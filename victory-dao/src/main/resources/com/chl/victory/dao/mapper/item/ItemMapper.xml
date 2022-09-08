@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.item.ItemMapper">
+  <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.item.ItemDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="leaf_cate_id" jdbcType="BIGINT" property="leafCateId" />
+    <result column="outer_no" jdbcType="VARCHAR" property="outerNo" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="sub_title" jdbcType="VARCHAR" property="subTitle" />
+    <result column="key" jdbcType="VARCHAR" property="key" />
+    <result column="cost" jdbcType="DECIMAL" property="cost" />
+    <result column="tag_price" jdbcType="DECIMAL" property="tagPrice" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="inventory" jdbcType="INTEGER" property="inventory" />
+    <result column="sales" jdbcType="INTEGER" property="sales" />
+    <result column="attr" jdbcType="VARCHAR" property="attr" />
+    <result column="imgs" jdbcType="VARCHAR" property="imgs" />
+    <result column="detail_html" jdbcType="VARCHAR" property="detailHtml" />
+    <result column="logistics" jdbcType="VARCHAR" property="logistics" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+  </resultMap>
+  <resultMap id="BaseOutlineResultMap" type="com.chl.victory.dao.model.item.ItemDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+    <result column="leaf_cate_id" jdbcType="BIGINT" property="leafCateId" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="sub_title" jdbcType="VARCHAR" property="subTitle" />
+    <result column="key" jdbcType="VARCHAR" property="key" />
+    <result column="cost" jdbcType="DECIMAL" property="cost" />
+    <result column="tag_price" jdbcType="DECIMAL" property="tagPrice" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="inventory" jdbcType="INTEGER" property="inventory" />
+    <result column="sales" jdbcType="INTEGER" property="sales" />
+    <result column="imgs" jdbcType="VARCHAR" property="imgs" />
+    <result column="logistics" jdbcType="VARCHAR" property="logistics" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_time, modified_time, shop_id, operator_id, leaf_cate_id, outer_no, title, 
+    sub_title, `key`, cost, tag_price, price, inventory, sales, attr, imgs, detail_html,
+    logistics, status, start_sent
+  </sql>
+  <sql id="Base_Outline_Column_List">
+    id, created_time, modified_time, shop_id, leaf_cate_id, title,
+    sub_title, `key`, cost, tag_price, price, inventory, sales, imgs, logistics, status, start_sent
+  </sql>
+
+  <sql id="conditionWithOrderAndPage">
+    <include refid="condition"/>
+    <include refid="order"/>
+    <include refid="page"/>
+  </sql>
+  <sql id="condition">
+    <where>
+      <if test="id != null"> id = #{id} </if>
+      <if test="ids != null and ids.size > 0">
+        id in
+        <foreach collection="ids" item="item" separator="," open="(" close=")">
+          #{item}
+        </foreach>
+      </if>
+      <if test="leafCateIds != null and leafCateIds.size > 0">
+        leaf_cate_id in
+        <foreach collection="leafCateIds" item="item" separator="," open="(" close=")">
+          #{item}
+        </foreach>
+      </if>
+      <if test="shopId != null">and shop_id = #{shopId,jdbcType=BIGINT} </if>
+      <if test="status != null">and status = #{status,jdbcType=TINYINT} </if>
+      <if test="statusStart != null">and <![CDATA[ status >= #{statusStart,jdbcType=TINYINT} ]]> </if>
+      <if test="leafCateId != null">and leaf_cate_id = #{leafCateId,jdbcType=BIGINT} </if>
+      <if test="title != null">
+        and `title` like concat('%',#{title,jdbcType=VARCHAR},'%')
+      </if>
+    </where>
+  </sql>
+  <sql id="order">
+    <if test="orderColumn != null">
+      order by #{orderColumn,jdbcType=VARCHAR} <if test="desc"> desc </if>
+    </if>
+    <if test="orderColumn == null and orderedColumns != null and orderedColumns.size > 0">
+      <trim suffixOverrides=",">
+        <foreach collection="orderedColumns" index="index" item="orderedColumn" open=" order by " separator="," close="">
+          #{item.orderColumn,jdbcType=VARCHAR} <if test="item.desc"> desc </if>
+        </foreach>
+      </trim>
+    </if>
+  </sql>
+  <sql id="page">
+    <if test="rowStart != null and pageSize != null">
+      limit #{rowStart},#{pageSize}
+    </if>
+  </sql>
+
+  <select id="count" parameterType="com.chl.victory.dao.query.item.ItemQuery" resultType="java.lang.Integer">
+    select
+    count(1)
+    from item
+    <include refid="condition" />
+  </select>
+
+  <select id="select" parameterType="com.chl.victory.dao.query.item.ItemQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from item
+    <include refid="conditionWithOrderAndPage" />
+  </select>
+  <select id="selectOutline" parameterType="com.chl.victory.dao.query.item.ItemQuery" resultMap="BaseOutlineResultMap">
+    select
+    <include refid="Base_Outline_Column_List" />
+    from item
+    <include refid="conditionWithOrderAndPage" />
+  </select>
+  <select id="selectOne" parameterType="com.chl.victory.dao.query.item.ItemQuery" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from item
+    <include refid="condition" />
+  </select>
+
+  <delete id="delete" parameterType="com.chl.victory.dao.query.item.ItemQuery">
+    delete from item
+    <where>
+      id = #{id} and status in (10, 20)
+      <if test="shopId != null">and shop_id = #{shopId,jdbcType=BIGINT} </if>
+    </where>
+  </delete>
+
+  <insert id="insert" parameterType="com.chl.victory.dao.model.item.ItemDO">
+    insert into item (id, created_time, modified_time,
+      shop_id, operator_id, leaf_cate_id, 
+      outer_no, title, sub_title, 
+      `key`, cost, tag_price,
+      price, inventory,
+      sales, attr, imgs, 
+      detail_html, logistics, status
+      )
+    values (#{id,jdbcType=BIGINT}, now(), now(),
+      #{shopId,jdbcType=BIGINT}, #{operatorId,jdbcType=BIGINT}, #{leafCateId,jdbcType=BIGINT}, 
+      #{outerNo,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, #{subTitle,jdbcType=VARCHAR}, 
+      #{key,jdbcType=VARCHAR}, #{cost,jdbcType=DECIMAL}, #{tagPrice,jdbcType=DECIMAL}, 
+      #{price,jdbcType=DECIMAL}, #{inventory,jdbcType=INTEGER},
+      #{sales,jdbcType=INTEGER}, #{attr,jdbcType=VARCHAR}, #{imgs,jdbcType=VARCHAR}, 
+      #{detailHtml,jdbcType=VARCHAR}, #{logistics,jdbcType=VARCHAR}, #{status,jdbcType=TINYINT}
+      )
+  </insert>
+  <update id="update" parameterType="com.chl.victory.dao.model.item.ItemDO">
+    update item
+    <set>
+        modified_time = now(),
+      <if test="shopId != null">
+        shop_id = #{shopId,jdbcType=BIGINT},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="leafCateId != null">
+        leaf_cate_id = #{leafCateId,jdbcType=BIGINT},
+      </if>
+      <if test="outerNo != null">
+        outer_no = #{outerNo,jdbcType=VARCHAR},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="subTitle != null">
+        sub_title = #{subTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="key != null">
+        `key` = #{key,jdbcType=VARCHAR},
+      </if>
+      <if test="cost != null">
+        cost = #{cost,jdbcType=DECIMAL},
+      </if>
+      <if test="tagPrice != null">
+        tag_price = #{tagPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="inventory != null">
+        inventory = #{inventory,jdbcType=INTEGER},
+      </if>
+      <if test="sales != null">
+        sales = #{sales,jdbcType=INTEGER},
+      </if>
+      <if test="attr != null">
+        attr = #{attr,jdbcType=VARCHAR},
+      </if>
+      <if test="imgs != null">
+        imgs = #{imgs,jdbcType=VARCHAR},
+      </if>
+      <if test="detailHtml != null">
+        detail_html = #{detailHtml,jdbcType=VARCHAR},
+      </if>
+      <if test="logistics != null">
+        logistics = #{logistics,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+  <update id="deductInventory" parameterType="com.chl.victory.dao.model.item.ItemDO">
+    <![CDATA[
+    update item
+    set
+        modified_time = now(),
+        inventory = inventory - #{inventory,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT} and shop_id = #{shopId,jdbcType=BIGINT} and  inventory - #{inventory,jdbcType=INTEGER} >= 0
+    ]]>
+  </update>
+  <select id="verifyDeductInventory" parameterType="com.chl.victory.dao.model.item.ItemDO" resultType="int">
+    <![CDATA[
+    select count(1) from item
+    where id = #{id,jdbcType=BIGINT} and shop_id = #{shopId,jdbcType=BIGINT} and  inventory - #{inventory,jdbcType=INTEGER} >= 0
+    ]]>
+  </select>
+  <update id="addInventory" parameterType="com.chl.victory.dao.model.item.ItemDO">
+    <![CDATA[
+    update item
+    set
+        modified_time = now(),
+        inventory = inventory + #{inventory,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT} and shop_id = #{shopId,jdbcType=BIGINT}
+    ]]>
+  </update>
+  <update id="addSales" parameterType="com.chl.victory.dao.model.item.ItemDO">
+    <![CDATA[
+    update item
+    set
+        modified_time = now(),
+        sales = sales + #{sales,jdbcType=INTEGER}
+    where id = #{id,jdbcType=BIGINT} and shop_id = #{shopId,jdbcType=BIGINT}
+    ]]>
+  </update>
+</mapper>

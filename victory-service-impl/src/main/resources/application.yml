@@ -1,0 +1,164 @@
+dubbo.scan.base-packages: com.chl.victory.serviceimpl
+dubbo:
+  registry:
+    timeout: 30000
+  provider:
+    version: 1.0.0
+    threads: 100
+  consumer:
+    timeout: 5000
+    check: false
+  protocol:
+    name: dubbo
+    port: 12345
+
+
+weixin:
+    tokenURI: https://api.weixin.qq.com/cgi-bin/token?grant_type={grant_type}&appid={appid}&secret={secret}
+    code2SessionURI: https://api.weixin.qq.com/sns/jscode2session?appid={appid}&secret={secret}&js_code={js_code}&grant_type={grant_type}
+    payUnifiedOrderURI: https://api.mch.weixin.qq.com/pay/unifiedorder
+    notifyPayURI: https://wm.5jym.com/p/wm/weixin/pay/notify/pay
+    notifyRefundURI: https://wm.5jym.com/p/wm/weixin/pay/notify/refund
+    certPath: /workspace/wx/cert/
+    getwxacodeunlimit: https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token={access_token}
+    thirdplatform:
+      # 第三方平台
+      component:
+        payConfig:
+          appId: xxxx
+          mchId: xxxx
+          apiKey: xxxxx
+        config:
+          # 消息加解密 Key: 在代替公众号收发消息过程中使用。必须是长度为 43 位的字符串，只能是字母和数字。
+          encodingAesKey: xxx
+          # 消息校验 Token:  开发者在代替公众号接收到消息时，用此 Token 来校验消息。 encodingAesKey base64加密结果
+          token: xxx=
+          # 第三方平台 appid
+          componentAppId: xxxxx
+          webviewDomain: xxxx
+          requestDomain: xxxx
+        # 授权的回调uri
+        componentloginpageRedirectUri: https://wm.5jym.com/p/wm/weixin/thirdplatform/redirect/afterAuth
+        gettemplatelist: https://api.weixin.qq.com/wxa/gettemplatelist?access_token={access_token}
+        apiQueryAuth: https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token={component_access_token}
+        apiCreatePreauthcode: https://api.weixin.qq.com/cgi-bin/component/api_create_preauthcode?component_access_token={component_access_token}
+        apiComponentToken: https://api.weixin.qq.com/cgi-bin/component/api_component_token
+        # 第三方平台 appsecret
+        componentAppSecret: xxxx
+      # 授权方
+      authorizer:
+        apiAuthorizerToken: https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token={component_access_token}
+        apiGetAuthorizerInfo: https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token={component_access_token}
+        uploadTemporaryMedia: https://api.weixin.qq.com/cgi-bin/media/upload
+      # 代小程序开发
+      foundryminiprogram:
+        fastcreate:
+          fastregisterweapp: https://api.weixin.qq.com/cgi-bin/component/fastregisterweapp?action=create&component_access_token={component_access_token}
+        baseinfo:
+          changewxasearchstatus: https://api.weixin.qq.com/wxa/changewxasearchstatus?access_token={access_token}
+          getwxasearchstatus: https://api.weixin.qq.com/wxa/getwxasearchstatus?access_token={access_token}
+          modifysignature: https://api.weixin.qq.com/cgi-bin/account/modifysignature?access_token={access_token}
+          modifyheadimage: https://api.weixin.qq.com/cgi-bin/account/modifyheadimage?access_token={access_token}
+          setnickname: https://api.weixin.qq.com/wxa/setnickname?access_token={access_token}
+          setwebviewdomain: https://api.weixin.qq.com/wxa/setwebviewdomain?access_token={access_token}
+          modifyDomain: https://api.weixin.qq.com/wxa/modify_domain?access_token={access_token}
+          getaccountbasicinfo: https://api.weixin.qq.com/cgi-bin/account/getaccountbasicinfo?access_token={access_token}
+        category:
+          # 获取审核时可填写的类目信息
+          getCategoryCanUsedToAudit: https://api.weixin.qq.com/wxa/get_category?access_token={access_token}
+          modifycategory: https://api.weixin.qq.com/cgi-bin/wxopen/modifycategory?access_token={access_token}
+          deletecategory: https://api.weixin.qq.com/cgi-bin/wxopen/deletecategory?access_token={access_token}
+          addcategory: https://api.weixin.qq.com/cgi-bin/wxopen/addcategory?access_token={access_token}
+          getcategory: https://api.weixin.qq.com/cgi-bin/wxopen/getcategory?access_token={access_token}
+          getallcategories: https://api.weixin.qq.com/cgi-bin/wxopen/getallcategories?access_token={access_token}
+        tester:
+          memberauth: https://api.weixin.qq.com/wxa/memberauth?access_token={access_token}
+          unbind_tester: https://api.weixin.qq.com/wxa/unbind_tester?access_token={access_token}
+          bind_tester: https://api.weixin.qq.com/wxa/bind_tester?access_token={access_token}
+        code:
+          defaultTemplateId: 10
+          revertcoderelease: https://api.weixin.qq.com/wxa/revertcoderelease?access_token={access_token}
+          release: https://api.weixin.qq.com/wxa/release?access_token={access_token}
+          undocodeaudit: https://api.weixin.qq.com/wxa/undocodeaudit?access_token={access_token}
+          get_latest_auditstatus: https://api.weixin.qq.com/wxa/get_latest_auditstatus?access_token={access_token}
+          submit_audit: https://api.weixin.qq.com/wxa/submit_audit?access_token={access_token}
+          get_qrcode: https://api.weixin.qq.com/wxa/get_qrcode?access_token={access_token}
+          commit: https://api.weixin.qq.com/wxa/commit?access_token={access_token}
+        login:
+          jscode2session: https://api.weixin.qq.com/sns/component/jscode2session?appid={appid}&js_code={js_code}&grant_type=authorization_code&component_appid={component_appid}&component_access_token={component_access_token}
+
+#datasource配置
+spring:
+  datasource:
+    druid:
+      config.decrypt: true
+      initial-size: 20
+      max-active: 200
+      filter:
+        config:
+          enabled: true
+        log4j2:
+          enabled: true
+        wall:
+          enabled: true
+        stat:
+          enabled: false
+          slow-sql-millis: 100
+          log-slow-sql: true
+          db-type: mysql
+      filters: config,stat,wall,log4j2
+      min-evictable-idle-time-millis: 1800000
+      time-between-eviction-runs-millis: 60000
+      test-while-idle: true
+      test-on-return: false
+      test-on-borrow: false
+      validation-query: select 1 from dual
+      max-pool-prepared-statement-per-connection-size: 20
+      pool-prepared-statements: false
+      max-wait: 5000
+      min-idle: 10
+        # 监控配置
+        # WebStatFilter配置，说明请参考Druid Wiki，配置_配置WebStatFilter
+      web-stat-filter:
+        enabled: false #是否启用StatFilter默认值true
+        url-pattern: /*
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+        profile-enable: false
+      stat-view-servlet:
+        enabled: false #是否启用StatViewServlet默认值true
+        url-pattern: /druid/*
+        login-username: root
+        login-password: root
+  transaction:
+    rollback-on-commit-failure: true #commit失败后回滚
+    default-timeout: 1s
+
+pagehelper:
+  params: count=countSql
+  support-methods-arguments: true
+  reasonable: false
+  helper-dialect: mysql
+
+mybatis:
+  configuration:
+    default-statement-timeout: 5000
+  mapper-locations: classpath:mapper/*.xml,classpath*:com/**/mapper/*.xml
+
+##tk.mapper https://github.com/abel533/Mapper/wiki/3.config
+mapper:
+  not-empty: true
+  before: true
+  identity: MYSQL
+  style: camelhumpandlowercase
+  #wrapKeyword: `{0}`
+  safe-delete: true
+  safe-update: true
+  mappers:
+  #mappers: com.chl.victory.dao.mapper.BaseMapper4TkMybatis
+
+
+login:
+    refreshTokenLastInterval: 10000
+
+debug: true
+

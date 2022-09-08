@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>VIP</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- <link rel="shortcut icon" href="/favicon.ico"> -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/item.css">
+
+    <style>
+        .me-img{width: 2rem;
+            height: 2rem;
+            border-radius: 1rem;
+        }
+
+        .category-card {
+            text-align: center;
+        }
+        .category-card img {
+            width: 40%;
+            /*height: 90%;*/
+            /*border-radius: .4rem;*/
+            display: inline-block;
+            /*margin: auto;*/
+        }
+        .category-card .cate-item{
+            line-height: 0.9;
+            margin-bottom: 0.5rem !important;
+        }
+    </style>
+
+</head>
+<body>
+<div id='app' class="page-group">
+    <template>
+
+        <div class="page page-current">
+
+            <header class="bar bar-nav">
+                <a href="javascript:goHistroy()" class="float-left nav-history">
+                    <span class="icon icon-left"></span>
+                </a>
+                <a href="javascript:window.location.reload()" class="float-right nav-refresh">
+                    <span class="icon icon-refresh"></span>
+                </a>
+                <h1 class="title header-title">
+                    <div class="header-shop float-left" style="display: flex;" @click="m_go_shop()">
+                        <img :src="m_get_img(shop.img)" class="header-img"/>
+                        <span><b>{{shop.name}}</b></span>
+                    </div>
+                    <!--<div class="header-user float-right" style="display: flex;" @click="m_go_me()">
+                        <img :src="user.img" class="header-img"/>
+                        <span><b>{{user.name}}</b></span>
+                    </div>-->
+                </h1>
+            </header>
+
+            <nav class="bar bar-tab">
+                <a class="tab-item " @click="m_go_shop()">
+                    <span class="icon icon-home"></span>
+                    <span class="tab-label">首页</span>
+                </a>
+                <a class="tab-item" @click="m_go_cart()">
+                    <span class="icon icon-cart"></span>
+                    <span class="tab-label">购物车</span>
+                </a>
+                <a class="tab-item active" @click="m_go_me()">
+                    <span class="icon icon-me"></span>
+                    <span class="tab-label">我的</span>
+                </a>
+                </a>
+            </nav>
+
+            <div class="content">
+                <div class="card" style="color: wheat;background-color: goldenrod;"  v-if="user.img">
+                    <div class="card-header" style="font-style: oblique;height: 1rem;min-height: 1rem;">VIP会员卡</div>
+                    <div class="card-content">
+                        <div class="card-content-inner">
+                            <div class="row no-gutter">
+                                <div style="display: flex;">
+                                    <div style="display: inline-block" class="float-left">
+                                        <img :src="user.img" class="me-img"/>
+                                    </div>
+                                    <div style="display: inline-block;padding-top:.5rem;padding-left:.5rem;" class="float-left">
+                                        <span><b>{{user.name}}</b></span>
+                                        <br/>
+                                    </div>
+                                </div>
+
+                                <div style="text-align: center;">
+                                    {{user.id}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div v-if="loading">
+                    <div class="preloader"></div>
+                </div>
+                <div style="margin-top: 4rem;margin-bottom: 2rem;" class="card" v-if="!loading && !user.img"> <!-- && !user.img-->
+                    <div class="card-content">
+                        <div class="row no-gutter">
+                            <a @click="m_need_go_login()"
+                               class="button button-danger"
+                               style="background-color: red;font-size: .6rem;color: white">使用微信登录</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" v-if="user.img">
+                    <div class="card-header">
+                        <b>我的订单</b>
+                        <!--<a href="#" @click="m_go_order_list">
+                            <span style="font-size: .4rem;">所有订单</span>
+                            <span class="icon icon-right" style="font-size: .3rem;"></span>
+                        </a>-->
+                    </div>
+                    <div class="card-content category-card">
+                        <div class="card-content-inner" style="padding-bottom: 0;padding-top: .5rem;">
+                            <div class="row no-gutter">
+                                <div v-for="cate in orderStatusList" class="col-20 cate-item"  @click="m_go_order_list(cate.code != undefined ? 'status='+cate.code : undefined)">
+                                    <div v-if="cate.count > 0" style="display: inline-block; width: 100%;">
+                                        <img :src="cate.img" style="margin-left: 15%;"/>
+                                        <div style="position: relative;left: -25%;font-size: .5rem;width: .6rem;height: .6rem;border-radius: .5rem;color: white;background-color: red;padding-top:.1rem;display: inline-block;float: right;" v-if="cate.count">{{cate.count}}</div>
+                                    </div>
+                                    <div v-else>
+                                        <img :src="cate.img" style=""/>
+                                    </div>
+                                    <span style="font-size: .4rem">{{cate.name}}</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card" v-if="user.img">
+                    <div class="card-header">
+                        <b>我的优惠券</b>
+                        <a href="#" @click="m_go_coupon_list">
+                            <span style="font-size: .4rem;">所有优惠券</span>
+                            <span class="icon icon-right" style="font-size: .3rem;"></span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card card-recommended-item-list">
+                    <div v-if="recommended_item_list.length > 0">
+                        <div class="card-header" style="font-size: .6rem;">
+                            你可能还喜欢
+                        </div>
+                        <div class="card-content">
+                            <div class="card-content-inner">
+                                <div class="list-block media-list">
+                                    <div class="no-gutter">
+                                        <div class="list-col-50 col-50 col-50-item" v-for="item in recommended_item_list">
+                                            <a>
+                                                <div class="item-img" @click="m_go_item_detail(item.id)">
+                                                    <img :src="m_get_img(item.img)">
+                                                </div>
+                                                <div class="item-outline">
+                                                    <div>
+                                                        <div class="item-outline-title">
+                                                            {{item.title}}
+                                                        </div>
+                                                        <div class="item-outline-sale">
+                                                            已卖{{item.salesTotal}}件
+                                                        </div>
+                                                        <div class="salestrategy-div"  v-if="item.strategyJson && item.strategyJson != ''" v-html="item.strategyTagHtml" >
+                                                        </div>
+                                                        <div v-if="item.existSku" class="item-exist-sku">
+                                                            款式多
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="item-outline-price">
+                                                            <span class="item-price-unit">￥</span>
+                                                            <span>{{item.price}}</span>
+                                                        </div>
+                                                        <div class="float-right item-outline-buycar" align="center">
+                                                            <img src="img/cart3.png" @click="m_add_cart_from_item_list(item.id, item.existSku)">
+                                                            <!--<span class="icon icon-cart" style="color: white"
+                                                                  @click="m_add_cart(item.id)"></span>-->
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </template>
+</div>
+
+
+<script type='text/javascript' src='js/jquery-3.4.1.min.js' charset='utf-8'></script>
+<script type="text/javascript">
+    jQuery.noConflict()
+</script>
+<script src="js/vue.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/miniprogram.js"></script>
+<script type='text/javascript' src='https://res.wx.qq.com/open/js/jweixin-1.4.0.js' charset='utf-8'></script>
+<script type="text/javascript" src="js/mixin_vue.js"></script>
+<script type='text/javascript' src='https://g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='https://g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+<script type="text/javascript">
+    //$.showPreloader();
+    //打开自动初始化页面的功能
+    //建议不要打开自动初始化，而是自己调用 $.init 方法完成初始化
+    $.config = {
+        autoInit: false,
+        router: false
+    }
+</script>
+
+<script type="text/javascript">
+    /*获取url query*/
+    var query = window.location.search.substring(1)
+    log(query)
+
+
+    /*vue code*/
+    var mixined_vue = Vue.extend({
+        mixins: [common_mixin]
+    })
+    var app = new mixined_vue({
+        el: '#app',
+        data: {
+            maxItems: 0,
+            orderStatusList: [
+                {
+                    code:10,
+                    img:"img/needpay.png",
+                    name:"待付款",
+                    count: 0
+                },
+                {
+                    code:20,
+                    img:"img/notsent.png",
+                    name:"待发货",
+                    count: 0
+                },
+                {
+                    code:30,
+                    img:"img/sent.png",
+                    name:"待收货",
+                    count: 0
+                },
+                {
+                    code:60,
+                    img:"img/refund.png",
+                    name:"退款",
+                    count: 0
+                },
+                {
+                    img:"img/allorder.png",
+                    name:"全部订单",
+                    count: 0
+                }
+            ]
+        },
+        methods: {
+        }
+    })
+
+    /*sui code*/
+
+    /*jQuery code*/
+    /*通过接口从服务器获取数据。*/
+
+    var callback = function () {
+        AjaxUtil.get("/wmall/order/status", {}, function(result) {
+            if (result.s && result.d != undefined && result.d.length > 0) {
+                var data = JsonUtil.getJson(result.d)
+
+                for (var i = 0; i < data.length; i++) {
+                    for (var j = 0; j < app.orderStatusList.length; j++) {
+                        if (data[i].code == app.orderStatusList[j].code) {
+                            app.orderStatusList[j].count = data[i].count
+                            break
+                        }
+                    }
+                }
+            }
+        });
+    }
+    initPage(callback)
+</script>
+
+<script type="text/javascript">
+    $.init()
+</script>
+</body>
+</html>

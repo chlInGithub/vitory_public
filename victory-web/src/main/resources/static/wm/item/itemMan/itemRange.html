@@ -1,0 +1,194 @@
+<div class="loadedContent" id="itemRangeEdit">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b><span class="range_name"></span>-圈定商品范围</b></span>
+        </div>
+        <div class="panel-body">
+            <form class="form-default am-hide" id="itemRangeEditQForm">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">ID</span>
+                            <input type="text" name="type" class="form-control"/>
+                        </div>
+                    </div>
+                    <button id="query" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        查询
+                    </button>
+                </div>
+            </form>
+
+            <form class="form-default" id="itemRangeEditForm" enctype="multipart/form-data" data-am-validator>
+                <div class="small">
+                    <div class="panel panel-default panel-itemIds">
+                        <div class="panel-heading">
+                            圈定商品
+                        </div>
+                        <div class="panel-body">
+                            <b style="color:red;font-size:.5rem;">(注意：未选择商品，则表示未圈商品范围。)</b>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon">已圈定的商品</span>
+                                        <textarea name="itemIds" class="form-control" rows="4"/>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+
+                            <div class="items-of-activity float-left" style="padding:0 5px 0 5px;width:49%;min-height: 300px;border: 1px solid #0e90d2;">
+                                <div style="text-align: center">已圈定的商品列表</div>
+                                <br/><br/>
+                                <div>
+                                    <table class="table table-hover small" style="background-color: #0e90d2;"><!--table-bordered-->
+                                        <thead>
+                                        <tr>
+                                            <th class='col-lg-1'><input value="" type="checkbox" class="tableCheckAll" style="margin-left: 40%;"/></th>
+                                            <th>
+                                                <div class="float-left">基本信息</div>
+                                                <a id="removeFromItemsOfActivity" class="btn btn-danger btn-xs am-animation-fade float-right">
+                                                    从商品集合中删除
+                                                </a>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="all-items float-right" style="padding:0 5px 0 5px;width:49%;min-height: 300px;border: 1px solid #e89451;">
+                                <div style="text-align: center">所有商品列表</div>
+                                <div>
+                                    <div class="form-default" id="alternativeItemListForm">
+                                        <div class="row">
+                                            <div class="col-lg-5 col-md-5 col-sm-5">
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-addon">商品ID</span>
+                                                    <input type="text" name="id" class="form-control"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 col-md-5 col-sm-5">
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-addon">标题</span>
+                                                    <input type="text" name="title" class="form-control"/>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2 col-sm-2">
+                                                <button id="queryAlternative" class="btn btn-primary btn-sm am-animation-fade">
+                                                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                                                    查询
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <table class="table table-hover small" style="background-color: #e89451;"><!--table-bordered-->
+                                        <thead>
+                                        <tr>
+                                            <th class='col-lg-1'><input value="" type="checkbox" class="tableCheckAll" style="margin-left: 40%;"/></th>
+                                            <th>
+                                                <div class="float-left">基本信息</div>
+                                                <a id="addToItemsOfActivity" class="btn btn-success btn-xs am-animation-fade float-right">
+                                                    添加到商品范围
+                                                </a>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" align="center">
+                    <button id="save" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                        <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                        保存
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+
+    $(function () {
+
+        var setTypeDes = function (type) {
+            var desc = '类型未知'
+            if (type == 2) {
+                desc = "推荐商品"
+            }else if (type == 3) {
+                desc = "低价商品"
+            }
+            $('#itemRangeEdit .range_name').html(desc)
+        }
+        var type
+        jumpContextData.dealJumpContextData(function (data) {
+            if (!ObjectCommonUtil.isEmpty(data.type)) {
+                $('#itemRangeEdit').find('#itemRangeEditQForm input[name="type"]:first').val(data.type)
+                type = data.type
+                setTypeDes(type)
+            }
+            if (!ObjectCommonUtil.isEmpty(data.max)) {
+                $("#itemRangeEdit #itemRangeEditForm .panel-itemIds textarea[name='itemIds']").data('max', data.max)
+            }
+        })
+
+        /*查询form*/
+        bindFormCallback({
+            pageId:'itemRangeEdit',
+            formId:'itemRangeEditQForm',
+            submitId:'query',
+            formVerify:function (data) {
+                log('itemRangeEdit verify')
+                return !ObjectCommonUtil.isEmpty(data.type)
+            },
+            submitResultDeal:function (data) {
+                var d = data.d
+                $("#itemRangeEdit #itemRangeEditForm .panel-itemIds textarea[name='itemIds']").val(d).change()
+
+                // $("#itemRangeEdit #itemRangeEditForm .panel-itemIds textarea[name='itemIds']")
+            }
+        })
+
+        /*商品信息form*/
+        bindFormCallback({
+            pageId:'itemRangeEdit',
+            formId:'itemRangeEditForm',
+            submitId:'save',
+            post: true,
+            /*headers:{
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },*/
+            formVerify:function (data) {
+                return true
+            },
+            submitDataAppend:function(data){
+                data['type'] = type
+            },
+            submitResultDeal:function (data) {
+                if (data.s){
+                    castSuccessMsg("成功")
+                    closeCurrentTabMenu()
+                }
+            }
+        })
+
+        var pageId = "itemRangeEdit"
+        canMovedItemGroup.initMovedItemGroup2(pageId)
+
+        if (!ObjectCommonUtil.isEmpty($('#'+pageId).find('#'+pageId+'QForm input[name="type"]:first').val())) {
+            $("#"+pageId+"QForm #query").click();
+        }
+
+        canMovedItemGroup.showAlternativeItems(pageId)
+    })
+
+</script>

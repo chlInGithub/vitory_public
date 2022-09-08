@@ -1,0 +1,239 @@
+<div class="loadedContent" id="saleStrategyList">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b>销售策略列表</b></span>
+        </div>
+        <div class="panel-body">
+            <form class="form-default" id="saleStrategyListForm">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">ID</span>
+                            <input type="text" name="id" class="form-control"/>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">类型</span>
+                            <select name="strategyType" class="form-control">
+                                <option value="">全部</option>
+                                <option value="1">预售</option>
+                                <option value="2">订单优惠后金额下限</option>
+                                <option value="3">限购-最小购买量</option>
+                                <option value="4">限购-最大购买量</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" align="center">
+                    <button id="query" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        查询
+                    </button>
+                </div>
+            </form>
+
+            <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+
+            <div class="batchBtns" >
+                <button type="button" class="btn btn-primary btn-xs btn-presellEdit jumped" data-targettype="openTabMenu" data-menuid="presellEdit">新建预售</button>
+                <button type="button" class="btn btn-success btn-xs btn-minFeeEdit jumped" data-targettype="openTabMenu" data-menuid="minFeeEdit">新建订单金额下限</button>
+                <button type="button" class="btn btn-primary btn-xs btn-minCountEdit jumped" data-targettype="openTabMenu" data-menuid="minCountEdit">新建限购-最小购买量</button>
+                <button type="button" class="btn btn-success btn-xs btn-maxCountEdit jumped" data-targettype="openTabMenu" data-menuid="maxCountEdit">新建限购-最大购买量</button>
+            </div>
+            <br/>
+
+            <div>
+                <table class="table table-hover small" style="background-color: #ddd;">
+                    <thead>
+                    <tr>
+                        <th class='col-lg-1'>类型</th>
+                        <th class='col-lg-7'>内容</th>
+                        <th class='col-lg-2'>最新修改时间</th>
+                        <th class='col-lg-2'>操作</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+    $(function () {
+        var preSellObject = {
+            desc: "<b style='color: green'>预售</b>",
+            getAttrHtml: function (attrJson) {
+                attrJson = JsonUtil.toJson(attrJson)
+                var html = "<span>订单商品总量不小于 <b style='color: red'>" + attrJson.minCount + "</b>件，预售生效；<br/> 可下单截止时间为 <b style='color: red'>" + attrJson.endTime + "</b>; 开始发货时间为 <b style='color: green'>" + attrJson.sentTime + "</b></span>"
+                return html
+            },
+            getButtonHtml: function () {
+                var buttons = '<button type="button" class="btn btn-success btn-xs btn-strategyDetail jumped" data-targettype="openTabMenu" data-menuid="presellDetail" style="margin:1px 1px;">详情</button>' +
+                    '<button type="button" class="btn btn-primary btn-xs btn-strategyEdit jumped" data-targettype="openTabMenu" data-menuid="presellEdit" style="margin:1px 1px;">编辑</button>' +
+                    '<button type="button" class="btn btn-danger btn-xs btn-strategyDel confirmed" data-msg="确定删除预售活动?" data-optid="del" style="margin:1px 1px;">删除</button>'
+                return buttons
+            }
+        }
+        var minFeeObject = {
+            desc: "<b style='color: red;'>订单优惠后金额下限 </b>",
+            getAttrHtml: function (attrJson) {
+                attrJson = JsonUtil.toJson(attrJson)
+                var html = "<span>订单实际金额不小于 <b style='color: red'>" + attrJson.minFee + "</b>元</span>"
+                return html
+            },
+            getButtonHtml: function () {
+                var buttons = '<button type="button" class="btn btn-success btn-xs btn-strategyDetail jumped" data-targettype="openTabMenu" data-menuid="minFeeDetail" style="margin:1px 1px;">详情</button>' +
+                    '<button type="button" class="btn btn-primary btn-xs btn-strategyEdit jumped" data-targettype="openTabMenu" data-menuid="minFeeEdit" style="margin:1px 1px;">编辑</button>' +
+                    '<button type="button" class="btn btn-danger btn-xs btn-strategyDel confirmed" data-msg="确定删除订单金额下限活动?" data-optid="del" style="margin:1px 1px;">删除</button>'
+                return buttons
+            }
+        }
+        var minCountObject = {
+            desc: "<b style='color: orangered;'>限购-最小购买量</b>",
+            getAttrHtml: function (attrJson) {
+                attrJson = JsonUtil.toJson(attrJson)
+                var html = "<span>订单中商品数量不小于 <b style='color: red'>" + attrJson.minCount + "</b>件</span>"
+                return html
+            },
+            getButtonHtml: function () {
+                var buttons = '<button type="button" class="btn btn-success btn-xs btn-strategyDetail jumped" data-targettype="openTabMenu" data-menuid="minCountDetail" style="margin:1px 1px;">详情</button>' +
+                    '<button type="button" class="btn btn-primary btn-xs btn-strategyEdit jumped" data-targettype="openTabMenu" data-menuid="minCountEdit" style="margin:1px 1px;">编辑</button>' +
+                    '<button type="button" class="btn btn-danger btn-xs btn-strategyDel confirmed" data-msg="确定删除限购-最小购买量活动?" data-optid="del" style="margin:1px 1px;">删除</button>'
+                return buttons
+            }
+        }
+        var maxCountObject = {
+            desc: "<b style='color: orange;'>限购-最大购买量</b>",
+            getAttrHtml: function (attrJson) {
+                attrJson = JsonUtil.toJson(attrJson)
+                var html = "<span>订单中商品数量不大于 <b style='color: red'>" + attrJson.maxCount + "</b>件</span>"
+                return html
+            },
+            getButtonHtml: function () {
+                var buttons = '<button type="button" class="btn btn-success btn-xs btn-strategyDetail jumped" data-targettype="openTabMenu" data-menuid="maxCountDetail" style="margin:1px 1px;">详情</button>' +
+                    '<button type="button" class="btn btn-primary btn-xs btn-strategyEdit jumped" data-targettype="openTabMenu" data-menuid="maxCountEdit" style="margin:1px 1px;">编辑</button>' +
+                    '<button type="button" class="btn btn-danger btn-xs btn-strategyDel confirmed" data-msg="确定删除限购-最小购买量活动?" data-optid="del" style="margin:1px 1px;">删除</button>'
+                return buttons
+            }
+        }
+        var getStrategyTypeObject = function (strategyType) {
+            if (strategyType == 1) {
+                return preSellObject
+            }
+            if (strategyType == 2) {
+                return minFeeObject
+            }
+            if (strategyType == 3) {
+                return minCountObject
+            }
+            if (strategyType == 4) {
+                return maxCountObject
+            }
+            return {}
+        }
+        var getStrategyDesc = function(strategyType){
+            return getStrategyTypeObject(strategyType).desc
+        }
+        var getAttrDesc = function(strategyType, attr){
+            return getStrategyTypeObject(strategyType).getAttrHtml(attr)
+        }
+        var getButtons = function(strategyType){
+            return getStrategyTypeObject(strategyType).getButtonHtml()
+        }
+
+        $("#saleStrategyListForm #query").on('click', function () {
+            var activeTable = $('#saleStrategyList table:first')
+            if (notLoad(activeTable)) {
+                activeTable.dataTable( {
+                    language: {
+                        info: "第 _PAGE_ 页，共 _PAGES_ 页，共 _TOTAL_ 条",
+                        /*翻页*/
+                        paginate: {
+                            first: 'first',
+                            previous: '<',
+                            next:     '>',
+                            last: 'last'
+                        },
+                        /*条数*/
+                        lengthMenu: '<div style="float: right;" class="col-lg-2 col-md-2 col-sm-2 input-group input-group-sm"><span class="input-group-addon">每页条数</span><select class="form-control" name="payType"><option value="10">10</option><option value="30">30</option><option value="50">50</option></select></div>',
+                        /*无数据时显示内容*/
+                        zeroRecords: "无数据",
+                        infoFiltered: ''
+                    },
+                    select:{
+                        style:     'none',
+                        className: 'none'
+                    },
+                    //info:false,
+                    // 删除斑马线效果
+                    /*stripeClasses: [ ],*/
+                    // 禁用search
+                    searching: false,
+                    // 禁用列排序
+                    ordering: false,
+                    // 从server 接口获取数据
+                    processing: true,
+                    serverSide: true,
+                    ajax: {
+                        url: getSubmitUrl("saleStrategyList", "list") ,
+                        data: function (d) {
+                            var data = getFormDataJson('saleStrategyList', 'saleStrategyListForm')
+                            data.pageIndex = d.start/d.length
+                            log(data.pageIndex)
+                            data.dataStart = d.start
+                            log(data.dataStart)
+                            data.pageSize = d.length
+                            data.draw = d.draw
+                            return JsonUtil.simpleFix(data)
+                        }
+                    },
+                    columns:[
+                        {data:'id', render:function (data, type, row, meta) {
+                                log(row)
+                                return getStrategyDesc(row.strategyType) + "<br/>" + row.id
+                            }},
+                        {data:'id', render:function (data, type, row, meta) {
+                                return getAttrDesc(row.strategyType, row.attr)
+                            }},
+                        {data:'modifiedTime'},
+                        {data:'id', render:function (data, type, row, meta) {
+                                var content = getButtons(row.strategyType)
+                                return content;
+                            }}
+                            ],
+                    // 使用测试数据
+                    //data: [/*{itemId:'1223433342',price:'3.45',count:23,total:'78.56'}*/],
+                    createdRow: function(row, data, dataIndex, cells){
+                        // row 创建完成后，为某些元素设置数据
+                        $(row).find('.btn-strategyDel').data('param',{id:data.id,name:data.title}).data('doneCallback',function (data) {
+                            if (data.s){
+                                $("#saleStrategyListForm #query").click()
+                                return false
+                            }
+                            castErrorMsg(data)
+                        })
+                        $(row).find('.btn-strategyDetail').data('param',{id:data.id})
+                        $(row).find('.btn-strategyEdit').data('param',{id:data.id})
+                    },
+                    drawCallback:function (){
+                        // draw完成后回调
+                        resizeContentHeight()
+                    }
+                } )
+                activeTable.data('hasLoad', true)
+            }else {
+                log("reload")
+                activeTable.DataTable().clear().ajax.reload()
+            }
+            return false
+        })
+
+        $("#saleStrategyListForm #query").click()
+    })
+</script>

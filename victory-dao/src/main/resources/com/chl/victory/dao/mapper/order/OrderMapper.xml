@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.order.OrderMapper">
+  <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.order.OrderDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="shop_service" jdbcType="BIT" property="shopService" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="pre_status" jdbcType="TINYINT" property="preStatus" />
+    <result column="status_flow" jdbcType="VARCHAR" property="statusFlow" />
+    <result column="buyer_id" jdbcType="BIGINT" property="buyerId" />
+    <result column="order_deliver_id" jdbcType="BIGINT" property="orderDeliverId" />
+    <result column="refund_id" jdbcType="BIGINT" property="refundId" />
+    <result column="buyer_msg" jdbcType="VARCHAR" property="buyerMsg" />
+    <result column="note" jdbcType="VARCHAR" property="note" />
+    <result column="total_fee" jdbcType="DECIMAL" property="totalFee" />
+    <result column="activity" jdbcType="VARCHAR" property="activity" />
+    <result column="coupons" jdbcType="VARCHAR" property="coupons" />
+    <result column="points_cash" jdbcType="VARCHAR" property="pointsCash" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
+    <result column="real_fee" jdbcType="DECIMAL" property="realFee" />
+    <result column="pay_id" jdbcType="BIGINT" property="payId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_time, modified_time, shop_id, operator_id, shop_service, status, pre_status, status_flow,
+    buyer_id, order_deliver_id, refund_id, buyer_msg, note, total_fee, activity, coupons, 
+    points_cash, real_fee, pay_id, app_id
+  </sql>
+  <sql id="conditionWithOrderAndPage">
+    <include refid="condition"/>
+    <include refid="order"/>
+    <include refid="page"/>
+  </sql>
+  <sql id="condition">
+    <where>
+      <trim prefixOverrides="and">
+        <if test="id != null"> id = #{id} </if>
+        <if test="shopId != null">
+          and shop_id = #{shopId,jdbcType=BIGINT}
+        </if>
+        <if test="appId != null">
+          and app_id = #{appId,jdbcType=VARCHAR}
+        </if>
+        <if test="buyerId != null">
+          and buyer_id = #{buyerId,jdbcType=BIGINT}
+        </if>
+        <if test="status != null">
+          and status = #{status,jdbcType=TINYINT}
+        </if>
+      </trim>
+
+    </where>
+  </sql>
+  <sql id="order">
+    <if test="orderColumn != null">
+      order by #{orderColumn,jdbcType=VARCHAR} <if test="desc"> desc </if>
+    </if>
+    <if test="orderColumn == null and orderedColumns != null and orderedColumns.size > 0">
+      <trim suffixOverrides=",">
+        <foreach collection="orderedColumns" index="index" item="orderedColumn" open=" order by " separator="," close="">
+          #{item.orderColumn,jdbcType=VARCHAR} <if test="item.desc"> desc </if>
+        </foreach>
+      </trim>
+    </if>
+  </sql>
+  <sql id="page">
+    <if test="rowStart != null and pageSize != null">
+      limit #{rowStart},#{pageSize}
+    </if>
+  </sql>
+
+  <select id="count" parameterType="com.chl.victory.dao.query.order.OrderQuery" resultType="java.lang.Integer">
+    select count(1) as count
+    from `order` a
+    <if test="itemId != null || presell != null">
+      , sub_order b
+    </if>
+    <if test="buyerName != null || buyerMobile != null">
+      , shop_member c
+    </if>
+    <where>
+      <trim prefixOverrides="and">
+        <if test="shopId != null">
+          a.shop_id = #{shopId,jdbcType=BIGINT}
+        </if>
+        <if test="id != null">
+          and a.id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="appId != null">
+          and a.app_id = #{appId,jdbcType=VARCHAR}
+        </if>
+        <if test="refundId != null">
+          and a.refund_id = #{refundId,jdbcType=BIGINT}
+        </if>
+        <if test="buyerName != null || buyerMobile != null">
+          and a.buyer_id = c.id
+        </if>
+        <if test="itemId != null || presell != null">
+          and a.id = b.order_id
+        </if>
+        <if test="itemId != null">
+          and b.item_id = #{itemId,jdbcType=BIGINT}
+        </if>
+        <if test="presell == 0">
+          and b.presell is null
+        </if>
+        <if test="presell == 1">
+          and b.presell is not null
+        </if>
+        <if test="status != null">
+          and a.status = #{status,jdbcType=TINYINT}
+        </if>
+        <if test="buyerId != null">
+          and a.buyer_id = #{buyerId,jdbcType=BIGINT}
+        </if>
+        <if test="buyerName != null">
+          and c.nick like concat('%',#{buyerName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="buyerMobile != null">
+          and c.mobile = #{buyerMobile,jdbcType=BIGINT}
+        </if>
+        <if test="startedCreatedTime != null">
+          <![CDATA[
+            and a.created_time >= #{startedCreatedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+        <if test="endedCreatedTime != null">
+          <![CDATA[
+            and a.created_time <= #{endedCreatedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+      </trim>
+    </where>
+  </select>
+
+  <select id="select" parameterType="com.chl.victory.dao.query.order.OrderQuery" resultMap="BaseResultMap">
+    select a.*
+    from `order` a
+    <if test="itemId != null || presell != null">
+      , sub_order b
+    </if>
+    <if test="buyerName != null || buyerMobile != null">
+      , shop_member c
+    </if>
+    <where>
+      <trim prefixOverrides="and">
+        a.shop_id = #{shopId,jdbcType=BIGINT}
+        <if test="id != null">
+          and a.id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="appId != null">
+          and a.app_id = #{appId,jdbcType=VARCHAR}
+        </if>
+        <if test="buyerName != null || buyerMobile != null">
+          and a.buyer_id = c.id
+        </if>
+        <if test="itemId != null || presell != null">
+          and a.id = b.order_id
+        </if>
+        <if test="itemId != null">
+          and b.item_id = #{itemId,jdbcType=BIGINT}
+        </if>
+        <if test="presell == 0">
+          and b.presell is null
+        </if>
+        <if test="presell == 1">
+          and b.presell is not null
+        </if>
+        <if test="status != null">
+          and a.status = #{status,jdbcType=TINYINT}
+        </if>
+        <if test="buyerId != null">
+          and a.buyer_id = #{buyerId,jdbcType=BIGINT}
+        </if>
+        <if test="buyerName != null">
+          and c.nick like concat('%',#{buyerName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="buyerMobile != null">
+          and c.mobile = #{buyerMobile,jdbcType=BIGINT}
+        </if>
+        <if test="startedCreatedTime != null">
+          <![CDATA[
+            and a.created_time >= #{startedCreatedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+        <if test="endedCreatedTime != null">
+          <![CDATA[
+            and a.created_time <= #{endedCreatedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+        <if test="startedModifiedTime != null">
+          <![CDATA[
+            and a.modified_time >= #{startedModifiedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+        <if test="endedModifiedTime != null">
+          <![CDATA[
+            and a.modified_time <= #{endedModifiedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+      </trim>
+    </where>
+    <if test="orderColumn != null">
+      order by concat('a.', #{orderColumn,jdbcType=VARCHAR}) <if test="desc"> desc </if>
+    </if>
+    <if test="orderColumn == null">
+    order by a.created_time desc
+    </if>
+    <include refid="page"/>
+  </select>
+  <select id="selectOne" parameterType="com.chl.victory.dao.query.order.OrderQuery" resultMap="BaseResultMap">
+    select a.*
+    from `order` a
+    <if test="itemId != null">
+      , sub_order b
+    </if>
+    <if test="buyerName != null || buyerMobile != null">
+      , shop_member c
+    </if>
+    <where>
+      <trim prefixOverrides="and">
+        a.shop_id = #{shopId,jdbcType=BIGINT}
+        <if test="id != null">
+          and a.id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="appId != null">
+          and a.app_id = #{appId,jdbcType=VARCHAR}
+        </if>
+        <if test="buyerName != null || buyerMobile != null">
+          and a.buyer_id = c.id
+        </if>
+        <if test="itemId != null">
+          and a.id = b.order_id and b.item_id = #{itemId,jdbcType=BIGINT}
+        </if>
+        <if test="status != null">
+          and a.status = #{status,jdbcType=TINYINT}
+        </if>
+        <if test="buyerId != null">
+          and a.buyer_id = #{buyerId,jdbcType=BIGINT}
+        </if>
+        <if test="buyerName != null">
+          and c.nick like concat('%',#{buyerName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="buyerMobile != null">
+          and c.mobile = #{buyerMobile,jdbcType=BIGINT}
+        </if>
+        <if test="startedCreatedTime != null">
+          <![CDATA[
+            and a.created_time >= #{startedCreatedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+        <if test="endedCreatedTime != null">
+          <![CDATA[
+            and a.created_time <= #{endedCreatedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+      </trim>
+    </where>
+    <include refid="order"/>
+  </select>
+
+  <delete id="delete" parameterType="com.chl.victory.dao.query.order.OrderQuery">
+    delete from `order`
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" parameterType="com.chl.victory.dao.model.order.OrderDO">
+    insert into `order` (id, created_time, modified_time,
+      shop_id, operator_id, shop_service, 
+      status, pre_status, status_flow, buyer_id,
+      order_deliver_id, refund_id, buyer_msg, 
+      note, total_fee, activity, 
+      coupons, points_cash, real_fee, 
+      pay_id, app_id)
+    values (#{id,jdbcType=BIGINT},
+      #{createdTime},
+      now(),
+      #{shopId,jdbcType=BIGINT}, #{operatorId,jdbcType=BIGINT}, #{shopService,jdbcType=BIT}, 
+      #{status,jdbcType=TINYINT},#{preStatus,jdbcType=TINYINT}, #{statusFlow,jdbcType=VARCHAR}, #{buyerId,jdbcType=BIGINT},
+      #{orderDeliverId,jdbcType=BIGINT}, #{refundId,jdbcType=BIGINT}, #{buyerMsg,jdbcType=VARCHAR}, 
+      #{note,jdbcType=VARCHAR}, #{totalFee,jdbcType=DECIMAL}, #{activity,jdbcType=VARCHAR}, 
+      #{coupons,jdbcType=VARCHAR}, #{pointsCash,jdbcType=VARCHAR}, #{realFee,jdbcType=DECIMAL}, 
+      #{payId,jdbcType=BIGINT},#{appId,jdbcType=VARCHAR})
+  </insert>
+  <update id="update" parameterType="com.chl.victory.dao.model.order.OrderDO">
+    update `order`
+    <set>
+        modified_time = now(),
+      <if test="shopId != null">
+        shop_id = #{shopId,jdbcType=BIGINT},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="shopService != null">
+        shop_service = #{shopService,jdbcType=BIT},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=TINYINT},
+      </if>
+      <if test="preStatus != null">
+        pre_status = #{preStatus,jdbcType=TINYINT},
+      </if>
+      <if test="statusFlow != null">
+        status_flow = #{statusFlow,jdbcType=VARCHAR},
+      </if>
+      <if test="buyerId != null">
+        buyer_id = #{buyerId,jdbcType=BIGINT},
+      </if>
+      <if test="orderDeliverId != null">
+        order_deliver_id = #{orderDeliverId,jdbcType=BIGINT},
+      </if>
+      <if test="refundId != null">
+        refund_id = #{refundId,jdbcType=BIGINT},
+      </if>
+      <if test="buyerMsg != null">
+        buyer_msg = #{buyerMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="note != null">
+        note = #{note,jdbcType=VARCHAR},
+      </if>
+      <if test="totalFee != null">
+        total_fee = #{totalFee,jdbcType=DECIMAL},
+      </if>
+      <if test="activity != null">
+        activity = #{activity,jdbcType=VARCHAR},
+      </if>
+      <if test="coupons != null">
+        coupons = #{coupons,jdbcType=VARCHAR},
+      </if>
+      <if test="pointsCash != null">
+        points_cash = #{pointsCash,jdbcType=VARCHAR},
+      </if>
+      <if test="realFee != null">
+        real_fee = #{realFee,jdbcType=DECIMAL},
+      </if>
+      <if test="payId != null">
+        pay_id = #{payId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT} and shop_id = #{shopId,jdbcType=BIGINT}
+    <if test="refunding == true">
+      and status in (60, 61)
+    </if>
+    <if test="currentRefundId != null">
+      and refund_id = #{currentRefundId,jdbcType=BIGINT}
+    </if>
+  </update>
+  <select id="selectNeedCloseTimeoutNotPayedOrder4OfflinePay" parameterType="java.util.Date" resultMap="BaseResultMap">
+    select a.id, a.shop_id, a.buyer_id from `order` a, pay_order b
+    where a.pay_id = b.id and a.status = 10  and b.type = 2
+        <![CDATA[
+            and a.created_time <= #{date,jdbcType=TIMESTAMP}
+        ]]>
+  </select>
+  <update id="closeTimeoutNotPayedOrder4OfflinePay" parameterType="java.util.Date">
+    update `order` a, pay_order b
+    set
+        a.modified_time = now(),
+        a.status = 50
+    where a.pay_id = b.id and a.status = 10  and b.type = 2
+        <![CDATA[
+            and a.created_time <= #{date,jdbcType=TIMESTAMP}
+        ]]>
+  </update>
+
+  <select id="selectNeedCloseTimeoutNotPayedOrder4OnlinePay" parameterType="java.util.Date" resultMap="BaseResultMap">
+    select a.id, a.shop_id, a.buyer_id from `order` a, pay_order b
+    where a.pay_id = b.id and a.status = 10  and b.type != 2
+        <![CDATA[
+            and a.created_time <= #{date,jdbcType=TIMESTAMP}
+        ]]>
+  </select>
+  <update id="closeTimeoutNotPayedOrder4OnlinePay" parameterType="java.util.Date">
+    update `order` a, pay_order b
+    set
+        a.modified_time = now(),
+        a.status = 50
+    where a.pay_id = b.id and a.status = 10  and b.type != 2
+        <![CDATA[
+            and a.created_time <= #{date,jdbcType=TIMESTAMP}
+        ]]>
+  </update>
+
+  <select id="countStatus" parameterType="com.chl.victory.dao.query.order.OrderQuery" resultType="com.chl.victory.dao.model.StatusCountDO">
+    select a.status as status, count(1) as count
+    from `order` a
+    <if test="itemId != null || presell != null">
+      , sub_order b
+    </if>
+    <if test="buyerName != null || buyerMobile != null">
+      , shop_member c
+    </if>
+    <where>
+      <trim prefixOverrides="and">
+        a.shop_id = #{shopId,jdbcType=BIGINT}
+        <if test="id != null">
+          and a.id = #{id,jdbcType=BIGINT}
+        </if>
+        <if test="appId != null">
+          and a.app_id = #{appId,jdbcType=VARCHAR}
+        </if>
+        <if test="buyerName != null || buyerMobile != null">
+          and a.buyer_id = c.id
+        </if>
+        <if test="itemId != null || presell != null">
+          and a.id = b.order_id
+        </if>
+        <if test="itemId != null">
+          and b.item_id = #{itemId,jdbcType=BIGINT}
+        </if>
+        <if test="presell == 0">
+          and b.presell is null
+        </if>
+        <if test="presell == 1">
+          and b.presell is not null
+        </if>
+        <if test="buyerId != null">
+          and a.buyer_id = #{buyerId,jdbcType=BIGINT}
+        </if>
+        <if test="buyerName != null">
+          and c.nick like concat('%',#{buyerName,jdbcType=VARCHAR},'%')
+        </if>
+        <if test="buyerMobile != null">
+          and c.mobile = #{buyerMobile,jdbcType=BIGINT}
+        </if>
+        <if test="startedCreatedTime != null">
+          <![CDATA[
+            and a.created_time >= #{startedCreatedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+        <if test="endedCreatedTime != null">
+          <![CDATA[
+            and a.created_time <= #{endedCreatedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+      </trim>
+    </where>
+    group by a.status
+  </select>
+
+  <select id="saleTotal" parameterType="com.chl.victory.dao.query.order.OrderQuery" resultType="java.math.BigDecimal">
+    select sum(real_fee)
+    from `order` a
+    <where>
+      <trim prefixOverrides="and">
+        a.shop_id = #{shopId,jdbcType=BIGINT}
+        <if test="status != null">
+          and a.status = #{status,jdbcType=TINYINT}
+        </if>
+        <if test="appId != null">
+          and a.app_id = #{appId,jdbcType=VARCHAR}
+        </if>
+        <if test="buyerId != null">
+          and a.buyer_id = #{buyerId,jdbcType=BIGINT}
+        </if>
+        <if test="startedCreatedTime != null">
+          <![CDATA[
+            and a.created_time >= #{startedCreatedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+        <if test="endedCreatedTime != null">
+          <![CDATA[
+            and a.created_time <= #{endedCreatedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+      </trim>
+    </where>
+  </select>
+
+  <select id="countMem" parameterType="com.chl.victory.dao.query.order.OrderQuery" resultType="java.lang.Integer">
+    select count(distinct buyer_id)
+    from `order` a
+    <where>
+      <trim prefixOverrides="and">
+        a.shop_id = #{shopId,jdbcType=BIGINT}
+        <if test="status != null">
+          and a.status = #{status,jdbcType=TINYINT}
+        </if>
+        <if test="appId != null">
+          and a.app_id = #{appId,jdbcType=VARCHAR}
+        </if>
+        <if test="startedCreatedTime != null">
+          <![CDATA[
+            and a.created_time >= #{startedCreatedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+        <if test="endedCreatedTime != null">
+          <![CDATA[
+            and a.created_time <= #{endedCreatedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+      </trim>
+    </where>
+  </select>
+</mapper>

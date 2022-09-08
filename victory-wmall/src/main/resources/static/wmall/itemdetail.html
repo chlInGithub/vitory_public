@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<title>商品详情</title>
+		<meta name="viewport" content="initial-scale=1, maximum-scale=1">
+		<!-- <link rel="shortcut icon" href="/favicon.ico"> -->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+		<link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css">
+		<link rel="stylesheet" href="css/common.css">
+
+		<style>
+
+        /*content*/
+        .item-img-swiper-container {
+            margin: 0;
+            height: 100%;
+            padding-bottom: 0;
+        }
+        /*.activity-swiper-img{
+            width: 100%;
+            height:100%;
+        }*/
+
+
+        .item-base-card .item-price{
+          font-size: 1rem;
+          font-weight: bold;
+          color: red;
+        }
+		.item-base-card .item-presell{
+          font-size: .6rem;
+          font-weight: bold;
+        }
+        .item-base-card .item-label-price{
+          	font-size: .5rem;
+          	font-color: gray;
+			margin-left: .8rem;
+			margin-top: .4rem;
+        }
+        .item-base-card .item-title{
+          overflow: hidden;
+			font-size: .7rem;
+        }
+        .item-base-card .item-setting{
+          font-size: .5rem;
+          text-align: right;
+        }
+        .item-base-card .item-share{
+          font-size: .4rem;
+          text-align: center;
+        }
+		.item-base-card .item-sales{
+			font-size: .4rem;
+        }
+
+        .bar-add-buycar{
+          background-color: red;
+          color: white !important;
+			font-size: .7rem
+        }
+        .bar-disabled-add-buycar{
+          background-color: orange;
+          color: white !important;
+			font-size: .7rem
+        }
+        .bar-buy{
+          background-color: red;
+          color: white !important;
+			font-size: .7rem
+        }
+
+		.card-sale-users .sale-user-img img{
+			width: 1.8rem;
+			height: 1.8rem;
+			border-radius: 1rem;
+			margin-right: -1rem;
+		}
+
+/*		.item-detail-card .card-content-inner {
+			line-height: 0 !important;
+		}*/
+
+			.share_code{
+				top: 30% !important;
+			}
+    </style>
+
+	</head>
+	<body>
+		<div id="app" class="page-group">
+			<template>
+
+				<div class="page page-current">
+
+					<header class="bar bar-nav">
+                        <a href="javascript:goHistroy()" class="float-left nav-history">
+                            <span class="icon icon-left"></span>
+                        </a>
+                        <a href="javascript:window.location.reload()" class="float-right nav-refresh">
+                            <span class="icon icon-refresh"></span>
+                        </a>
+						<h1 class="title header-title">
+							<div class="header-shop float-left" style="display: flex;" @click="m_go_shop()">
+								<img :src="m_get_img(shop.img)" class="header-img"/>
+								<span><b>{{shop.name}}</b></span>
+							</div>
+							<div class="header-user float-right" style="display: flex;" @click="m_go_me()">
+								<img :src="user.img" class="header-img"/>
+								<span><b>{{user.name}}</b></span>
+							</div>
+						</h1>
+					</header>
+
+					<nav class="bar bar-tab">
+						<div class="row">
+							<div class="col-20">
+								<a class="tab-item"  @click="m_go_shop()">
+									<span class="icon icon-home"></span>
+									<span class="tab-label">首页</span>
+								</a>
+							</div>
+							<div class="col-20">
+								<a class="tab-item"  @click="m_go_cart()">
+									<span class="icon icon-cart"></span>
+									<span class="tab-label">购物车</span>
+								</a>
+							</div>
+							<div class="col-30" style="display: contents;">
+								<a class="tab-item bar-add-buycar" v-if="item.inventory > 0" @click="m_open_sku_list_for_add_cart()">
+									<span class="tab-label">加入购物车</span>
+								</a>
+								<a class="tab-item bar-disabled-add-buycar" v-else>
+									<span class="tab-label">暂时缺货</span>
+								</a>
+							</div>
+							<!--<div class="col-30" style="display: contents;">
+								<a class="tab-item bar-buy" @click="m_buy_now(item.id)">
+									<span class="tab-label">立即购买</span>
+								</a>
+							</div>-->
+						</div>
+					</nav>
+
+
+					<div class="content">
+						<div class="page-index">
+
+							<!-- 商品图片 -->
+							<div class="swiper-container item-img-swiper-container" data-space-between='10' data-autoplay=1500>
+								<div class="swiper-wrapper">
+									<div class="swiper-slide" v-if="item.imgs.length > 0" v-for="img in item.imgs">
+										<img style="width:100%;" class="activity-swiper-img" :src="m_get_img(img)" alt="">
+									</div>
+								</div>
+							</div>
+
+							<!--预售-->
+							<div v-if="item.strategyJson.presell" class="card item-base-card">
+								<div class="card-content">
+									<div class="card-content-inner" style="background-color: limegreen;">
+										<div>
+											<div class="row">
+												<div class="col-100">
+													<div class="item-presell float-left">
+														<div style="font-size: .8rem">预售</div>
+														<div v-if="item.strategyJson.presell.endTime" style="color: red">下单截止时间:{{item.strategyJson.presell.endTime}}</div>
+														<div v-if="item.strategyJson.presell.sentTime" style="color: red">开始发货时间:{{item.strategyJson.presell.sentTime}}</div>
+														<div v-if="item.strategyJson.presell.minCount" style="font-size:.5rem;">预售结束后售出总量小于{{item.strategyJson.presell.minCount}}件，系统将自动退款。</div>
+														<div style="font-size:.5rem;">自截止时间至发货时间后5日内，不支持退款。</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!-- 商品基本信息 -->
+
+							<div class="card item-base-card">
+								<div class="card-content">
+									<div class="card-content-inner">
+										<div>
+											<div class="row">
+                                                <div class="col-100">
+                                                    <!-- 商品标价与一口价 -->
+                                                    <div class="item-price float-left">
+                                                        <span>￥{{item.price}}</span>
+                                                    </div>
+                                                    <div class="item-label-price float-left">
+                                                        <s>
+                                                            <span>￥{{item.labelPrice}}</span>
+                                                        </s>
+                                                    </div>
+                                                </div>
+											</div>
+										</div>
+
+
+										<!-- 商品标题 -->
+										<div>
+											<div class="row">
+												<div class="col-80 item-title">
+													{{item.title}}
+												</div>
+												<!--<div class="col-20 item-setting float-right">
+													<span class="icon icon-settings"></span>
+													<div style="font-size:.4rem">参数</div>
+												</div>-->
+												<div class="col-20 item-share float-right" @click="m_share_item()">
+													<span class="icon icon-share"></span>
+													<div class="">分享</div>
+												</div>
+												<!--<div class="col-20 item-share float-right">
+													<div class="">库存{{item.inventory}}件</div>
+													<div class="">总销{{item.salesTotal}}件</div>
+												</div>-->
+											</div>
+										</div>
+
+										<!-- 发货地，快递费 -->
+										<div class="sent-city" style="font-size: .5rem">
+											<div class="row">
+												<div class="col-50">
+													快递:<span>{{item.express}}</span>
+												</div>
+												<div class="col-50" style="text-align: right">
+													<div class="item-sales">已售{{item.salesTotal}}件/剩余{{item.inventory}}件</div>
+												</div>
+											</div>
+											<div class="row">
+												<div class="col-50" style="font-size:.3rem;color:red" v-if="item.from">
+													发货地:{{item.from}}
+												</div>
+												<div class="col-50" style="font-size:.3rem;color:red">
+													<span>(快递费用仅供参考，以结算页为准)</span>
+												</div>
+											</div>
+										</div>
+										<div class="salestrategy-div"  v-if="item.strategyJson && item.strategyJson != ''" v-html="item.strategyTagHtml" >
+										</div>
+										<div v-if="item.existSku" class="item-exist-sku">
+											款式多
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+							<!-- 优惠券 走马灯 -->
+							<div class="card" style="display: none; " v-if="couponList.length > 0">
+								<!--<div class="card-header">
+									<span>
+										优惠券
+									</span>
+								</div>-->
+								<div class="card-content coupon-card">
+									<div class="card-content-inner" align="center" style="padding: 0">
+										<div class="swiper-container" style="padding-bottom: 0rem" data-space-between='10' data-autoplay=1500>
+											<div class="swiper-wrapper">
+												<div class="swiper-slide" v-for=" coupon in couponList ">
+
+													<div style="display:inline-block;width: 80%;border-radius: 0.3rem;border: 1px solid rosybrown;background-color: lightyellow;margin: .3rem 0;" @click="m_getting_coupon(coupon.id, coupon.got)">
+														<div style="width: 10%;float: left;font-size: .4rem;">
+															<div style="margin-top: .2rem;">
+																优<br/>
+																惠<br/>
+																券
+															</div>
+														</div>
+														<div style="width: 80%;float: left;border-right: 1px solid rosybrown;border-left: 1px solid rosybrown;line-height: 1.2;">
+															<div>
+																<div style="margin-right: .3rem;display: inline-block;font-size: 1rem;color: red;">
+																	￥{{ coupon.discount }}
+																</div>
+																<div style="display: inline-block;font-size: .6em;color: red;">
+																	{{ "满￥" + coupon.meet +"减￥" + coupon.discount}}
+																</div>
+															</div>
+															<div style="font-size: .5rem;color: gray;">
+																{{ coupon.name }}
+															</div>
+															<div style="font-size: .4rem;color:red;">
+																{{ coupon.validTime + " - " + coupon.invalidTime}}
+															</div>
+														</div>
+														<div style="width: 10%;float: right;font-size: .4rem;">
+															<div style="margin-top: .2rem;" v-if="coupon.got">
+																已<br/>
+																领<br/>
+																取
+															</div>
+															<div style="color: red;margin-top: .5rem;" v-else>
+																抢<br/>
+																券
+															</div>
+														</div>
+
+													</div>
+
+
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="card card-sale-users" v-if="item.saleUV > 0">
+								<div class="card-content coupon-card">
+									<div class="card-content-inner" style="padding: .5rem .5rem 0rem .5rem;;display: inline-block;">
+										<div style="display: block;padding-right: 1rem;" class="float-left">
+											<div class="sale-user-img float-left" v-for="userImg in item.saleUsers">
+												<img :src="userImg">
+											</div>
+										</div>
+										<div class="float-left" style="display:block; margin-top:.5rem; font-size: .5rem;color: green;">
+											<span>近30日约{{item.saleUV}}人购买</span>
+										</div>
+									</div>
+								</div>
+							</div>
+
+
+							<div class="card item-detail-card">
+								<div class="card-header">图文详情</div>
+								<div class="card-content">
+									<div class="card-content-inner" style="overflow: hidden;padding:0 !important;">
+										<span v-html="item.detail"></span>
+									</div>
+								</div>
+							</div>
+							
+							<div class="card-content-inner" v-if="evaluationList.length > 0">
+							<div class="card item-evaluation-card">
+								<div class="card-header">商品评价({{evaluationCount}})</div>
+								<div class="card-content">
+									<!-- <div class="card-content-inner" v-if="evaluationList.length > 0"> -->
+										<div class="list-block media-list">
+											<ul>
+												<li v-for="evaluation in evaluationList">
+													<div class="item-content">
+														<div class="item-inner">
+															<span style="font-size: .7rem">{{evaluation.userName}}</span>
+															<br />
+															<span style="font-size: .7rem">{{evaluation.content}}</span>
+														</div>
+													</div>
+												</li>
+											</ul>
+										</div>
+									<!-- </div>
+									<div class="card-content-inner" v-else>
+										暂无评价
+									</div> -->
+								</div>
+							</div>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<!-- 选择sku列表 -->
+				<div class="popup popup-sku-list">
+					<div class="content-block">
+
+						<div class="card">
+							<div class="card-header">
+								<div class="popup-close float-left" style="display: inline-block;"
+									 @click="m_cancel_sku_list">
+									<span class="icon icon-left"></span>
+								</div>
+								<div>
+									sku列表
+								</div>
+								<div class="popup-close float-right" style="display: inline-block;"
+									 @click="m_cancel_sku_list">
+									<span>X</span>
+								</div>
+							</div>
+							<div class="card-content">
+								<div class="card-content-inner" v-if="item.skus && item.skus.length > 0">
+									<div class="list-block media-list">
+										<ul>
+											<li v-for="sku in item.skus">
+												<div class="item-content">
+													<div class="item-inner">
+														<div v-if="sku.inventory > 0" @click="m_cancel_sku_list();m_add_cart(item.id, sku.id)">
+															<div style="margin-left: 1rem;">
+																<div style="color:red;font-size:.6rem;">
+																	￥{{ sku.price }}元
+																</div>
+																<div style="font-size:.5rem;">
+																	库存{{ sku.inventory }}件
+																</div>
+																<b style="font-size:.5rem;">
+																	{{ sku.title }}
+																</b>
+															</div>
+														</div>
+														<div v-else disabled style="background-color: whitesmoke;">
+															<div style="margin-left: 1rem;">
+																<div style="color:red;font-size:.6rem;">
+																	￥{{ sku.price }}元
+																</div>
+																<div style="font-size:.5rem;">
+																	库存{{ sku.inventory }}件
+																</div>
+																<b style="font-size:.5rem;">
+																	{{ sku.title }}
+																</b>
+															</div>
+														</div>
+													</div>
+												</div>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</template>
+		</div>
+	</body>
+	<script type='text/javascript' src='js/jquery-3.4.1.min.js' charset='utf-8'></script>
+	<script type="text/javascript">
+		jQuery.noConflict()
+	</script>
+	<script src="js/vue.js"></script>
+	<script type="text/javascript" src="js/common.js"></script>
+	<script type="text/javascript" src="js/miniprogram.js"></script>
+	<script type='text/javascript' src='https://res.wx.qq.com/open/js/jweixin-1.4.0.js' charset='utf-8'></script>
+	<script type="text/javascript" src="js/mixin_vue.js"></script>
+	<script type='text/javascript' src='https://g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+	<script type='text/javascript' src='https://g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+	<script type='text/javascript' src='https://g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script>
+	<script type="text/javascript">
+		//$.showPreloader();
+		//打开自动初始化页面的功能
+		//建议不要打开自动初始化，而是自己调用 $.init 方法完成初始化
+		$.config = {
+			autoInit: false,
+			router: false
+		}
+	</script>
+
+	<script type="text/javascript">
+		/*vue code*/
+		var mixined_vue = Vue.extend({
+			mixins: [common_mixin]
+		})
+		var app = new mixined_vue({
+			el: '#app',
+			data: {
+				item: {},
+				couponList: [],
+				evaluationList: [],
+				evaluationCount: 0
+			},
+			methods: {
+                m_open_sku_list_for_add_cart: function () {
+                    if (this.item.skus != undefined && this.item.skus.length > 0) {
+                        $.popup('.popup-sku-list');
+                    }else {
+                        m_add_cart(this.item.id)
+					}
+                },
+                m_cancel_sku_list: function () {
+                    $.closeModal('.popup-sku-list');
+                },
+				m_share_item: function () {
+					share_item(this.item)
+                }
+			},
+			watch: {
+				/*监听activity_list变化，以便生效对应走马灯*/
+				item: function() {
+					log('item change')
+					setTimeout(function() {
+						$.init()
+					}, 300);
+				}
+			}
+		})
+
+		/*sui code*/
+
+		/*jQuery code*/
+		/*通过接口从服务器获取数据。*/
+		var query_item_detail = function(callback) {
+			AjaxUtil.get("/wmall/item/detail", genJsonFromUrlParams(), function(result) {
+				app.item = JsonUtil.getJson(result.d)
+				saleStrategyUtil.parseList([app.item])
+			})
+		}
+		var query_coupons = function() {
+			AjaxUtil.get("/wmall/shop/coupons", {}, function(result) {
+                app.couponList = JsonUtil.getJson(result.d);
+			})
+		}
+		var callback = function() {
+			query_item_detail()
+			// query_coupons()
+		}
+		var share_item = function(item){
+		    var url = "/wmall/item/share?id=" + item.id
+            $.modal({
+                title:  '<div style="font-size: .6rem;">分享小程序码</div>',
+                text: '<div><img width="100%" src=' + url + '></div><div style="text-align: center;font-size: .5rem;font-weight: 600;">请长按小程序码并保存，之后可手动分享。</div>',
+                buttons: [
+                    {
+                        text: '<div style="font-size: .7rem;">关闭</div>',
+                        bold: true
+                    },
+                ],
+                extraClass:'share_code'
+            })
+		}
+		initPage(callback)
+	</script>
+
+
+	<script type="text/javascript">
+		$.init()
+	</script>
+
+</html>

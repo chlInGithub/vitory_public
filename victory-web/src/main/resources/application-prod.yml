@@ -1,0 +1,63 @@
+
+dubbo:
+  registry:
+    address: zookeeper://xxxx:2181
+
+spring:
+  application:
+    name: by-wm-prod
+  profiles: prod
+  datasource:
+    druid:
+      #避免出现乱码，url中添加useUnicode=true&characterEncoding=UTF-8autoReconnect=true
+      #url: jdbc:mysql://127.0.0.1:3306/victory_wm?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+      url: jdbc:mysql://xxxxx:3306/victory_wm?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+      username: xxxx
+      password: ld2/HsRltRZJSvMakKsCi8gtfU9IOpqcK2mY49e2DQWvw8CAz08uaHBjJNy3hvMkQZSsRt32PVvVA2LDdadoVw==
+      driver-class-name: com.mysql.jdbc.Driver
+      default-transaction-isolation: 2 #java.sql.Connection.TRANSACTION_READ_COMMITTED
+      connection-properties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAKJPGhJrKuVX8V2KeJhGk9OwS39pNFqfXIkovSQAAOGorq3AnUmwJ7vewdzZl5Od7BvYmTiGjvH2yDyJVbqZkUsCAwEAAQ==
+#redis配置
+  redis:
+    host: xxxx
+    port: 6379
+    database: 0
+    password: xxxx
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-idle: 10
+        min-idle: 1
+        max-active: 200
+        max-wait: 2000ms
+
+  #mvc:
+      #pathmatch:
+        #use-registered-suffix-pattern:  true #匹配所有后缀。任意后缀都能进行mapping，从后缀与功能类型关联角度考虑，认为不应使用该配置。
+  transaction:
+    default-timeout: 1s
+
+myFirst:
+  name: dev
+  count: 10
+  innerConfig:
+    enable: false #非必填可根据url推断
+
+myconfig:
+  test:
+    test: false
+    merchantUserId: 1
+#mybatis:
+  #configuration:
+    #log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+zimg:
+  server: http://xxxx:4869
+debug: false
+
+
+logging:
+  config: classpath:logback-prod.xml
+
+experience:
+  shopId: 1

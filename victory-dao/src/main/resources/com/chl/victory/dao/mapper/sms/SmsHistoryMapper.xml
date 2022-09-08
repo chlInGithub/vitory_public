@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.sms.SmsHistoryMapper">
+  <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.sms.SmsHistoryDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="sms_sending_id" jdbcType="BIGINT" property="smsSendingId" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+    <result column="to_mobile" jdbcType="BIGINT" property="toMobile" />
+    <result column="sms_temp_id" jdbcType="BIGINT" property="smsTempId" />
+    <result column="values" jdbcType="VARCHAR" property="values" />
+    <result column="last_time" jdbcType="TIMESTAMP" property="lastTime" />
+    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="result" jdbcType="VARCHAR" property="result" />
+    <result column="his" jdbcType="VARCHAR" property="his" />
+    <result column="send_times" jdbcType="TINYINT" property="sendTimes" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, sms_sending_id, created_time, modified_time, shop_id, to_mobile, sms_temp_id, 
+    `values`, last_time, status, result, his, send_times
+  </sql>
+  <sql id="conditionWithOrderAndPage">
+    <include refid="condition"/>
+    <include refid="order"/>
+    <include refid="page"/>
+  </sql>
+  <sql id="condition">
+    <where>
+      <if test="id != null"> sms_sending_id = #{id} </if>
+      <if test="shopId != null">
+        and shop_id = #{shopId,jdbcType=BIGINT}
+      </if>
+      <if test="smsTempId != null">
+        and sms_temp_id = #{smsTempId,jdbcType=BIGINT}
+      </if>
+      <if test="status != null">
+        and status = #{status,jdbcType=TINYINT}
+      </if>
+    </where>
+  </sql>
+  <sql id="order">
+    <if test="orderColumn != null">
+      order by #{orderColumn} <if test="desc"> desc </if>
+    </if>
+    <if test="orderColumn = null and orderedColumns != null and orderedColumns.size > 0">
+      <trim suffixOverrides=",">
+        <foreach collection="orderedColumns" index="index" item="orderedColumn" open=" order by " separator="," close="">
+          #{item.orderColumn} <if test="item.desc"> desc </if>
+        </foreach>
+      </trim>
+    </if>
+  </sql>
+  <sql id="page">
+    <if test="rowStart != null and pageSize != null">
+      limit #{rowStart},#{pageSize}
+    </if>
+  </sql>
+
+  <select id="count" parameterType="com.chl.victory.dao.query.sms.SmsSendingQuery" resultType="java.lang.Integer">
+    select
+    count(1)
+    from sms_history
+    <include refid="condition" />
+  </select>
+
+  <select id="select" parameterType="com.chl.victory.dao.query.sms.SmsSendingQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sms_history
+    <include refid="conditionWithOrderAndPage" />
+  </select>
+
+  <insert id="insert" parameterType="com.chl.victory.dao.model.sms.SmsHistoryDO">
+    insert into sms_history (id, sms_sending_id, created_time,
+      modified_time, shop_id, to_mobile, 
+      sms_temp_id, `values`, last_time,
+      status, result, his, send_times
+      )
+    values (#{id,jdbcType=BIGINT}, #{smsSendingId,jdbcType=BIGINT}, #{createdTime,jdbcType=TIMESTAMP},
+      #{modifiedTime,jdbcType=TIMESTAMP}, #{shopId,jdbcType=BIGINT}, #{toMobile,jdbcType=BIGINT},
+      #{smsTempId,jdbcType=BIGINT}, #{values,jdbcType=VARCHAR}, #{lastTime,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=TINYINT}, #{result,jdbcType=VARCHAR}, #{his,jdbcType=VARCHAR}, #{sendTimes,jdbcType=TINYINT}
+      )
+  </insert>
+</mapper>

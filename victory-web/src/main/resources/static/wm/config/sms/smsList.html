@@ -1,0 +1,133 @@
+<div class="loadedContent" id="smsList">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b>已使用短信列表</b></span>
+        </div>
+        <div class="panel-body">
+            <form class="form-default" id="smsListForm">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">发送时间</span>
+                            <input type="text" class="datetime date-start input-sm form-control" name="start" data-format="yyyy-mm-dd "/>
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                            <span class="input-group-addon">至</span>
+                            <input type="text" class="datetime date-end input-sm form-control" name="end"/>
+                            <span class="add-on"><i class="icon-remove"></i></span>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">发送状态</span>
+                            <select class="form-control" name="status">
+                                <option value="0">失败</option>
+                                <option value="1">成功</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" align="center">
+                    <button id="query" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        查询
+                    </button>
+                </div>
+            </form>
+
+            <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+
+            <div>
+                <table class="table table-bordered table-hover small">
+                    <thead>
+                    <tr>
+                        <th class='col-lg-3'>发送时间</th>
+                        <th class='col-lg-3'>手机号</th>
+                        <th class='col-lg-3'>内容</th>
+                        <th class='col-lg-3'>状态</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+<script>
+    $("#smsList #smsListForm #query").on('click', function () {
+        var table = $('#smsList table:first')
+        if (undefined == table.data('hasLoad')) {
+            table.dataTable( {
+                language: {
+                    info: "第 _PAGE_ 页，共 _PAGES_ 页，共 _TOTAL_ 条",
+                    /*翻页*/
+                    paginate: {
+                        first: 'first',
+                        previous: '<',
+                        next:     '>',
+                        last: 'last'
+                    },
+                    /*条数*/
+                    lengthMenu: '<div style="float: right;" class="col-lg-2 col-md-2 col-sm-2 input-group input-group-sm"><span class="input-group-addon">每页条数</span><select class="form-control" name="payType"><option value="10">10</option><option value="30">30</option><option value="50">50</option></select></div>',
+                    /*无数据时显示内容*/
+                    zeroRecords: "无数据",
+                    infoFiltered: ''
+                },
+                select:{
+                    style:     'none',
+                    className: 'none'
+                },
+                //info:false,
+                // 删除斑马线效果
+                /*stripeClasses: [ ],*/
+                // 禁用search
+                searching: false,
+                // 禁用列排序
+                ordering: false,
+                // 从server 接口获取数据
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: getSubmitUrl('smsList','query'),
+                    data: function (d) {
+                        log(d)
+                        var data = getFormDataJson('smsList', 'smsListForm')
+                        data.pageIndex = d.start/d.length
+                        data.dataStart = d.start
+                        data.pageSize = d.length
+                        data.draw = d.draw
+                        return JsonUtil.simpleFix(data)
+                    }
+                },
+                columns:[{data:'time'},{data:'mobile'},{data:'msg'},
+                    {data:'status', render:function (data, type, row, meta) {
+                            return status == '0' ? '失败' : '成功'
+                        }}],
+                drawCallback:function (){
+                    // draw完成后回调
+                    resizeContentHeight()
+                }
+            } )
+            table.data('hasLoad', true)
+        }else {
+            table.DataTable().clear().ajax.reload()
+        }
+        return false
+    })
+
+    $('#smsListForm .datetime').datetimepicker({
+        format: "yyyy-mm-dd hh:ii:ss",
+        todayBtn: "linked",
+        clearBtn: true,
+        language: "zh-CN",
+        keyboardNavigation: false,
+        forceParse: false,
+        autoclose:true,
+        todayHighlight: true
+    })
+
+    $("#smsListForm #query").click()
+
+</script>

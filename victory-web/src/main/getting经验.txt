@@ -1,0 +1,155 @@
+module执行mvn install等前，请先针对parent pom.xml执行，否则会保找不到其他module坐标的错误
+
+遵循的设计流程
+    业务模型 到 系统模型 到 数据模型
+
+架构阶段需要做的事情
+    选型
+    系统搭建
+    创建基本module
+    制定规范
+    输出demo
+
+规范与经验
+    先设计后开发，排期项精细到1天
+
+    按照业务域划分模块，收拢数据的出入口,统一且复用，避免同样的业务行为在多处进行各自实现
+
+    使用设计模式,不同业务逻辑应该使用设计模式进行分离，具有较好的业务扩展性，尽量避免到处if-else分支，修改时可能影响其他业务的逻辑
+
+    抽离业务无关逻辑，使用AOP、拦截器等
+
+    method侧重内聚性，名称可表示行为内容，行为内容可清晰可见有哪些步骤
+
+    redis除了做cache，还可作为database，如考虑业务数据重要性，在mysql和redis见进行选择。
+
+    redis key前缀 命名规则
+        key前缀直接作为key的情况
+            什么数据_OF_维度_数据结构类型
+        由key前缀 + 具体维度数据 构成实际key的情况
+            什么数据_OF_维度_数据结构类型:
+
+    明确代码完成情况
+        TODO 待完成必须添加TODO
+
+    数据
+        数据表字段命名规则，多词时使用_分割，便于其他人看懂字段含义
+        数据库字段要加注释，否则model和table都没有注释，这样很难理解
+        数据做环境隔离
+        数据做归属隔离
+        状态数据应该枚举，否则无法知道数据代表的具体含义
+
+    数据暴露
+        提供外部接口时，划定暴露范围，如不应该将dao中的do直接暴露出去
+
+    package
+        每个package的职责明确，如enums放枚举，constant放常量，response\result放返回数据模型，request\query放请求数据模型，等
+
+    model query规则
+        对于model可以使用lombok，最直接的好处不需要自行管理setter getter
+            <dependency>
+                <groupId>org.projectlombok</groupId>
+                <artifactId>lombok</artifactId>
+                <version>1.18.0</version>
+            </dependency>
+            idea添加插件
+
+        命名规则
+             web
+                model 不要使用DO DTO后缀,视情况而定是否使用VO
+                query 使用Param后缀
+             facade
+                model 使用DTO后缀
+                query 使用QueryDTO后缀
+             service
+                使用facade的model query
+             dao
+                model 使用DO后缀
+                query 使用Query后缀
+        filed命名
+            各个层的model query中fieldName与type尽可能统一，方便使用BeanUtils，避免对象copy时无聊的逐个赋值
+
+    类型转换行为命名规则
+        transfer2XXXX
+        虽然可利用重载定义多个方法名为transfer的行为，但是可读性较差，所以建议添加后缀2SomeType
+
+    module的路径命名规则
+        规则：统一前缀.moduleName.其他
+        好处：清晰表明归属的module，避免冲突
+
+    参数验证规则
+        方法参数验证，如不允许NULL
+            springMVC controller接口
+                验证自定义对象作为入参
+                    入参对象添加@org.springframework.validation.annotation.Validated
+                    自定义对象field添加@javax.validation.constraints.xx
+                验证基本类型，只能使用@org.springframework.web.bind.annotation.RequestParam.required限制是否必需
+                其他类型，只能编写特定验证逻辑
+            如果方法归属spring管理的bean
+                方法1：(原理aop代理，验证种类多样)该bean类添加@org.springframework.validation.annotation.Validated,方法参数添加@javax.validation.constraints.xx
+                方法2：@lombok.NonNull
+            如果不是,例如util工具类接口参数
+                方法1：@NonNull lombok.NonNull
+        对象field验证，如不允许NULL，使用hibernate.validator
+            field加注解,如@javax.validation.constraints.xx
+            com.chl.victory.common.util.ValidationUtil.validate(对象)
+
+    DAO层
+        表字段名不要使用mysql关键字，否则sql会执行error，只能加单引号解决，改起来会很耗时
+
+        TINYINT(1) 会被转为Boolean，TINYINT(2)被转为Byte，所以需注意长度的选择，否则后期修改会耗时
+
+        使用tk.mybatis（丰富的mapper接口，最简mapper.xml）
+
+        mybatis generator
+            对于不使用tk.mybatis的情况
+                仅仅在xxxMapper.xml中进行简单修改，如添加condition查询条件，count，条件select
+            对于使用tk.mybatis的情况
+                默认sql无法满足要求时，仅需添加自定义sql
+            其他已生成部分不做修改，通过manager对mapper进行包装
+
+    manager层
+        dao层上应该封装一层，不要直接在service中使用，以便对数据访问进行扩展，如servce->manager->dao
+
+    业务service层
+        @Transactional
+            如果不指定rollbackfor，则仅对运行时异常和error进行回滚，
+            所以当抛出(自定义)受检异常时，由于不符合回滚规则，而进行commit，这样不符合预期。
+
+            为避免问题产生，需为rollbackfor赋值，可明确异常、也可Exception.class,
+            使用Exception.class，会更好些，避免出现遗漏。
+
+            如下调用不会使用事务
+            serviceA.methodA(无论有无事务注解)->serviceA.methodB(该方法有事务注解)
+            原因：方法内部调用属于直接调用，不会使用代理，不会触发对内部方法的事务流程
+
+        TransactionTemplate
+            无论代理还是直接调用，都会使用事务
+
+        选择建议
+            若该方法不会被内部调用，可使用注解@Transactional
+            若不确定该方法不会被内部调用，须使用TransactionTemplate
+
+        事务配置
+            propagation 默认require，
+            isolation 默认-1，表示与连接的db保持一致。
+                未验证，所以明确设置,spring.datasource.druid.default-transaction-isolation: 2
+                #Connection.TRANSACTION_READ_COMMITTED
+
+    线程安全
+        simpledateformat不是thread-safe，所以不要作为service的成员变量，应该使用dateutil
+        threadlocal 加数据和删除数据一定成对出现，避免OOM
+
+跟踪请求
+    每个请求对应唯一的请求ID，贯穿整个处理过程，log中格式化输出-->拉取log并入库-->构造索引-->提供console页面供查询整个链路log
+
+
+
+
+日志文件按照业务分离
+
+
+
+
+html
+    form不能嵌套，否则在浏览器生成dom时会删除内部form。

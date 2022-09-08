@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.merchant.ShopMapper">
+    <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.merchant.ShopDO">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+        <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime"/>
+        <result column="operator_id" jdbcType="BIGINT" property="operatorId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="mobile" jdbcType="BIGINT" property="mobile"/>
+        <result column="img" jdbcType="VARCHAR" property="img"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="check_code" jdbcType="VARCHAR" property="checkCode"/>
+        <!--<result column="domain" jdbcType="VARCHAR" property="domain"/>-->
+        <result column="expired_time" jdbcType="TIMESTAMP" property="expiredTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    id, created_time, modified_time, operator_id, `name`, mobile, img, address, check_code, expired_time
+  </sql>
+    <sql id="conditionWithOrderAndPage">
+        <include refid="condition"/>
+        <include refid="order"/>
+        <include refid="page"/>
+    </sql>
+    <sql id="condition">
+        <where>
+            <trim prefixOverrides="and">
+                <if test="id != null">id = #{id}</if>
+                <if test="name != null">
+                    and `name` like concat('%',#{name,jdbcType=VARCHAR},'%')
+                </if>
+                and <![CDATA[ expired_time >= now() ]]>
+            </trim>
+        </where>
+    </sql>
+    <sql id="order">
+        <if test="orderColumn != null">
+            order by #{orderColumn}
+            <if test="desc">desc</if>
+        </if>
+        <if test="orderColumn = null and orderedColumns != null and orderedColumns.size > 0">
+            <trim suffixOverrides=",">
+                <foreach collection="orderedColumns" index="index" item="orderedColumn" open=" order by " separator=","
+                         close="">
+                    #{item.orderColumn}
+                    <if test="item.desc">desc</if>
+                </foreach>
+            </trim>
+        </if>
+    </sql>
+    <sql id="page">
+        <if test="rowStart != null and pageSize != null">
+            limit #{rowStart},#{pageSize}
+        </if>
+    </sql>
+
+    <select id="count" parameterType="com.chl.victory.dao.query.merchant.ShopQuery" resultType="java.lang.Integer">
+        select
+        count(1)
+        from shop
+        <include refid="condition"/>
+    </select>
+
+    <select id="select" parameterType="com.chl.victory.dao.query.merchant.ShopQuery" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from shop
+        <include refid="conditionWithOrderAndPage"/>
+    </select>
+
+    <select id="selectOne" parameterType="com.chl.victory.dao.query.merchant.ShopQuery" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from shop
+        <include refid="condition"/>
+    </select>
+
+    <select id="selectFreightFree" parameterType="java.lang.Long" resultType="java.math.BigDecimal">
+        select freight_free
+        from shop
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectDeliveryArea" parameterType="java.lang.Long" resultType="java.lang.String">
+        select delivery_area
+        from shop
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectPayType" parameterType="java.lang.Long" resultType="java.lang.String">
+        select pay_type
+        from shop
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+    <select id="selectDeliveryType" parameterType="java.lang.Long" resultType="java.lang.String">
+        select delivery_type
+        from shop
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <delete id="delete" parameterType="com.chl.victory.dao.query.merchant.ShopQuery">
+    delete from shop
+    where id = #{id,jdbcType=BIGINT} and mobile = #{mobile,jdbcType=BIGINT} and check_code = #{checkCode,jdbcType=VARCHAR}
+  </delete>
+
+    <insert id="insert" parameterType="com.chl.victory.dao.model.merchant.ShopDO">
+    insert into shop (id, created_time, modified_time, 
+      operator_id, `name`, mobile,
+      img, address, check_code)
+    values (#{id,jdbcType=BIGINT}, now(), now(),
+      #{operatorId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{mobile,jdbcType=BIGINT},
+      #{img,jdbcType=VARCHAR}, #{address,jdbcType=VARCHAR}, #{checkCode,jdbcType=VARCHAR})
+  </insert>
+
+    <update id="update" parameterType="com.chl.victory.dao.model.merchant.ShopDO">
+        update shop
+        <set>
+            modified_time = now(),
+            <if test="operatorId != null">
+                operator_id = #{operatorId,jdbcType=BIGINT},
+            </if>
+            <if test="name != null">
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="mobile != null">
+                mobile = #{mobile,jdbcType=BIGINT},
+            </if>
+            <if test="img != null">
+                img = #{img,jdbcType=VARCHAR},
+            </if>
+            <if test="address != null">
+                address = #{address,jdbcType=VARCHAR},
+            </if>
+            <!--<if test="nextCheckCode != null">
+                check_code = #{nextCheckCode,jdbcType=VARCHAR},
+            </if>-->
+            <if test="expiredTime != null">
+                expired_time = #{expiredTime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}<!-- and check_code = #{checkCode,jdbcType=VARCHAR}-->
+    </update>
+
+    <update id="updateFreightFree" parameterType="com.chl.victory.dao.model.merchant.ShopDO">
+        update shop
+        <set>
+            modified_time = now(),
+            freight_free = #{freightFree,jdbcType=DECIMAL}
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateDeliveryArea" parameterType="com.chl.victory.dao.model.merchant.ShopDO">
+        update shop
+        <set>
+            modified_time = now(),
+            delivery_area = #{deliveryArea,jdbcType=DECIMAL}
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updatePayType" parameterType="com.chl.victory.dao.model.merchant.ShopDO">
+        update shop
+        <set>
+            modified_time = now(),
+            pay_type = #{payType,jdbcType=DECIMAL}
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+    <update id="updateDeliveryType" parameterType="com.chl.victory.dao.model.merchant.ShopDO">
+        update shop
+        <set>
+            modified_time = now(),
+            delivery_type = #{deliveryType,jdbcType=DECIMAL}
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

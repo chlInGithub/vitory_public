@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.activity.ShopActivityMapper">
+  <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.activity.ShopActivityDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="valid_time" jdbcType="TIMESTAMP" property="validTime" />
+    <result column="invalid_time" jdbcType="TIMESTAMP" property="invalidTime" />
+    <result column="status" jdbcType="BIT" property="status" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="desc" jdbcType="VARCHAR" property="desc" />
+    <result column="meet" jdbcType="DECIMAL" property="meet" />
+    <result column="discount" jdbcType="DECIMAL" property="discount" />
+    <result column="only" jdbcType="BIT" property="only" />
+    <result column="repeat" jdbcType="BIT" property="repeat" />
+    <result column="order" jdbcType="TINYINT" property="order" />
+    <result column="img" jdbcType="VARCHAR" property="img" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_time, modified_time, shop_id, operator_id, valid_time, invalid_time, 
+    status, title, `desc`, meet, discount, `only`, `repeat`, `order`, img
+  </sql>
+  <sql id="conditionWithOrderAndPage">
+    <include refid="condition"/>
+    <include refid="order"/>
+    <include refid="page"/>
+  </sql>
+  <sql id="condition">
+    <where>
+      <if test="id != null"> id = #{id} </if>
+      and shop_id = #{shopId,jdbcType=BIGINT}
+      <if test="startValidTime != null">
+        <![CDATA[
+            and valid_time <= #{startValidTime,jdbcType=TIMESTAMP}
+        ]]>
+      </if>
+      <if test="endValidTime != null">
+        <![CDATA[
+            and invalid_time >= #{endValidTime,jdbcType=TIMESTAMP}
+        ]]>
+      </if>
+      <if test="only != null">
+        and `only` = #{only,jdbcType=BIT}
+      </if>
+      <if test="repeat != null">
+        and `repeat` = #{repeat,jdbcType=BIT}
+      </if>
+      <if test="status != null">
+        and status = #{status,jdbcType=BIT}
+      </if>
+      <if test="title != null">
+        and title like concat('%',#{title,jdbcType=VARCHAR},'%')
+      </if>
+    </where>
+  </sql>
+  <sql id="order">
+    <if test="orderColumn != null">
+      order by #{orderColumn} <if test="desc"> desc </if>
+    </if>
+    <if test="orderColumn = null and orderedColumns != null and orderedColumns.size > 0">
+      <trim suffixOverrides=",">
+        <foreach collection="orderedColumns" index="index" item="orderedColumn" open=" order by " separator="," close="">
+          #{item.orderColumn} <if test="item.desc"> desc </if>
+        </foreach>
+      </trim>
+    </if>
+  </sql>
+  <sql id="page">
+    <if test="rowStart != null and pageSize != null">
+      limit #{rowStart},#{pageSize}
+    </if>
+  </sql>
+
+  <select id="count" parameterType="com.chl.victory.dao.query.activity.ShopActivityQuery" resultType="java.lang.Integer">
+    select count(1)
+    from shop_activity
+    <include refid="condition" />
+  </select>
+
+  <select id="select" parameterType="com.chl.victory.dao.query.activity.ShopActivityQuery" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from shop_activity
+    <include refid="conditionWithOrderAndPage" />
+  </select>
+
+  <select id="selectOne" parameterType="com.chl.victory.dao.query.activity.ShopActivityQuery" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from shop_activity
+    <include refid="condition" />
+  </select>
+
+  <delete id="delete" parameterType="com.chl.victory.dao.query.activity.ShopActivityQuery">
+    delete from shop_activity
+    where id = #{id,jdbcType=BIGINT} and shop_id = #{shopId}
+  </delete>
+
+  <insert id="insert" parameterType="com.chl.victory.dao.model.activity.ShopActivityDO">
+    insert into shop_activity (id,created_time, modified_time,
+      shop_id, operator_id, valid_time, 
+      invalid_time, status, title, 
+      `desc`, meet, discount,
+      `only`, `repeat`, `order`, img)
+    values (#{id,jdbcType=BIGINT}, now(), now(),
+      #{shopId,jdbcType=BIGINT}, #{operatorId,jdbcType=BIGINT}, #{validTime,jdbcType=TIMESTAMP}, 
+      #{invalidTime,jdbcType=TIMESTAMP}, #{status,jdbcType=BIT}, #{title,jdbcType=VARCHAR},
+      #{desc,jdbcType=VARCHAR}, #{meet,jdbcType=DECIMAL}, #{discount,jdbcType=DECIMAL}, 
+      #{only,jdbcType=BIT}, #{repeat,jdbcType=BIT}, #{order,jdbcType=TINYINT}, #{img,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="update" parameterType="com.chl.victory.dao.model.activity.ShopActivityDO">
+    update shop_activity
+    <set>
+        modified_time = now(),
+      <if test="shopId != null">
+        shop_id = #{shopId,jdbcType=BIGINT},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="validTime != null">
+        valid_time = #{validTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="invalidTime != null">
+        invalid_time = #{invalidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=BIT},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="desc != null">
+        `desc` = #{desc,jdbcType=VARCHAR},
+      </if>
+      <if test="meet != null">
+        meet = #{meet,jdbcType=DECIMAL},
+      </if>
+      <if test="discount != null">
+        discount = #{discount,jdbcType=DECIMAL},
+      </if>
+      <if test="only != null">
+        `only` = #{only,jdbcType=BIT},
+      </if>
+      <if test="repeat != null">
+        `repeat` = #{repeat,jdbcType=BIT},
+      </if>
+      <if test="order != null">
+        `order` = #{order,jdbcType=TINYINT},
+      </if>
+      <if test="img != null">
+        img = #{img,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT} and shop_id = #{shopId}
+  </update>
+</mapper>

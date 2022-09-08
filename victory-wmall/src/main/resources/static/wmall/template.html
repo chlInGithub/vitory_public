@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- <link rel="shortcut icon" href="/favicon.ico"> -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/item.css">
+    <!-- <link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm-extend.min.css"> -->
+
+    <style>
+
+    </style>
+
+</head>
+<body>
+<div id="app" class="page-group">
+    <template>
+        <div class="page page-current">
+
+            <header class="bar bar-nav">
+                <a href="javascript:goHistroy()" class="float-left">
+                    <span class="icon icon-left"></span>
+                </a>
+                <a href="javascript:window.location.reload()" class="float-right" style="margin-left: .3rem;">
+                    <span class="icon icon-refresh"></span>
+                </a>
+                <h1 class="title header-title">
+                    <div class="header-shop float-left" style="display: flex;" @click="m_go_shop()">
+                        <img :src="m_get_img(shop.img)" class="header-img"/>
+                        <span><b>{{shop.name}}</b></span>
+                    </div>
+                    <div class="header-user float-right" style="display: flex;" @click="m_go_me()">
+                        <img :src="user.img" class="header-img"/>
+                        <span><b>{{user.name}}</b></span>
+                    </div>
+                </h1>
+            </header>
+
+            <nav class="bar bar-tab">
+                <a class="tab-item active" href="shop.html">
+                    <span class="icon icon-home"></span>
+                    <span class="tab-label">首页</span>
+                </a>
+                <a class="tab-item" href="cart.html">
+                    <span class="icon icon-cart"></span>
+                    <span class="tab-label">购物车</span>
+                </a>
+                <a class="tab-item" href="#">
+                    <span class="icon icon-me"></span>
+                    <span class="tab-label">我的</span>
+                </a>
+            </nav>
+
+            <div class="content">
+                <div class="page-index">
+                    <!--  -->
+
+                </div>
+            </div>
+        </div>
+    </template>
+</div>
+
+</body>
+
+<script type='text/javascript' src='js/jquery-3.4.1.min.js' charset='utf-8'></script>
+<script type="text/javascript">
+    /*避免jQuery $ 与 sui $ 产生冲突，不使用$代表jQuery，js jQuery code时必须使用jQuery*/
+    jQuery.noConflict()
+</script>
+<script type="text/javascript" src="js/vue.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/miniprogram.js"></script>
+<script type='text/javascript' src='https://res.wx.qq.com/open/js/jweixin-1.4.0.js' charset='utf-8'></script>
+<script type="text/javascript" src="js/mixin_vue.js"></script>
+<script type='text/javascript' src='https://g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='https://g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+<!-- <script type='text/javascript' src='https://g.alicdn.com/msui/sm/0.6.2/js/sm-extend.min.js' charset='utf-8'></script> -->
+<script type="text/javascript">
+    $.showPreloader();
+    //打开自动初始化页面的功能
+    //建议不要打开自动初始化，而是自己调用 $.init 方法完成初始化
+    $.config = {
+        autoInit: false,
+        router: false
+    }
+</script>
+
+<script type="text/javascript">
+    log('test')
+
+    /*vue code*/
+    var mixined_vue = Vue.extend({
+        mixins: [common_mixin]
+    })
+    var app = new mixined_vue({
+        el: '#app',
+        data: {
+            /*
+            关于 vue data 的规范：
+            1 命名： 与接口返回数据名称一致，data中属性名采用驼峰命名法。
+            2 分组： 可以接口返回值维度作为一个分组，方便后续赋值。
+            */
+            fieldName: 0,
+        },
+        methods: {
+            /*
+            关于 vue method 的规范：
+            1 命名： 区分field，采用m_作为前缀，单词小写且之间使用_分割。
+            2 职责： 负责数据模型操作。
+             */
+            m_method_name: function () {
+
+            },
+        },
+        watch: {
+            /*监听属性变化*/
+            fieldName: function () {
+            },
+        }
+    })
+
+    /*sui code*/
+
+    /*jQuery code*/
+    /*通过接口从服务器获取数据*/
+    var functionName = function () {
+        /* AjaxUtil.get("/wmall/item/list", {}, function(result) {
+            app.item_list = result.d
+            app.maxItems = result.c
+        }) */
+    }
+    var callback = function () {
+        functionName()
+    }
+    initPage(callback)
+    /*mock*/
+    setTimeout(function () {
+
+        var shop = {
+            name: '店铺名1',
+            img: 'https://ss1.baidu.com/70cFfyinKgQFm2e88IuM_a/forum/pic/item/a911349b033b5bb55ae52b7033d3d539b600bc37.jpg',
+        }
+        var user = {
+            name: '用户名1',
+            img: 'https://ss1.baidu.com/70cFfyinKgQFm2e88IuM_a/forum/pic/item/a911349b033b5bb55ae52b7033d3d539b600bc37.jpg'
+        }
+        app.m_modify_shop_user(shop, user)
+
+        $.hidePreloader();
+    }, 1000);
+</script>
+
+<script type="text/javascript">
+    /*sui js 行为 初始化*/
+    $.init()
+</script>
+
+</html>

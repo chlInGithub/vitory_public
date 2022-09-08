@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.merchant.ShopAppMapper">
+  <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.merchant.ShopAppDO">
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
+    <result column="app_secret" jdbcType="VARCHAR" property="appSecret" />
+    <result column="third_type" jdbcType="INTEGER" property="thirdType" />
+    <result column="auth_refresh_token" jdbcType="VARCHAR" property="authRefreshToken" />
+    <result column="pay_config" jdbcType="VARCHAR" property="payConfig" />
+    <result column="fast_registe" jdbcType="INTEGER" property="fastRegiste" />
+  </resultMap>
+
+  <select id="countWXPayCert" parameterType="com.chl.victory.dao.model.merchant.ShopAppDO" resultType="int">
+    select count(wx_pay_cert) from shop_app where shop_id = #{shopId,jdbcType=BIGINT}  and app_id = #{appId,jdbcType=VARCHAR} and third_type = 0
+  </select>
+  <select id="selectWXPayCert" parameterType="com.chl.victory.dao.model.merchant.ShopAppDO" resultType="String" >
+    select wx_pay_cert from shop_app where shop_id = #{shopId,jdbcType=BIGINT}  and app_id = #{appId,jdbcType=VARCHAR} and third_type = 0
+  </select>
+  <update id="updateWXPayCert"  parameterType="com.chl.victory.dao.model.merchant.ShopAppDO">
+    update shop_app set wx_pay_cert = #{wxPayCert,jdbcType=VARCHAR} where shop_id = #{shopId,jdbcType=BIGINT}  and app_id = #{appId,jdbcType=VARCHAR} and third_type = 0
+  </update>
+  <select id="selectStyle" parameterType="com.chl.victory.dao.model.merchant.ShopAppDO" resultType="String" >
+    select style from shop_app where shop_id = #{shopId,jdbcType=BIGINT}  and app_id = #{appId,jdbcType=VARCHAR}
+  </select>
+  <update id="updateStyle"  parameterType="com.chl.victory.dao.model.merchant.ShopAppDO">
+    update shop_app set style = #{style,jdbcType=VARCHAR} where shop_id = #{shopId,jdbcType=BIGINT}  and app_id = #{appId,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

@@ -1,0 +1,549 @@
+
+<div class="loadedContent" id="orderList">
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <span class="panel-header-ele"><b>订单列表</b></span>
+    </div>
+    <div class="panel-body">
+        <form class="form-default" id="orderListForm">
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">订单ID</span>
+                        <input type="number" name="orderId" class="form-control"/>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">下单时间</span>
+                        <input type="text" class="datetime date-start input-sm form-control" name="start" data-format="yyyy-mm-dd "/>
+                        <span class="add-on"><i class="icon-remove"></i></span>
+                        <span class="input-group-addon">至</span>
+                        <input type="text" class="datetime date-end input-sm form-control" name="end"/>
+                        <span class="add-on"><i class="icon-remove"></i></span>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">商品ID</span>
+                        <input type="number" name="itemId" class="form-control"/>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">会员ID</span>
+                        <input type="number" name="buyerId" class="form-control"/>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">会员昵称</span>
+                        <input type="text" name="buyerName" class="form-control"/>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">会员手机号</span>
+                        <input type="number" name="buyerMobile" class="form-control"/>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-2">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">预售</span>
+                        <select name="presell" class="form-control">
+                            <option value="">--</option>
+                            <option value="1">是</option>
+                            <option value="0">否</option>
+                        </select>
+                    </div>
+                </div>
+                <!--<div class="col-lg-3 col-md-3 col-sm-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">支付方式</span>
+                        <select class="form-control" name="payType">
+                            <option value="1">方式1</option>
+                            <option value="2">方式2</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">配送方式</span>
+                        <select class="form-control" name="deliveryType">
+                            <option value="1">方式1</option>
+                            <option value="2">方式2</option>
+                        </select>
+                    </div>
+                </div>-->
+            </div>
+            <div class="row" align="center">
+                <button id="query" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    查询
+                </button>
+            </div>
+        </form>
+
+        <hr/>
+
+        <!-- Nav tabs -->
+        <ul id="orderListNav" class="nav nav-tabs" role="tablist">
+            <li role="presentation"><a data-val="" id="tab_all" class="btn-xs" href="#panel_order_all" aria-controls="panel_order_all" role="tab" data-toggle="tab">所有订单 <span class="am-badge am-badge-secondary am-round" id="badge_order_all">0</span></a></li>
+            <li role="presentation"><a data-val="10" id="tab_newed" class="btn-xs" href="#panel_order_newed" aria-controls="panel_order_newed" role="tab" data-toggle="tab">待付款 <span class="am-badge am-badge-secondary am-round" id="badge_order_newed">0</span></a></li>
+            <li role="presentation"><a data-val="20" id="tab_payed" class="btn-xs" href="#panel_order_payed" aria-controls="panel_order_payed" role="tab" data-toggle="tab">待发货 <span class="am-badge am-badge-secondary am-round" id="badge_order_payed">0</span></a></li>
+            <li role="presentation"><a data-val="30" id="tab_sent" class="btn-xs" href="#panel_order_sent" aria-controls="panel_order_sent" role="tab" data-toggle="tab">待收货 <span class="am-badge am-badge-secondary am-round" id="badge_order_sent">0</span></a></li>
+            <li role="presentation"><a data-val="40" id="tab_success" class="btn-xs" href="#panel_order_success" aria-controls="panel_order_success" role="tab" data-toggle="tab">交易完成 <span class="am-badge am-badge-secondary am-round" id="badge_order_success">0</span></a></li>
+            <li role="presentation"><a data-val="50" id="tab_close" class="btn-xs" href="#panel_order_close" aria-controls="panel_order_close" role="tab" data-toggle="tab">交易关闭 <span class="am-badge am-badge-secondary am-round" id="badge_order_close">0</span></a></li>
+            <li role="presentation"><a data-val="60" id="tab_askRefund" class="btn-xs" href="#panel_order_askRefund" aria-controls="panel_order_askRefund" role="tab" data-toggle="tab">申请退款 <span class="am-badge am-badge-secondary am-round" id="badge_order_askRefund">0</span></a></li>
+            <li role="presentation"><a data-val="61" id="tab_refunding" class="btn-xs" href="#panel_order_refunding" aria-controls="panel_order_refunding" role="tab" data-toggle="tab">退款处理中 <span class="am-badge am-badge-secondary am-round" id="badge_order_refunding">0</span></a></li>
+            <li role="presentation"><a data-val="62" id="tab_refunded" class="btn-xs" href="#panel_order_refunded" aria-controls="panel_order_refunded" role="tab" data-toggle="tab">退款完成 <span class="am-badge am-badge-secondary am-round" id="badge_order_refunded">0</span></a></li>
+            <li role="presentation"><a data-val="63" id="tab_closeRefund" class="btn-xs" href="#panel_order_closeRefund" aria-controls="panel_order_closeRefund" role="tab" data-toggle="tab">退款关闭 <span class="am-badge am-badge-secondary am-round" id="badge_order_closeRefund">0</span></a></li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content orderListPanels">
+            <div role="tabpanel" class="tab-pane table-responsive" id="panel_order_all"></div>
+            <div role="tabpanel" class="tab-pane" id="panel_order_newed"></div>
+            <div role="tabpanel" class="tab-pane" id="panel_order_payed"></div>
+            <div role="tabpanel" class="tab-pane" id="panel_order_sent"></div>
+            <div role="tabpanel" class="tab-pane" id="panel_order_success"></div>
+            <div role="tabpanel" class="tab-pane" id="panel_order_close"></div>
+            <div role="tabpanel" class="tab-pane" id="panel_order_askRefund"></div>
+            <div role="tabpanel" class="tab-pane" id="panel_order_refunding"></div>
+            <div role="tabpanel" class="tab-pane" id="panel_order_refunded"></div>
+            <div role="tabpanel" class="tab-pane" id="panel_order_closeRefund"></div>
+        </div>
+    </div>
+</div>
+
+    <div id="orderTableRowTemplate" style="display:none">
+
+            <div class="panel panel-default panel-tight">
+                <div class="panel-heading">
+                    <!--<input class="tableCheckEle" type="checkbox" value=""/>-->
+                    <span class="panel-header-ele">订单编号:<b name="orderId"></b></span>
+                    <span class="panel-header-ele">下单时间:<span name="createTime"></span></span>
+                    <span class="" name="payType"></span>
+                    <span class="" style="margin-left:1rem;color:red;" name="payTypeDesc"></span>
+                    <span class="" style="margin-left:1rem;color:red;" name="deliverTypeDesc"></span>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="col-lg-3">
+                                    <div>
+                                        <img class="float-left item-img" name="itemImg" src=""/>
+                                        <div style="margin-left:5px" class="float-left">
+                                            <div name="itemTitle" data-toggle="tooltip" data-placement="top" title=""></div>
+                                            <div name="itemId"></div>
+                                            <div data-skuid="" name="skuTitle" data-toggle="tooltip" data-placement="top" title=""></div>
+                                            <div style="color:red;" name="presellDesc"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="col-lg-1"><div name="price"></div></td>
+                                <td class="col-lg-1"><div name="count"></div></td>
+                                <td class="col-lg-1"><div name="afterSale" data-toggle="tooltip" data-placement="top" title=""></div></td>
+                                <td class="col-lg-2 am-text-middle">
+                                    <div>
+                                        <div name="nick"></div>
+                                        <div name="receiveName"></div>
+                                        <div name="receivePhone"></div>
+                                    </div>
+                                </td>
+                                <td class="col-lg-2 am-text-middle">
+                                    <div>
+                                        <div name="activity"></div>
+                                        <div name="realPayAmount" style="font-size: 1.5rem;color: red;"></div>
+                                        <div name="coupons"></div>
+                                    </div>
+                                </td>
+                                <td class="col-lg-1 am-text-middle"><div name="status"></div></td>
+                                <td class="col-lg-1 am-text-middle"><div name="opts"></div></td>
+                            </tr>
+                            <tr>
+                                <td class="col-lg-3">
+                                    <div>
+                                        <img class="float-left" name="itemImg" width="70px" height="70px" src=""/>
+                                        <div style="margin-left:5px" class="float-left">
+                                            <div name="itemTitle" data-toggle="tooltip" data-placement="top" title=""></div>
+                                            <div name="itemId"></div>
+                                            <div data-skuid="" name="skuTitle" data-toggle="tooltip" data-placement="top" title=""></div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="col-lg-1"><div name="price"></div></td>
+                                <td class="col-lg-1"><div name="count"></div></td>
+                                <td class="col-lg-1"><div name="afterSale" data-toggle="tooltip" data-placement="top" title=""></div></td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+            </div>
+
+    </div>
+    <div id="orderTableTemplate" style="display: none" >
+        <br/>
+        <table class="display table table-hover small" width="100%"  style="background-color: #ddd;">
+            <thead>
+            <tr>
+                <th class='col-lg-3'><!--<input value="" type="checkbox" class="tableCheckAll"/>--> 商品</th>
+                <th class='col-lg-1'>单价</th>
+                <th class='col-lg-1'>数量</th>
+                <th class='col-lg-1'>售后</th>
+                <th class='col-lg-2'>买家信息</th>
+                <th class='col-lg-2'>实收金额</th>
+                <th class='col-lg-1'>订单状态</th>
+                <th class='col-lg-1'>操作</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+    <div id="orderStatusButsTemplate"  style="display: none">
+        <div id="status10Buttons">
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-primary btn-xs btn-orderDetail jumped" data-targettype="openTabMenu" data-menuid="orderDetail">订单详情</button>
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-danger btn-xs btn-orderClose confirmed" data-msg="确定关闭订单?" data-optid="orderClose">关闭交易</button>
+        </div>
+        <div id="status10ButtonsOfflinePay">
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-primary btn-xs btn-orderDetail jumped" data-targettype="openTabMenu" data-menuid="orderDetail">订单详情</button>
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-danger btn-xs btn-orderClose confirmed" data-msg="确定关闭订单?" data-optid="orderClose">关闭交易</button>
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-danger btn-xs btn-confirmOfflinePayed confirmed" data-msg="确定已支付订单?" data-optid="confirmOfflinePayed">确认已支付</button>
+        </div>
+        <div id="status20ButtonsOfflinePay">
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-primary btn-xs btn-orderDetail jumped" data-targettype="openTabMenu" data-menuid="orderDetail">订单详情</button>
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-danger btn-xs btn-orderClose confirmed" data-msg="确定关闭订单?" data-optid="orderClose">关闭交易</button>
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-success btn-xs btn-orderTaken confirmed" data-msg="确定用户已自提?" data-optid="orderTaken">已自提</button>
+        </div>
+        <div id="status20Buttons">
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-primary btn-xs btn-orderDetail jumped" data-targettype="openTabMenu" data-menuid="orderDetail">订单详情</button>
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-danger btn-xs btn-orderClose confirmed" data-msg="确定关闭订单?" data-optid="orderClose">关闭交易</button>
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-success btn-xs btn-orderDetail jumped" data-targettype="openTabMenu" data-menuid="orderDetail">发货</button>
+        </div>
+        <div id="status30Buttons">
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-primary btn-xs btn-orderDetail jumped" data-targettype="openTabMenu" data-menuid="orderDetail">订单详情</button>
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-danger btn-xs btn-orderClose confirmed" data-msg="确定关闭订单?" data-optid="orderClose">关闭交易</button>
+        </div>
+        <div id="status40Buttons">
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-primary btn-xs btn-orderDetail jumped" data-targettype="openTabMenu" data-menuid="orderDetail">订单详情</button>
+            <!--<button style="margin-bottom: 3px;" type="button" class="btn btn-danger btn-xs btn-orderClose confirmed" data-msg="确定关闭订单?" data-optid="orderClose">关闭交易</button>-->
+        </div>
+        <div id="status50Buttons">
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-primary btn-xs btn-orderDetail jumped" data-targettype="openTabMenu" data-menuid="orderDetail">订单详情</button>
+            <!--<button style="margin-bottom: 3px;" type="button" class="btn btn-danger btn-xs btn-orderClose confirmed" data-msg="确定关闭订单?" data-optid="orderClose">关闭交易</button>-->
+        </div>
+        <div id="status60Buttons">
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-primary btn-xs btn-orderDetail jumped" data-targettype="openTabMenu" data-menuid="orderDetail">订单详情</button>
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-danger btn-xs btn-orderClose confirmed" data-msg="确定关闭订单?" data-optid="orderClose">关闭交易</button>
+            <!--<button style="margin-bottom: 3px;" type="button" class="btn btn-warning btn-xs btn-refundDetail">退款详情</button>-->
+        </div>
+        <div id="status61Buttons">
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-primary btn-xs btn-orderDetail jumped" data-targettype="openTabMenu" data-menuid="orderDetail">订单详情</button>
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-danger btn-xs btn-orderClose confirmed" data-msg="确定关闭订单?" data-optid="orderClose">关闭交易</button>
+            <!--<button style="margin-bottom: 3px;" type="button" class="btn btn-warning btn-xs btn-refundDetail">退款详情</button>-->
+        </div>
+        <div id="status62Buttons">
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-primary btn-xs btn-orderDetail jumped" data-targettype="openTabMenu" data-menuid="orderDetail">订单详情</button>
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-danger btn-xs btn-orderClose confirmed" data-msg="确定关闭订单?" data-optid="orderClose">关闭交易</button>
+            <!--<button style="margin-bottom: 3px;" type="button" class="btn btn-warning btn-xs btn-refundDetail">退款详情</button>-->
+        </div>
+        <div id="status63Buttons">
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-primary btn-xs btn-orderDetail jumped" data-targettype="openTabMenu" data-menuid="orderDetail">订单详情</button>
+            <button style="margin-bottom: 3px;" type="button" class="btn btn-danger btn-xs btn-orderClose confirmed" data-msg="确定关闭订单?" data-optid="orderClose">关闭交易</button>
+            <!--<button style="margin-bottom: 3px;" type="button" class="btn btn-warning btn-xs btn-refundDetail">退款详情</button>-->
+        </div>
+    </div>
+
+
+</div>
+
+
+
+<script>
+    $(function () {
+        $('#orderListNav li a').css({
+            'padding-left': '5px',
+            'padding-right': '5px'
+        })
+
+        bindFormCallback({
+            pageId:'orderList',
+            formId:'orderListForm',
+            submitId: 'query',
+            formVerify:function (formData) {
+                log('orderListForm formVerify ' + formData)
+                //TODO
+                return true
+            },
+            submitDataAppend:function (formData) {
+                log('orderListForm submitDataAppend ' + formData)
+            },
+            submitResultDeal:function (resultData) {
+                log('orderListForm callback ' + resultData.toString())
+
+                var d = resultData.d
+                $('#orderListNav').find('span').text(0)
+                log('all nav be 0')
+                for (var i in d) {
+                    log(d[i])
+                    $('#orderListNav').find("#badge_order_"+d[i].status).text(d[i].count)
+                }
+
+                var activeTab = $('#orderListNav .active a')
+                if (activeTab.length == 0){
+                    $('#orderListNav li:first a').tab('show')
+                } else {
+                    var tablePanelId = activeTab.attr('aria-controls')
+                    activeTab.data('hasLoad') ? activeTab.data('hasLoad', false) : null;
+                    $('#'+tablePanelId + " table:first").DataTable().ajax.reload()
+                }
+            }
+        })
+
+        bindNavTabCallback({
+            pageId:'orderList',
+            navId:'orderListNav',
+            navShown: function (target, relatedTarget) {
+                var activeTab = $('#orderListNav .active a')
+                var tablePanelId = activeTab.attr('aria-controls')
+                if (undefined == activeTab.data('hasLoad') || false == activeTab.data('hasLoad')) {
+                    $('#'+tablePanelId).append($("#orderTableTemplate").children().clone())
+                    $('#'+tablePanelId + " table:first").dataTable( {
+                        language: {
+                            info: "第 _PAGE_ 页，共 _PAGES_ 页，共 _TOTAL_ 条",
+                            /*翻页*/
+                            paginate: {
+                                first: 'first',
+                                previous: '<',
+                                next:     '>',
+                                last: 'last'
+                            },
+                            /*条数*/
+                            lengthMenu: '<div style="float: right;" class="col-lg-2 col-md-2 col-sm-2 input-group input-group-sm"><span class="input-group-addon">每页条数</span><select class="form-control" name="pageSize"><option value="10">10</option><option value="30">30</option><option value="50">50</option></select></div>',
+                            /*无数据时显示内容*/
+                            zeroRecords: "无数据",
+                            infoFiltered: ''
+                        },
+                        select:{
+                            style:     'none',
+                            className: 'none'
+                        },
+                        //info:false,
+                        // 删除斑马线效果
+                        stripeClasses: [ ],
+                        // 禁用search
+                        searching: false,
+                        // 禁用列排序
+                        ordering: false,
+                        // 从server 接口获取数据
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url:getSubmitUrl('orderList','list'),
+                            data: function (d) {
+                                var data = getFormDataJson('orderList', 'orderListForm')
+                                data.pageIndex = d.start/d.length
+                                data.dataStart = d.start
+                                data.pageSize = d.length
+                                data.draw = d.draw
+                                data.status = activeTab.data('val')
+                                return JsonUtil.simpleFix(data)
+                            }
+                        },
+                        columns:[{data:'orderId'},{data:null},{data:null},{data:null},{data:null},{data:null},{data:null},{data:null}],
+                        // 使用测试数据
+                        //data: dataSet,
+                        createdRow: function(row, data, dataIndex, cells){
+                            $(row).children().remove()
+                            var content = $('#orderTableRowTemplate').children().clone()
+                            var tr = content.find('tr:first')
+                            var clonetr = content.find('tr:last').remove()
+
+                            content.find('.tableCheckEle').val(data.orderId)
+                            content.find('b[name="orderId"]').html(data.orderId)
+                            content.find('span[name="createTime"]').html(data.createTime)
+                            // var payType = (data.pay.type == 0 ? 'fab fa-weixin fa-lg orangered' : (data.pay.type == 1 ? 'fab fa-alipay fa-lg orangered' :  'fab fa-alipay fa-credit-card  orangered'))
+                            if (data.pay.type == 0) {
+                                content.find('span[name="payType"]').attr('class',  'fab fa-weixin fa-lg orangered');
+                                content.find('span[name="payTypeDesc"]').text('微信支付');
+                            }else if (data.pay.type == 1) {
+                                content.find('span[name="payType"]').attr('class',  'fab fa-alipay fa-lg orangered');
+                                content.find('span[name="payTypeDesc"]').text('支付宝支付');
+                            }else {
+                                // content.find('span[name="payType"]').attr('class',  'fab fa-credit-card fa-lg orangered');
+                                content.find('span[name="payTypeDesc"]').text('线下支付');
+                            }
+
+                            if (data.deliver.deliverType == 0) {
+                                content.find('span[name="deliverTypeDesc"]').text('自提');
+                            }else if (data.deliver.deliverType == 1){
+                                content.find('span[name="payTypeDesc"]').text('快递/配送');
+                            }else {
+                                content.find('span[name="payTypeDesc"]').text('缺少交付信息');
+                            }
+
+                            tr.find('img[name="itemImg"]').attr('src', ImgUtil.getImgUrl(data.subs[0].itemImg, 3));
+                            tr.find('div[name="itemTitle"]').html(StringUtil.abbreviatory(data.subs[0].itemTitle)).attr('title', data.subs[0].itemTitle)
+                            tr.find('div[name="itemId"]').html(data.subs[0].itemId)
+                            tr.find('div[name="skuTitle"]').html(StringUtil.abbreviatory(data.subs[0].skuTitle)).attr('title', data.subs[0].skuTitle)
+                            tr.find('div[name="skuTitle"]').data('skuId', data.subs[0].skuId)
+                            if (!ObjectCommonUtil.isEmpty(data.subs[0].presell)) {
+                                tr.find('div[name="presellDesc"]').html('预售规则 <br/>截止时间:'+JsonUtil.toJson(data.subs[0].presell).endTime+' <br/>发货开始时间：' + JsonUtil.toJson(data.subs[0].presell).sentTime);
+                            }
+
+                            tr.find('div[name="price"]').html(StringUtil.moneyDesc(data.subs[0].price))
+                            tr.find('div[name="count"]').html(data.subs[0].count)
+
+                            if (ObjectCommonUtil.isUndefined(data.subs[0].refund)) {
+                                tr.find('div[name="afterSale"]').html("").removeAttr('title')
+                            }else {
+                                tr.find('div[name="afterSale"]').html(StringUtil.abbreviatory(data.subs[0].refund.cause, 20)).attr('title', data.subs[0].refund.cause)
+                            }
+
+                            tr.find('div[name="nick"]').html("买家昵称:" + data.buyer.nick)
+                            tr.find('div[name="receiveName"]').html("收货人:" + data.deliver.name)
+                            tr.find('div[name="receivePhone"]').html("收货人电话:" + data.deliver.mobile)
+                            if (ObjectCommonUtil.isUndefined(data.activities)) {
+                                tr.find('div[name="activity"]').html("")
+                            }else {
+                                var desc = ""
+                                for (var i in data.activities){
+                                    desc += data.activities[i].desc + ";"
+                                }
+                                desc = desc.substring(0, desc.length-1)
+                                tr.find('div[name="activity"]').html(desc)
+                            }
+
+                            tr.find('div[name="realPayAmount"]').html(StringUtil.moneyDesc(data.sum))
+
+                            if (ObjectCommonUtil.isUndefined(data.coupons)) {
+                                tr.find('div[name="coupons"]').html("")
+                            }else {
+                                var desc = ""
+                                for (var i in data.coupons){
+                                    desc += data.coupons[i].desc + ";"
+                                }
+                                desc = desc.substring(0, desc.length-1)
+                                tr.find('div[name="coupons"]').html(desc)
+                            }
+
+                            tr.find('div[name="status"]').html(data.statusDesc)
+                            tr.find('div[name="status"]').data('status', data.status)
+                            var buts;
+                            if (data.status == 10 && data.pay.type == 2) {
+                                buts = $('#orderStatusButsTemplate').find('#status'+data.status+'ButtonsOfflinePay').clone();
+                            }else if(data.status == 20 && data.deliver.deliverType == 0){
+                                buts = $('#orderStatusButsTemplate').find('#status'+data.status+'ButtonsOfflinePay').clone();
+                            }else{
+                                buts = $('#orderStatusButsTemplate').find('#status'+data.status+'Buttons').clone();
+                            }
+                            buts.find('.btn').each(function () {
+                                var but = $(this)
+                                if (but.hasClass('btn-orderDetail')){
+                                    var paramJson = {}
+                                    paramJson['orderId'] = data.orderId
+                                    but.data('param', paramJson)
+                                    return
+                                }
+                                if (but.hasClass('btn-orderClose')){
+                                    var paramJson = {}
+                                    paramJson['orderId'] = data.orderId
+                                    but.data('param', paramJson)
+                                    return
+                                }
+                                if (but.hasClass('btn-orderTaken')){
+                                    var paramJson = {}
+                                    paramJson['orderId'] = data.orderId
+                                    but.data('param', paramJson)
+                                    return
+                                }
+                                if (but.hasClass('btn-confirmOfflinePayed')){
+                                    var paramJson = {}
+                                    paramJson['orderId'] = data.orderId
+                                    but.data('param', paramJson)
+                                    return
+                                }
+                                /*if (but.hasClass('btn-refundDetail')){
+                                    var paramJson = {}
+                                    paramJson['refundId'] = data.refundId
+                                    but.data('param', paramJson)
+                                    return
+                                }*/
+                            })
+                            tr.find('div[name="opts"]').append(buts)
+
+                            if (data.subs.length > 1){
+                                $(tr.find('td')[4]).attr('rowspan',data.subs.length)
+                                $(tr.find('td')[5]).attr('rowspan',data.subs.length)
+                                $(tr.find('td')[6]).attr('rowspan',data.subs.length)
+                                $(tr.find('td')[7]).attr('rowspan',data.subs.length)
+
+                                for (var i=1; i<data.subs.length; i++) {
+                                    var newTr = clonetr.clone()
+                                    newTr.find('img[name="itemImg"]').attr('src', ImgUtil.getImgUrl(data.subs[i].itemImg));
+                                    newTr.find('div[name="itemTitle"]').html(StringUtil.abbreviatory(data.subs[i].itemTitle)).attr('title', data.subs[i].itemTitle)
+                                    newTr.find('div[name="itemId"]').html(data.subs[i].itemId)
+                                    newTr.find('div[name="skuTitle"]').html(StringUtil.abbreviatory(data.subs[i].skuTitle)).attr('title', data.subs[i].skuTitle)
+                                    newTr.find('div[name="skuTitle"]').data('skuId', data.subs[i].skuId)
+                                    newTr.find('div[name="price"]').html(StringUtil.moneyDesc(data.subs[i].price))
+                                    newTr.find('div[name="count"]').html(data.subs[i].count)
+
+                                    if (!ObjectCommonUtil.isEmpty(data.subs[i].presell)) {
+                                        newTr.find('div[name="presellDesc"]').html('预售规则 <br/>截止时间:'+JsonUtil.toJson(data.subs[0].presell).endTime+' <br/>发货开始时间：' + JsonUtil.toJson(data.subs[i].presell).sentTime);
+                                    }
+
+                                    if (ObjectCommonUtil.isUndefined(data.subs[i].refund)) {
+                                        newTr.find('div[name="afterSale"]').html("").removeAttr('title')
+                                    }else {
+                                        newTr.find('div[name="afterSale"]').html(StringUtil.abbreviatory(data.subs[i].refund.cause, 20)).attr('title', data.subs[i].refund.cause)
+                                    }
+                                    content.find('table tbody').append(newTr)
+                                }
+                            }
+
+                            $(row).append('<td colspan="8"></td>')
+                            $(row).find('td').append(content)
+                        },
+                        drawCallback:function (){
+                            // draw完成后回调
+                            resizeContentHeight()
+                            bindConfirmedCallback({
+                                selector: '#orderList .confirmed',
+                                doneCallback: function () {
+                                    var activeTab = $('#orderListNav .active a')
+                                    if (activeTab.length == 0){
+                                        $('#orderListNav li:first a').tab('show')
+                                    } else {
+                                        /*var tablePanelId = activeTab.attr('aria-controls')
+                                        $('#orderListNav li a').data('hasLoad') ? $('#orderListNav li a').data('hasLoad', false) : null;
+                                        $('#'+tablePanelId + " table:first").DataTable().ajax.reload()*/
+                                        $("#orderList #query").click()
+                                    }
+                                }
+                            })
+                        }
+                    } )
+                    activeTab.data('hasLoad', true)
+                }else if (activeTab.data('hasLoad') == false) {
+                    $('#'+tablePanelId + " table:first").DataTable().clear().ajax.reload()
+                }
+            }
+        })
+
+        $('#orderListForm .datetime').datetimepicker({
+            format: "yyyy-mm-dd hh:ii:ss",
+            todayBtn: "linked",
+            clearBtn: true,
+            language: "zh-CN",
+            keyboardNavigation: false,
+            forceParse: false,
+            autoclose:true,
+            todayHighlight: true
+        })
+
+        $("#orderListForm #query").click()
+        //$('#orderListNav li:first a').tab('show')
+    })
+
+</script>

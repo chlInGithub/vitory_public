@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <title>博予微商城-管理系统</title>
+    <link rel="alternate icon" type="image/png" href="r/i/favicon.png">
+    <link rel="stylesheet" href="r/css/amazeui.min.css"/>
+    <link rel="stylesheet" href="r/bootstrap-3.3.7-dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="r/css/login.css"/>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+        }/*这里是关键*/
+    </style>
+</head>
+<body>
+
+<h1 class="login-logo">
+    <a target="_blank" href="https://by.5jym.com">
+        <img style="border-bottom: 1px white solid;border-radius: 1rem;" src="r/i/logo-white.png" alt="博予科技有限公司">
+    </a>
+</h1>
+<img class="sqLogin-bj" src="r/i/sqbj.jpg">
+<div class="sqLogin clearfix" style="text-align: center">
+    <!--
+    <div class="Login-left">
+        <img src="">
+    </div>
+    -->
+    <div class="Login-div">
+        <div class="Login-box">
+            <div class="Login-head">用户登录</div>
+            <div class="Login-content">
+                <input type="text" class="input mobile" name="m" placeholder="手机号">
+                <input type="password" class="input pass" name="p" placeholder="密码" minlength="6">
+                <div id="error-msg" style="color: red;font-size: 1.2rem;text-align: center;display: none;"></div>
+                <input value="登录" class="login-btn" id="login" type="button">
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div style="padding:10px;border:1px solid black;border-radius: 5px;background-color:white;float:right;position: relative;top:20%;right:5%;text-align: center">
+    <img src="r/img/consult.jpg" />
+    <div style="margin-top: 5px;">
+        业务咨询
+    </div>
+    <div style="margin-top: 5px;">
+        申请体验账号
+    </div>
+</div>
+
+<div class="Login-bottom">
+    <!--<p></p>-->
+    <p>© 2020 博予科技有限公司</p>
+</div>
+
+    <script src="/wm/r/js/jquery-3.3.1.min.js"></script>
+    <script src="/wm/r/jsencrypt/jsencrypt.min.js"></script>
+
+    <script>
+        $(function () {
+            var showError = function (errorMsg) {
+                $("#error-msg").text(errorMsg).show()
+                btnUtil.recoverBtn('#login', "登录")
+            };
+            var hideError = function (errorMsg) {
+                $("#error-msg").hide()
+            };
+            var btnUtil = {
+                processing : function (selector, text) {
+                    $(selector).attr("disabled", true)
+                    $(selector).val(text == undefined ? "处理中……" : text)
+                },
+                recoverBtn : function (selector, text) {
+                    $(selector).removeAttr("disabled")
+                    $(selector).val(text)
+                }
+            }
+
+            $('#login').bind('click',function () {
+                /*$('#login').attr("disabled", true)
+                $('#login').val("登录中……")*/
+                btnUtil.processing('#login', "登录中……")
+
+                var name = $('.Login-content input[name="m"]').val()
+                var pass = $('.Login-content input[name="p"]').val()
+                if ($.trim(name) == ''){
+                    $('.Login-content input[name="m"]').focus();
+                    showError("请填写手机号")
+                    return false;
+                }
+
+                if ($.trim(pass) == ''){
+                    $('.Login-content input[name="p"]').focus();
+                    showError("请填写密码")
+                    return false;
+                }
+
+                setTimeout(function () {
+                    /*$('#login').removeAttr("disabled")
+                    $('#login').val("登录")*/
+                    btnUtil.recoverBtn('#login', "登录")
+                }, 10000)
+
+                $.ajax('/p/wm/npk')
+                    .done(function (data) {
+                        if (data.s) {
+                            var pubKey = data.d
+                            var encrypt = new JSEncrypt();
+                            encrypt.setPublicKey(pubKey);
+                            var encryptedPass = encrypt.encrypt(pass);
+                            var encryptedName = encrypt.encrypt(name);
+
+                            $.ajax('/p/wm/login',{'method':'POST','data':{'n':encryptedName,'p':encryptedPass}})
+                                .done(function (data) {
+                                    if (data.s) {
+                                        window.location.pathname = '/wm/main.html'
+                                    }else {
+                                        if (data.m == undefined) {
+                                            return showError("手机号或密码错误")
+                                        }
+                                        return showError(data.m);
+                                    }
+                                })
+                                .fail(function (data) {
+                                    showError("登录请求失败")
+                                })
+                        }else {
+                            if (data.m == undefined) {
+                                return showError("获取公钥失败")
+                            }
+                            return showError(data.m);
+                        }
+                    })
+                    .fail(function (data) {
+                        showError("获取公钥失败")
+                    })
+
+
+                return false
+            })
+        })
+
+    </script>
+</body>
+</html>

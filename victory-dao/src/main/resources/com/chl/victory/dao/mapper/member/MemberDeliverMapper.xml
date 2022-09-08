@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.member.MemberDeliverMapper">
+  <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.member.MemberDeliverDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="mem_id" jdbcType="BIGINT" property="memId" />
+    <result column="mobile" jdbcType="BIGINT" property="mobile" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="addr" jdbcType="VARCHAR" property="addr" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_time, modified_time, mem_id, mobile, name, addr, code
+  </sql>
+  <sql id="conditionWithOrderAndPage">
+    <include refid="condition"/>
+    <include refid="order"/>
+    <include refid="page"/>
+  </sql>
+  <sql id="condition">
+    <where>
+      <if test="id != null"> id = #{id} </if>
+      <if test="memId != null">and mem_id = #{memId,jdbcType=BIGINT} </if>
+    </where>
+    <!--<include refid="order"/>
+    <include refid="page"/>-->
+  </sql>
+  <sql id="order">
+    <if test="orderColumn != null">
+      order by #{orderColumn} <if test="desc"> desc </if>
+    </if>
+    <if test="orderColumn = null and orderedColumns != null and orderedColumns.size > 0">
+      <trim suffixOverrides=",">
+        <foreach collection="orderedColumns" index="index" item="orderedColumn" open=" order by " separator="," close="">
+          #{item.orderColumn} <if test="item.desc"> desc </if>
+        </foreach>
+      </trim>
+    </if>
+  </sql>
+  <sql id="page">
+    <if test="rowStart != null and pageSize != null">
+      limit #{rowStart},#{pageSize}
+    </if>
+  </sql>
+
+  <select id="count" parameterType="com.chl.victory.dao.query.member.MemberDeliverQuery" resultType="java.lang.Integer">
+    select
+    count(1)
+    from member_deliver
+    <include refid="condition" />
+  </select>
+
+  <select id="select" parameterType="com.chl.victory.dao.query.member.MemberDeliverQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from member_deliver
+    <include refid="conditionWithOrderAndPage" />
+  </select>
+  <select id="selectOne" parameterType="com.chl.victory.dao.query.member.MemberDeliverQuery" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from member_deliver
+    <include refid="condition" />
+  </select>
+  <delete id="delete" parameterType="com.chl.victory.dao.query.member.MemberDeliverQuery">
+    delete from member_deliver
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.chl.victory.dao.model.member.MemberDeliverDO">
+    insert into member_deliver (id, created_time, modified_time,
+      mem_id, mobile, name, 
+      addr, code)
+    values (#{id,jdbcType=BIGINT}, now(), now(),
+      #{memId,jdbcType=BIGINT}, #{mobile,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR},
+      #{addr,jdbcType=VARCHAR},#{code,jdbcType=VARCHAR})
+  </insert>
+  <update id="update" parameterType="com.chl.victory.dao.model.member.MemberDeliverDO">
+    update member_deliver
+    <set>
+        modified_time = now(),
+      <if test="memId != null">
+        mem_id = #{memId,jdbcType=BIGINT},
+      </if>
+      <if test="mobile != null">
+        mobile = #{mobile,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="addr != null">
+        addr = #{addr,jdbcType=VARCHAR},
+      </if>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

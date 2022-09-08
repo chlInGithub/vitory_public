@@ -1,0 +1,380 @@
+<div class="loadedContent" id="itemDetail">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b>商品详情</b></span>
+        </div>
+        <div class="panel-body">
+            <form class="form-default" id="itemDetailQForm">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">商品ID</span>
+                            <input type="text" name="id" class="form-control"/>
+                        </div>
+                    </div>
+                    <button id="query" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        查询
+                    </button>
+                </div>
+            </form>
+
+            <form class="form-default" id="itemDetailForm" enctype="multipart/form-data" data-am-validator>
+                <div class="small">
+                    <div class="panel panel-default panel-cate">
+                        <div class="panel-heading">
+                            类目信息
+                        </div>
+                        <div class="panel-body am-text-center">
+                            <div class="row">
+                                <div class="col-lg-7 col-md-7 col-sm-7">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon">类目</span>
+                                        <select class="form-control data-am-selected cate-select" name="cateId">
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default panel-saleStrategy" style="display: none">
+                        <div class="panel-heading">
+                            销售策略信息
+                        </div>
+                        <div class="panel-body am-text-center">
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12 col-sm-12 saleStrategy">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default panel-item">
+                        <div class="panel-heading">
+                            商品信息
+                        </div>
+                        <div class="panel-body am-text-center">
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon">商品ID</span>
+                                        <input type="text" name="id" class="form-control" disabled/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon">商品编码</span>
+                                        <input type="text" name="outerNo" class="form-control" placeholder="其他系统的商品ID，如ERP"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"><i class="required-star">*</i>标题</span>
+                                        <input type="text" name="title" class="form-control" placeholder="字符数大于10,小于20" minlength="10" maxlength="20" required/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon">副标题</span>
+                                        <input type="text" name="subTitle" class="form-control" placeholder="字符数小于10" maxlength="10"/>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon">关键词</span>
+                                        <input type="text" name="key" class="form-control" placeholder="字符数小于10，空格分割" maxlength="10"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"><i class="required-star">*</i>成本</span>
+                                        <input type="number" name="cost" class="form-control" pattern="^(\d+|\d+\.\d{1,2})$" placeholder="整数或两位小数，不小于0.01" min="0.01" required/>
+                                        <span class="input-group-addon">元</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"><i class="required-star">*</i>标价</span>
+                                        <input type="number" name="labelPrice" class="form-control" pattern="^(\d+|\d+\.\d{1,2})$" placeholder="整数或两位小数，不小于0", min="0" required/>
+                                        <span class="input-group-addon">元</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon"><i class="required-star">*</i>一口价</span>
+                                        <input type="number" name="price" class="form-control" pattern="^(\d+|\d+\.\d{1,2})$" placeholder="整数或两位小数，不小于0", min="0" required/>
+                                        <span class="input-group-addon">元</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon">库存</span>
+                                        <input type="number" name="inventory" class="form-control" pattern="^(\d+)$" placeholder="不小于0", min="0"/>
+                                        <span class="input-group-addon">件</span>
+                                    </div>
+                                    <div>
+                                        <span style="color: red;">若存在sku，则以sku总库存为准。</span>
+                                    </div>
+                                </div>
+                                <!--<div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon">起卖数</span>
+                                        <input type="number" name="minimum" class="form-control" pattern="^(\d+)$" placeholder="整数，不小于0", min="0"/>
+                                        <span class="input-group-addon">件</span>
+                                    </div>
+                                </div>-->
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon">销量</span>
+                                        <input type="number" name="sales" class="form-control" pattern="^(\d+)$" placeholder="整数，不小于0", min="0"/>
+                                        <span class="input-group-addon">件</span>
+                                    </div>
+                                    <div>
+                                        <span style="color: red;">每售出一件，在该销量基础上加一。</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon">重量</span>
+                                        <input type="number" name="attr.weight" class="form-control" pattern="^(\d+|\d+\.\d{1,2})$" placeholder="整数或两位小数，不小于0", min="0"/>
+                                        <span class="input-group-addon">千克</span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon">体积</span>
+                                        <input type="number" name="attr.volume" class="form-control" pattern="^(\d+|\d+\.\d{1,2})$" placeholder="整数或两位小数，不小于0", min="0"/>
+                                        <span class="input-group-addon">立方米</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+                            <div class="row">
+                                <div class="col-lg-1 col-md-3 col-sm-3">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-addon">图片</span>
+                                        <!--<input type="hidden" name="imgs" class="form-control" disabled/>-->
+                                        <span class="input-group-addon"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-11 col-md-11 col-sm-11">
+                                    <div class="input-group input-group-sm float-left uploaded-imgs">
+                                        <input type="hidden" name='imgs' class="form-control">
+                                    </div>
+                                    <div class="input-group input-group-sm am-form-file">
+                                        <div>
+                                            <button type="button" class="am-btn am-btn-secondary am-btn-sm item-img-upload">
+                                                <i class="am-icon-plus am-icon-lg"></i>
+                                            </button>
+                                            <input id="fileupload" type="file" name="imgFile" multiple  class="item-img-upload">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default panel-sku">
+                        <div class="panel-heading">
+                            SKU
+                        </div>
+                        <div class="panel-body" style="width:70%;margin:auto;">
+                            <table class="display table table-bordered table-hover small sku-table" width="100%">
+                                <thead>
+                                <tr>
+                                    <th class='col-lg-5'>sku描述(规格等)</th>
+                                    <th class='col-lg-2'>一口价(单位：元)</th>
+                                    <th class='col-lg-2'>库存(单位：件)</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <!--<tr>
+                                    <td>
+                                        <input type="text" name="skuTitle" style="width: 100%"/>
+                                    </td>
+                                    <td>
+                                        <input type="number" name="skuPrice"/>
+                                    </td>
+                                    <td>
+                                        <input type="number" name="skuInventory"/>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-primary btn-xs add-sku">+</button>
+                                        <button type="button" class="btn btn-primary btn-xs reduce-sku">-</button>
+                                    </td>
+                                </tr>-->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="panel panel-default panel-logistics">
+                        <div class="panel-heading">
+                            物流
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">免物流</label>
+                                <div class="col-lg-10 radio">
+                                    <label>
+                                        <input type="radio" class="form-control my-radio" name="logistics.needLogistics" value="0">自提
+                                    </label>
+                                    <label>
+                                        <input type="radio" class="form-control my-radio" name="logistics.needLogistics" value="1" checked>需要物流
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-2 control-label">运费设置</label>
+                                <div class="col-lg-10 radio">
+                                    <div>
+                                        <label>
+                                            <input type="radio" class="form-control my-radio my-radio-checked" name="logistics.freightStrategy" value="0" checked>免运费
+                                        </label>
+                                    </div>
+                                    <div>
+                                        <label>
+                                            <input type="radio" class="form-control my-radio my-radio-checked" name="logistics.freightStrategy" id="sameFreightRadio" value="1">
+                                            统一运费
+                                            <input type="number" class="form-control my-radio-val" style="width: 40%;display: inline-block;" name="logistics.sameFreightVal" pattern="^(\d+)$" placeholder="整数，不小于0", min="0">元
+                                        </label>
+                                    </div>
+                                    <!--<div>
+                                        <label>
+                                            <input type="radio" class="form-control my-radio" name="freightStrategy" value="2">
+                                            运费模板
+                                            <select class="form-control" name="freightTemp" style="display: inline-block;">
+                                                <option value="1">运费模板1</option>
+                                                <option value="2">运费模板2</option>
+                                            </select>
+                                        </label>
+                                    </div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel panel-default panel-coupon" style="display: none">
+                        <div class="panel-heading">
+                            优惠、积分
+                        </div>
+                        <div class="panel-body">
+                            敬请期待
+                        </div>
+                    </div>
+                    <div class="panel panel-default panel-others" style="display: none">
+                        <div class="panel-heading">
+                            其他
+                        </div>
+                        <div class="panel-body">
+                            敬请期待
+                        </div>
+                    </div>
+                    <div class="panel panel-default panel-detail">
+                        <div class="panel-heading">
+                            详情
+                        </div>
+                        <div class="panel-body">
+                            <div name="detail" class="my-phone">
+                                <div class="my-phone-container"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    $(function () {
+        var itemDetail = {
+            clearSku : function () {
+                $('#itemDetail .sku-table tbody:first tr').remove()
+            },
+            addSku : function(sku){
+                var id = '',title = '', price = '', inventory = ''
+                if (ObjectCommonUtil.isNotUndefined(sku)){
+                    id = sku.id
+                    title = sku.title
+                    price = sku.price
+                    inventory = sku.inventory
+                }
+                var newEle = '<tr><td><input type="hidden" name="id" disabled value="'+id+'"><input class="form-control" type="text" name="skuTitle" style="width: 100%"  placeholder="字符数小于20" minlength="1" maxlength="20" required value="'+ title +'"/></td><td><input class="form-control"  type="number" name="skuPrice" pattern="^(\\d+|\\d+\\.\\d{1,2})$" placeholder="整数或两位小数，不小于0", min="0" required value="'+ price +'"/></td><td><input class="form-control" type="number" name="skuInventory" pattern="^(\\d+)$" placeholder="整数，不小于0", min="0" required value="'+ inventory +'"/></td></tr>'
+                $('#itemDetail .sku-table tbody:first').append(newEle)
+            }
+        }
+
+        /*查询form*/
+        bindFormCallback({
+            pageId:'itemDetail',
+            formId:'itemDetailQForm',
+            submitId:'query',
+            formVerify:function (data) {
+                log('itemDetail verify')
+                return !ObjectCommonUtil.isEmpty(data.id)
+            },
+            submitResultDeal:function (data) {
+                fileUploadUtils.clearImgs('#itemDetail .uploaded-imgs')
+
+                if (data.d == undefined) {
+                    castSuccessMsg("商品不存在")
+                }
+                var d = data.d;
+                for (var key in d){
+                    if (key == 'attr' || key == 'logistics') {
+                        for (var key2 in d[key]){
+                            var name = key.concat('.').concat(key2)
+                            var val = d[key][key2]
+                            FormUtil.fillVal('#itemDetail #itemDetailForm', name, val)
+                        }
+                    }else if (key == 'skus'){
+                        itemDetail.clearSku()
+                        for (var key2 in d[key]){
+                            var sku = d[key][key2]
+                            itemDetail.addSku(sku)
+                        }
+                    }else if(key == 'detail'){
+                        $('#itemDetail #itemDetailForm .my-phone .my-phone-container').html(d[key])
+                    }else if (key == 'imgs'){
+                        if (!ObjectCommonUtil.isEmpty(d[key]) ){
+                            var imgs = d[key].split(',')
+                            for (var index in imgs){
+                                fileUploadUtils.appendImgs('#itemDetail #fileupload', imgs[index])
+                            }
+                            $("#itemDetail .uploaded-img .am-icon-close").remove()
+                        }
+                    }else {
+                        FormUtil.fillVal('#itemDetail #itemDetailForm', key, d[key])
+                    }
+                }
+                $('#itemDetail #itemDetailForm .form-control').attr('disabled',true)
+                $('#itemDetail #itemDetailForm input').attr('disabled',true)
+                var saleStrategyhtml = saleStrategyUtil.getSaleStrategyShowHtml(d)
+                if (!ObjectCommonUtil.isEmpty(saleStrategyhtml)) {
+                    $('#itemDetail #itemDetailForm .panel-saleStrategy').show()
+                    $('#itemDetail #itemDetailForm .saleStrategy').html(saleStrategyhtml)
+                }
+            }
+        })
+
+        CateUtils.load()
+
+        /*每个页面都应取一次数据，以便获取参数*/
+        jumpContextData.dealJumpContextData(function (data) {
+            if (!ObjectCommonUtil.isEmpty(data.itemId)) {
+                $('#itemDetail').find('#itemDetailQForm input[name="id"]:first').val(data.itemId)
+                $("#itemDetailQForm #query").click()
+            }
+        })
+    })
+
+</script>

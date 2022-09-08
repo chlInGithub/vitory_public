@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.fee.FeeRuleMapper">
+  <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.fee.FeeRuleDO">
+    <result column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+    <result column="uniform" jdbcType="TINYINT" property="uniform" />
+    <result column="item_id" jdbcType="BIGINT" property="itemId" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="val" jdbcType="DECIMAL" property="val" />
+    <result column="valid" jdbcType="TINYINT" property="valid" />
+  </resultMap>
+</mapper>

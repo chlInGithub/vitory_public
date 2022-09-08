@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <classPathEntry location="mybatis-generator/lib/mysql-connector-java-5.1.38.jar"/>
+
+    <context id="MySqlContext" targetRuntime="MyBatis3" defaultModelType="flat">
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+        <property name="javaFileEncoding" value="UTF-8"/>
+
+        <!--<plugin type="org.mybatis.mybatis.generator.plugins.SerializablePlugin"/>-->
+
+        <commentGenerator type="mybatis.generator.MyCommentGenerator">
+            <property name="suppressAllComments" value="true"/>
+            <property name="suppressDate" value="true"/>
+            <property name="addRemarkComments" value="true"/>
+        </commentGenerator>
+
+        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/victory_wm"
+                        userId="victory_wm"
+                        password="QAZ1qazWSX2wsx">
+        </jdbcConnection>
+
+        <javaModelGenerator targetPackage="com.chl.victory.dao.model.sms"
+                            targetProject="dao/src/main/java">
+            <property name="trimStrings" value="true"/>
+            <property name="rootClass" value="com.chl.victory.dao.model.BaseDO"/>
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="com.chl.victory.dao.mapper.sms"
+                         targetProject="dao/src/main/resources"/>
+
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.chl.victory.dao.mapper.sms"
+                             targetProject="dao/src/main/java"/>
+
+        <table tableName="sms_history" domainObjectName="SmsHistoryDO"  mapperName="SmsHistoryMapper" enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="MySql"/>
+        </table>
+        <table tableName="sms_recharge_order" domainObjectName="SmsRechargeOrderDO"  mapperName="SmsRechargeOrderMapper" enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="MySql"/>
+        </table>
+        <table tableName="sms_sending" domainObjectName="SmsSendingDO"  mapperName="SmsSendingMapper" enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="MySql"/>
+        </table>
+        <table tableName="sms_set" domainObjectName="SmsSetDO"  mapperName="SmsSetMapper" enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="MySql"/>
+        </table>
+        <table tableName="sms_set_history" domainObjectName="SmsSetHistoryDO"  mapperName="SmsSetHistoryMapper" enableCountByExample="false"
+               enableUpdateByExample="false" enableDeleteByExample="false"
+               enableSelectByExample="false" selectByExampleQueryId="false">
+            <generatedKey column="id" sqlStatement="MySql"/>
+        </table>
+    </context>
+</generatorConfiguration>

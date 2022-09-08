@@ -1,0 +1,128 @@
+<div class="loadedContent" id="minFeeDetail">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b>订单实际金额下限-销售策略详情</b></span>
+        </div>
+        <div class="panel-body">
+            <form class="form-default" id="minFeeDetailForm">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">ID</span>
+                            <input type="text" name="id" class="form-control"/>
+                        </div>
+                    </div>
+                    <button id="query" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        查询
+                    </button>
+                </div>
+            </form>
+
+            <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+
+            <div class="small" v-if="minFeeDetail.id">
+                <div class="panel panel-default  panel-status">
+                    <div class="panel-heading" style="display: flex;">
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                            ID:&nbsp;&nbsp;{{minFeeDetail.id}}
+                        </span>
+                    </div>
+                    <div class="panel-body">
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                            订单实际金额不小于 &nbsp;&nbsp;<b style="color: red;">{{minFeeDetail.attr.minFee}} </b> &nbsp;&nbsp;
+                        </span>
+                    </div>
+                </div>
+                <div class="panel panel-default panel-itemIds">
+                    <div class="panel-heading">
+                        参与的商品
+                    </div>
+                    <div class="panel-body">
+                        <b style="color:red;font-size:.5rem;">(注意：未选择商品，则表示店铺所有商品都参与该活动。)</b>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">使用该策略的商品</span>
+                                    <textarea name="itemIds" class="form-control" rows="4" disabled :value="minFeeDetail.itemIds"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+
+                        <div v-if="minFeeDetail.itemIds" class="items-of-activity float-left" style="padding:0 5px 0 5px;width:49%;min-height: 300px;border: 1px solid #0e90d2;">
+                            <div style="text-align: center">使用该策略的商品列表</div>
+                            <div>
+                                <table class="table table-hover small" style="background-color: #0e90d2;"><!--table-bordered-->
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            <div class="float-left">基本信息</div>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div v-else>
+                无数据
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var appminFeeDetail = new mixined_vue({
+        el: '#minFeeDetail',
+        data: {
+            minFeeDetail: {}
+        },
+        methods: {
+        },
+        coumputed:{
+        }
+    })
+
+    $(function () {
+        // 每个页面都应取一次数据，以便获取参数
+        log('minFeeDetail')
+        jumpContextData.dealJumpContextData(function (data) {
+            if (!ObjectCommonUtil.isEmpty(data.id)) {
+                $('#minFeeDetail').find('#minFeeDetailForm input[name="id"]:first').val(data.id)
+            }
+        })
+
+        bindFormCallback({
+            pageId:'minFeeDetail',
+            formId:'minFeeDetailForm',
+            submitId:'query',
+            formVerify:function (data) {
+                log('minFeeDetail verify')
+                return !ObjectCommonUtil.isEmpty(data.id)
+            },
+            submitResultDeal:function (data) {
+                var d = data.d
+                if (ObjectCommonUtil.isUndefined(data.d)) {
+                    data.d = {}
+                }
+                appminFeeDetail.minFeeDetail = data.d;
+                appminFeeDetail.minFeeDetail.attr = JsonUtil.toJson(data.d.attr)
+
+                setTimeout(function (){
+                    resizeContentHeight()
+                    canMovedItemGroup.showItems4Detail("minFeeDetail")
+                }, 500)
+            }
+        })
+
+        $("#minFeeDetailForm #query").click()
+    })
+
+
+</script>

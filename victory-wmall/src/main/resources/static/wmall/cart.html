@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>购物车</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- <link rel="shortcut icon" href="/favicon.ico"> -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <link rel="stylesheet" href="css/common.css">
+
+    <style>
+
+        .item-content .item-inner .row {
+            display: inline-flex;
+            margin: 0;
+            width: 100%;
+        }
+
+        .icon-form-checkbox {
+            width: .8rem !important;
+            height: .8rem !important;;
+            border-radius: .8rem !important;;
+        }
+
+    </style>
+
+    <script src="js/vue.js"></script>
+</head>
+<body>
+<div id="app" class="page-group">
+    <template>
+        <div class="page page-current">
+
+            <header class="bar bar-nav">
+                <a href="javascript:goHistroy()" class="float-left nav-history">
+                    <span class="icon icon-left"></span>
+                </a>
+                <a href="javascript:window.location.reload()" class="float-right nav-refresh">
+                    <span class="icon icon-refresh"></span>
+                </a>
+                <h1 class="title header-title">
+                    <div class="header-shop float-left" style="display: flex;" @click="m_go_shop()">
+                        <img :src="m_get_img(shop.img)" class="header-img"/>
+                        <span><b>{{shop.name}}</b></span>
+                    </div>
+                    <div class="header-user float-right" style="display: flex;" @click="m_go_me()">
+                        <img :src="user.img" class="header-img"/>
+                        <span><b>{{user.name}}</b></span>
+                    </div>
+                </h1>
+            </header>
+
+            <nav class="bar bar-tab">
+                <div class="row">
+                    <!-- <div class="col-20">
+            <a class="tab-item" href="#">
+              <span class="icon icon-home"></span>
+              <span class="tab-label">首页</span>
+            </a>
+          </div> -->
+                    <div class="col-100">
+                        <div class=" item-content">
+                            <label class="label-checkbox" style="display: inline-flex;margin-left: 1rem;margin-right: .3rem">
+                                <input type="checkbox" name="select-all" @change="checked_all(itemList)">
+                                <div class="item-media" align="center"
+                                     style="margin-top: 0rem;display: inline-block;font-size: .6rem">
+                                    <i class="icon icon-form-checkbox" style="padding: 0"></i>
+                                    <br/>
+                                    全选
+                                </div>
+                            </label>
+
+
+                            <div class="item-inner float-right" style="margin-right: .5rem;">
+                                <div class="item-title-row">
+                                    <div class="item-title float-left" style="margin-top: .2rem;font-size: .6rem">
+                                        <div>
+                                            <span style="color: gray">不含运费</span>
+                                            <span style="color: black">合计:</span>
+                                            <b style="color: red">￥{{ computeResult.total }}</b>
+                                        </div>
+                                        <div>
+                                            <span style="color: black">共减￥{{ computeResult.coupon }}</span>
+                                            <span v-if="computeResult.coupon > 0" style="color: red" class="float-right" @click="m_show_coupon_detail()">优惠明细</span>
+                                        </div>
+                                    </div>
+                                    <div class="item-after float-right" style="margin-left: .5rem; margin-right: 0rem">
+                                        <a @click="go_settle()" class="button button-fill button-danger button-big"
+                                           style="background-color: red;font-size: .8rem;top: .1rem;height: 1.9rem;line-height: 2rem;">结算({{
+                                            computeResult.itemCount }})</a>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="content">
+
+                <div class="page-index">
+                    <div class="card shop-about" style="font-size: .4rem;line-height: .7rem;padding-left:.5rem;color:orangered;text-align: center">
+                        已自动隐藏售罄商品!
+                    </div>
+
+                    <div class="card">
+                        <div class="card-content">
+                            <div class="card-content-inner">
+
+                                <div class="list-block media-list" v-if="itemList.length > 0">
+                                    <div class="row no-gutter">
+                                        <div class="col-100" v-for="item in itemList">
+                                            <div class="item-content">
+                                                <label class="label-checkbox" style="margin-right: .3rem;">
+                                                    <input type="checkbox" name="item-in-buycar" :disabled="!m_can_operate(item)"
+                                                           :value="item.itemId + '_' + item.skuId"
+                                                           v-model="checkedItemSkus" @change="checked_item_compute(item)">
+                                                    <div class="item-media" style="padding-top: 1rem;padding-bottom: 1rem" :disabled="!m_can_operate(item)">
+                                                        <i class="icon icon-form-checkbox" v-if="m_can_operate(item)"></i>
+                                                        <i class="icon icon-form-checkbox" v-else style="background-color: gray"></i>
+                                                    </div>
+                                                </label>
+
+                                                <div class="item-inner">
+                                                    <div class="row">
+                                                        <div class="col-40" @click="m_go_item_detail(item.itemId)">
+                                                            <img class="buycar-item-img" :src="m_get_img(item.img)"
+                                                                 style="width: 100%"/>
+                                                        </div>
+                                                        <div class="col-60" style="margin-left: .5rem">
+                                                            <div class="buycar-item-title" style="font-size: .6rem;">
+                                                                {{ item.title }}
+                                                            </div>
+                                                            <div class="buycar-item-sku-title"
+                                                                 style="font-size: .5rem;color:gray">
+                                                                {{ item.skuTitle }}
+                                                            </div>
+                                                            <div class="salestrategy-div"  v-if="item.strategyJson && item.strategyJson != ''" v-html="item.strategyTagHtml" >
+                                                            </div>
+                                                            <div v-if="item.limit" class="buycar-item-limit"
+                                                                 style="font-size: .5rem;color: red;">
+                                                                限购{{ item.limit }}件
+                                                            </div>
+                                                            <div v-if="item.minimum" class="buycar-item-minimum"
+                                                                 style="font-size: .5rem;color: red;">
+                                                                {{ item.minimum }}件起卖
+                                                            </div>
+                                                            <div v-if="item.inventory" class="buycar-item-inventory"
+                                                                 style="font-size: .5rem;color: gray;">
+                                                                库存{{ item.inventory }}
+                                                            </div>
+                                                            <div class="buycar-item-price float-left"
+                                                                 style="font-size: 0.7rem;color: red;">
+                                                                ￥<span>{{ item.price }}</span>
+                                                            </div>
+                                                            <div class="buycar-item-del float-right "
+                                                                 @click="del_item(item.itemId,item.skuId)" style="font-size: .5rem">
+                                                                <span class="icon icon-remove"></span>
+                                                            </div>
+                                                            <div class="buycar-item-count" style="display: inline-block;margin-top: 0.5rem;width: 100%;">
+                                                                <button  @click="m_decrement_item_count(item)"
+                                                                        class="button button-light float-left"
+                                                                        style="height: .8rem;line-height: 0;padding:0 .2rem;border-radius: .2rem;width: .8rem;">-
+                                                                </button>
+                                                                <input type="number" pattern="[1-99]" min="1"
+                                                                       disabled="disabled" class=" float-left"
+                                                                       :value="item.count"
+                                                                       style="border: solid gray 1px;width: 2rem;height: .8rem;text-align: center;font-size: .6rem">
+                                                                <button @click="m_increment_item_count(item)"
+                                                                        class="button button-light float-left"
+                                                                        style="height: .8rem;line-height: 0;padding:0 .2rem;border-radius: .2rem;width: .8rem;">+
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-else-if="loading">
+                                    查询中
+                                </div>
+                                <div v-else="!loading">
+                                    购物车空空的
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+
+</div>
+
+
+</body>
+
+
+<script type='text/javascript' src='js/jquery-3.4.1.min.js' charset='utf-8'></script>
+<script type="text/javascript">
+    jQuery.noConflict()
+</script>
+
+<script src="js/vue.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/miniprogram.js"></script>
+<script type='text/javascript' src='https://res.wx.qq.com/open/js/jweixin-1.4.0.js' charset='utf-8'></script>
+<script type="text/javascript" src="js/mixin_vue.js"></script>
+<script type='text/javascript' src='https://g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='https://g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+<script type="text/javascript">
+    //$.showPreloader();
+    //打开自动初始化页面的功能
+    //建议不要打开自动初始化，而是自己调用 $.init 方法完成初始化
+    $.config = {
+        autoInit: false,
+        router: false
+    }
+</script>
+
+
+<script type="text/javascript">
+    var mixined_vue = Vue.extend({
+        mixins: [common_mixin]
+    })
+    var app = new mixined_vue({
+        el: '#app',
+        data: {
+            checkedAll: false,
+            computeResult: {
+                total: 0,
+                coupon: 0,
+                couponDetail: {
+                    totalNoCoupon: 0,
+                    coupons: [{
+                        desc: '',
+                        amount: 0
+                    }],
+                    coupon: 0,
+                    total: 0
+                },
+                itemCount: 0
+            },
+            checkedItemSkus: [],
+            itemList: [],
+            loading: true
+
+        },
+        watch: {
+            /*checkedItemSkus : function () {
+                this.compute_cart_timeout()
+            }*/
+        },
+        methods: {
+            m_can_operate: function(item){
+                if (item.count > item.inventory) {
+                    return false
+                }
+                if (ObjectCommonUtil.isNotUndefined(item.strategyJson.minCount) && item.count < item.strategyJson.minCount.minCount) {
+                    return false
+                }
+                if (ObjectCommonUtil.isNotUndefined(item.strategyJson.maxCount) && item.count > item.strategyJson.maxCount.maxCount) {
+                    return false
+                }
+                return true
+            },
+            m_show_coupon_detail: function(){
+                var detail = ''
+                this.computeResult.couponDetail.coupons.forEach(function (coupons) {
+                    detail += ('<div><div style="width: 70%;float: left;">' + coupons.desc + '</div>' + '<div style="width: 30%;float: right;color:red">￥' + coupons.amount + '</div></div>')
+                })
+                $.modal({
+                    title:  '<div style="font-size: .7rem;">优惠详情</div>',
+                    text: '<div style="font-size: .5rem;    display: grid;">'+ detail + '</div>',
+                    buttons: [
+                        {
+                            text: '知道喽',
+                            bold: true
+                        },
+                    ]
+                })
+            },
+            m_increment_item_count: function (item) {
+                if(ObjectCommonUtil.isNotUndefined(item.strategyJson.maxCount)) {
+                    if (item.count < item.strategyJson.maxCount.maxCount) {
+                        item.count += 1
+                        this.items_change(item)
+                    }else {
+                        item.count = item.strategyJson.maxCount.maxCount
+                    }
+                } else {
+                    item.count -= 1
+                    this.items_change(item)
+                }
+            },
+            m_decrement_item_count: function (item) {
+                if(ObjectCommonUtil.isNotUndefined(item.strategyJson.minCount)) {
+                    if (item.count > item.strategyJson.minCount.minCount) {
+                        item.count -= 1
+                        this.items_change(item)
+                    }else {
+                        item.count = item.minimum
+                    }
+                } else {
+                    if (item.count > 2) {
+                        item.count -= 1
+                        this.items_change(item)
+                    }
+                }
+            },
+            items_change: function (item) {
+                this.m_add_cart(item.itemId, item.skuId, item.count, false)
+
+                if (item.deleted || item.checked) {
+                    this.compute_cart_timeout();
+                }
+            },
+            del_item: function (itemId, skuId, event) {
+                log(itemId + "-" + skuId)
+                // TODO http del
+                var items = []
+                this.itemList.forEach(function (item) {
+                    log(item.itemId +"_"+ item.skuId)
+                    if (item.itemId+"_"+item.skuId != itemId+"_"+skuId) {
+                        items.push(item)
+                    }
+                })
+
+                var checkedItems = []
+                this.checkedItemSkus.forEach(function (item) {
+                    if (item != itemId+"_"+skuId) {
+                        checkedItems.push(item)
+                    }
+                })
+
+                this.itemList = items
+                this.checkedItemSkus = checkedItems
+
+                this.items_change({itemId:itemId, skuId:skuId, count:0, deleted:true})
+            },
+            checked_all: function (items) {
+
+                // 全选框
+                this.checkedAll = !this.checkedAll
+                if (items == undefined || items.length < 1) {
+                    return
+                }
+                var tempCheckedVal = this.checkedAll
+
+                // 过滤起卖限制
+                items = items.filter(function (item) {
+                    return item.count >= item.minimum
+                })
+
+                items.forEach(function (item, index, array) {
+                    if (item.checked != tempCheckedVal) {
+                        app.checked_item(item);
+                    }
+                });
+
+                if (tempCheckedVal) {
+                    app.checkedItemSkus = []
+                    items.forEach(function (item) {
+                        app.checkedItemSkus.push(item.itemId+"_"+item.skuId)
+                    })
+                }else {
+                    app.checkedItemSkus = []
+                }
+
+                this.compute_cart_timeout();
+            },
+            checked_item: function (item) {
+                // 某个复选框
+                item.checked = !item.checked
+                jQuery('input[name="item-in-buycar"][value='+item.itemId+'_'+item.skuId+']')[0].checked = item.checked
+                jQuery('input[name="item-in-buycar"]').not(':checked').length < 1
+                    ? jQuery('input[name="select-all"]')[0].checked = app.checkedAll = true
+                    : jQuery('input[name="select-all"]')[0].checked = app.checkedAll = false
+            },
+            checked_item_compute: function (item) {
+                // 某个复选框
+                this.checked_item(item)
+                this.compute_cart_timeout()
+
+            },
+            compute_cart_timeout: function () {
+                setTimeout(compute_cart, 5)
+            },
+            go_settle: function () {
+                if (this.checkedItemSkus.length < 1) {
+                    return false
+                }
+
+                var params = this.checkedItemSkus.toString()
+
+                this.m_go_settle(params)
+            },
+            get_checked_item_string: function () {
+                if (this.checkedItemSkus.length < 1) {
+                    return ""
+                }
+
+                var temp = [];
+                var presellItems = 0
+                this.checkedItemSkus.forEach(function (value) {
+                    app.itemList.forEach(function (item) {
+                        var currentId = item.itemId + "_" + item.skuId;
+                        if (currentId == value) {
+                            if (ObjectCommonUtil.isNotUndefined(item.strategyJson.presell)) {
+                                presellItems++
+                            }
+                            temp.push(value+"_"+item.count)
+                        }
+                    })
+                })
+
+                if (presellItems >= 2) {
+                    $.toast("预售商品必须单独下单")
+                    return "";
+                }
+
+                return temp.toString();
+            },
+            get_checked_item_list: function () {
+                if (this.checkedItemSkus.length < 1) {
+                    return ""
+                }
+
+                var temp = [];
+                this.checkedItemSkus.forEach(function (value) {
+                    app.itemList.forEach(function (item) {
+                        var currentId = item.itemId + "_" + item.skuId;
+                        if (currentId == value) {
+                            temp.push(item)
+                        }
+                    })
+                })
+
+                return temp
+            }
+        }
+    })
+
+    /*jQuery code*/
+    /*通过接口从服务器获取数据。*/
+    var query_cart_items = function (callback) {
+        AjaxUtil.get("/wmall/cart/items", {}, function (result) {
+            if (result.d != undefined) {
+                app.itemList = result.d
+                saleStrategyUtil.parseList(app.itemList)
+            }
+            app.loading = false
+        })
+    }
+    var defaultComputeResult = app.computeResult
+    var compute_cart = function (callback) {
+        if (app.checkedItemSkus.length < 1) {
+            app.computeResult = defaultComputeResult
+            return false
+        }
+
+        if (!itemFuncs.check_item_valid(app.get_checked_item_list())) {
+            return false
+        }
+
+        var items = app.get_checked_item_string();
+        if (items == "") {
+            return false
+        }
+
+        $.showPreloader("处理中");
+        setTimeout(function () {
+            $.hidePreloader()
+        }, 2000)
+
+        var data = {
+            items : items
+        }
+
+        AjaxUtil.get("/wmall/cart/compute", data, function (result) {
+
+            $.hidePreloader()
+
+            if (result.d != undefined) {
+                app.computeResult = result.d
+            }
+        }, function () {
+            $.hidePreloader()
+        });
+
+
+    }
+    var callback = function () {
+        query_cart_items()
+        //compute_cart()
+    }
+    initPage(callback)
+</script>
+</html>

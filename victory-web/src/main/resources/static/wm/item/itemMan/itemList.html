@@ -1,0 +1,350 @@
+
+<div class="loadedContent" id="itemList">
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <span class="panel-header-ele"><b>商品列表</b></span>
+    </div>
+    <div class="panel-body">
+        <form class="form-default" id="itemListForm">
+            <div class="row">
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">商品ID</span>
+                        <input type="text" name="id" class="form-control"/>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">标题</span>
+                        <input type="text" name="title" class="form-control"/>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4">
+                    <div class="input-group input-group-sm">
+                        <span class="input-group-addon">类目</span>
+                        <select class="form-control cate-select" name="cateId" data-am-selected>
+                            <option value="1">方式1</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span style="color:red;">暂仅支持查询三级类目</span>
+                    </div>
+                </div>
+            </div>
+            <div class="row" align="center">
+                <button id="query" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                    <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                    查询
+                </button>
+            </div>
+        </form>
+
+        <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+
+        <div class="batchBtns" >
+            <button type="button" class="btn btn-danger btn-xs btn-batchItemDel confirmed" data-msg="确定删除商品?" data-optid="del">批量删除</button><span style="color: red;font-size:.5rem;">删除:仅作用于已下架商品</span>
+            <button style="margin-left: 2rem;" type="button" class="btn btn-success btn-xs btn-batchItemSale confirmed" data-msg="确定上架商品?" data-optid="shelf">批量上架</button><span style="color: red;font-size:.5rem;">上架:仅作用于已下架商品</span>
+            <button style="margin-left: 2rem;" type="button" class="btn btn-warning btn-xs btn-batchItemSoldOut confirmed" data-msg="确定下架商品?" data-optid="soldOut">批量下架</button>
+            <button type="button" class="btn btn-primary btn-xs btn-itemEdit jumped" data-targettype="openTabMenu" data-menuid="itemEdit" style="margin-left: 4rem;">商品发布</button>
+            <button type="button" class="btn btn-success btn-xs btn-itemRange4LowPrice jumped" data-targettype="openTabMenu" data-menuid="itemRange" style="margin-left: 4rem;">圈定低价商品</button>
+            <button type="button" class="btn btn-success btn-xs btn-itemRange4Recommend jumped" data-targettype="openTabMenu" data-menuid="itemRange" style="margin-left: 4rem;">圈定推荐商品</button>
+            <!--<button type="button" class="btn am-btn-secondary btn-xs btn-batchItemSelfTake confirmed" data-msg="确定将商品设置为门店自提?" data-optid="del">设置门店自提</button>
+        -->
+        </div>
+        <br/>
+
+        <!-- Nav tabs -->
+        <ul id="itemListNav" class="nav nav-tabs" role="tablist">
+            <li role="presentation"><a data-val="" id="tab_all" class="btn-xs" href="#panel_item_all" aria-controls="panel_item_all" role="tab" data-toggle="tab">所有 <span class="am-badge am-badge-secondary am-round" id="badge_item_all">42</span></a></li>
+            <li role="presentation"><a data-val='10' id="tab_published" class="btn-xs" href="#panel_item_published" aria-controls="panel_item_published" role="tab" data-toggle="tab">仓库中 <span class="am-badge am-badge-secondary am-round" id="badge_item_published">42</span></a></li>
+            <li role="presentation"><a data-val="20" id="tab_willShelf" class="btn-xs" href="#panel_item_willShelf" aria-controls="panel_item_willShelf" role="tab" data-toggle="tab">上架中 <span class="am-badge am-badge-primary am-round" id="badge_item_willShelf">42</span></a></li>
+            <li role="presentation"><a data-val="30" id="tab_sale" class="btn-xs" href="#panel_item_sale" aria-controls="panel_item_sale" role="tab" data-toggle="tab">出售中 <span class="am-badge am-badge-success am-round" id="badge_item_sale">42</span></a></li>
+            <li role="presentation"><a data-val="40" id="tab_sellOut" class="btn-xs" href="#panel_item_sellOut" aria-controls="panel_item_sellOut" role="tab" data-toggle="tab">售罄 <span class="am-badge am-badge-warning am-round" id="badge_item_sellOut">42</span></a></li>
+            <li role="presentation"><a data-val="50" id="tab_warn" class="btn-xs" href="#panel_item_warn" aria-controls="panel_item_warn" role="tab" data-toggle="tab">预警 <span class="am-badge am-badge-danger am-round" id="badge_item_warn">42</span></a></li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content itemListPanels">
+            <div role="tabpanel" class="tab-pane table-responsive" id="panel_item_all"></div>
+            <div role="tabpanel" class="tab-pane" id="panel_item_published"></div>
+            <div role="tabpanel" class="tab-pane" id="panel_item_willShelf"></div>
+            <div role="tabpanel" class="tab-pane" id="panel_item_sale"></div>
+            <div role="tabpanel" class="tab-pane" id="panel_item_sellOut"></div>
+            <div role="tabpanel" class="tab-pane" id="panel_item_warn"></div>
+        </div>
+    </div>
+</div>
+
+    <div id="itemTableTemplate" style="display: none" >
+        <br/>
+        <div></div>
+        <table class="display table table-hover small" width="100%"  style="background-color: #ddd;">
+            <thead>
+            <tr>
+                <th></th>
+                <th class='col-lg-1'><input value="" type="checkbox" class="tableCheckAll" style="margin-left: 40%;"/></th>
+                <th class='col-lg-6'>商品(sku)</th>
+                <th class='col-lg-2'>单价、总销量、库存</th>
+                <!--<th class='col-lg-1'>顺序</th>-->
+                <th class='col-lg-1'>编辑时间</th>
+                <th class='col-lg-2'>操作</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+
+
+<script>
+
+    $(function () {
+        $('#itemList .btn-itemRange4LowPrice').data('param', {type:3,max:4})
+        $('#itemList .btn-itemRange4Recommend').data('param', {type:2, max:10})
+
+        $('#itemListNav li a').css({
+            'padding-left': '5px',
+            'padding-right': '5px'
+        })
+
+        bindConfirmedCallback({
+            selector:'#itemList .batchBtns .confirmed',
+            genParam: function () {
+                var activeTab = $('#itemListNav .active a')
+                var tablePanelId = activeTab.attr('aria-controls')
+                var ids = getCheckedValsFromTable($('#'+tablePanelId + " table:first"))
+                if (!ObjectCommonUtil.isEmpty(ids)){
+                    var param = {}
+                    param.ids = ids
+                    return param
+                }
+                return
+            },
+            doneCallback: function () {
+                $("#itemList #itemListForm #query").click();
+                var activeTab = $('#itemListNav .active a')
+                var tablePanelId = activeTab.attr('aria-controls')
+                $('#'+tablePanelId + " table:first .tableCheckAll:checked").click()
+            }
+        })
+
+        bindFormCallback({
+            pageId:'itemList',
+            formId:'itemListForm',
+            submitId: 'query',
+            formVerify:function (formData) {
+                log('itemListForm formVerify ' + formData)
+                //TODO
+                return true
+            },
+            submitDataAppend:function (formData) {
+                log('itemListForm submitDataAppend ' + formData)
+            },
+            submitResultDeal:function (resultData) {
+                var d = resultData.d
+                $('#itemListNav').find('span').text(0)
+                for (var i in d) {
+                    $('#itemListNav').find("#badge_item_"+d[i].space).text(d[i].count)
+                }
+
+                tablesInNavTab.showOrReloadTable('itemListNav')
+            }
+        })
+
+        bindNavTabCallback({
+            pageId:'itemList',
+            navId:'itemListNav',
+            navShown: function (target, relatedTarget) {
+                var activeTab = $('#itemListNav .active a')
+                var tablePanelId = activeTab.attr('aria-controls')
+                log(activeTab.data('hasLoad'))
+                if (undefined == activeTab.data('hasLoad') || false == activeTab.data('hasLoad')) {
+                    $('#'+tablePanelId).append($("#itemTableTemplate").children().clone())
+                    $('#'+tablePanelId + " table:first").dataTable( {
+                        language: {
+                            info: "第 _PAGE_ 页，共 _PAGES_ 页，共 _TOTAL_ 条",
+                            /*翻页*/
+                            paginate: {
+                                first: 'first',
+                                previous: '<',
+                                next:     '>',
+                                last: 'last'
+                            },
+                            /*条数*/
+                            lengthMenu: '<div style="float: right;" class="col-lg-2 col-md-2 col-sm-2 input-group input-group-sm"><span class="input-group-addon">每页条数</span><select class="form-control" name="payType"><option value="10">10</option><option value="30">30</option><option value="50">50</option></select></div>',
+                            /*无数据时显示内容*/
+                            zeroRecords: "无数据",
+                            infoFiltered: ''
+                        },
+                        select:{
+                            style:     'none',
+                            className: 'none'
+                        },
+                        //info:false,
+                        // 删除斑马线效果
+                        stripeClasses: [ ],
+                        // 禁用search
+                        searching: false,
+                        // 禁用列排序
+                        ordering: false,
+                        // 从server 接口获取数据
+                        processing: true,
+                        serverSide: true,
+                        ajax: {
+                            url: getSubmitUrl('itemList', 'list'),
+                            data: function (d) {
+                                var data = getFormDataJson('itemList', 'itemListForm')
+                                data.pageIndex = d.start/d.length
+                                data.dataStart = d.start
+                                data.pageSize = d.length
+                                data.draw = d.draw
+                                data.space = activeTab.data('val')
+                                return JsonUtil.simpleFix(data)
+                            }
+                        },
+                        columns:[
+                            {data:'id', render:function (data, type, row, meta) {
+                                    if (!ObjectCommonUtil.isEmpty(row.skus)){
+                                        return '<div class="details-control"></div>'
+                                    }else {
+                                        return ''
+                                    }
+                                }
+                            }
+                            ,{data:'id',render:function (data, type, row, meta) {
+                                    var ele =   '<div style="margin-left: 40%;">' +
+                                        '<input value="'+row.id+'" type="checkbox" class="tableCheckEle float-left"/>' +
+                                    '</div>'
+                                    return ele
+                                }}
+                            ,{data:'id',render:function (data, type, row, meta) {
+                                    var salestrategyHtml = saleStrategyUtil.getSaleStrategyShowHtml(row);
+
+                                    var ele =   '<div>' +
+                                        '<img class="float-left item-img" name="itemImg" src="'+ImgUtil.getImgUrl(row.img, 1)+'"/>' +
+                                        '<div style="margin-left:5px" class="float-left">' +
+                                        '<div name="itemTitle" data-toggle="tooltip" data-placement="top" title="'+row.title+'">'+StringUtil.abbreviatory(row.title,20)+'<b style="color:red;margin-left: 3rem;">('+ row.statusDesc +')</b></div>' +
+                                        '<div name="itemId">'+row.id+'</div>' + salestrategyHtml +
+                                    '</div>' +
+                                    '</div>'
+                                    return ele
+                                }}
+                            ,{data:'id',render:function (data, type, row, meta) {
+                                    var ele =   '<div>' +
+                                        '<div name="price"  style="color:red">一口价：'+StringUtil.moneyDesc(row.price)+'</div>' +
+                                        '<div name="sales">总销量：'+ StringUtil.simplePrint(row.sales) +'</div>' +
+                                        '<div name="inventory">库存：'+StringUtil.simplePrint(row.inventory)+'</div>' +
+                                        '</div>'
+                                    return ele
+                                }}
+                            /*,{data:'sort'}*/
+                            ,{data:'modifyTime'}
+                            ,{data:'id',render:function (data, type, row, meta) {
+                                    //TODO 根据状态显示按钮
+                                    var ele =   '<button type="button" class="btn btn-success btn-xs btn-itemDetail jumped" data-targettype="blank" data-menuid="itemDetail" style="margin:0 3px;">详情</button>' +
+                                        '<button type="button" class="btn btn-primary btn-xs btn-itemEdit jumped" data-targettype="openTabMenu" data-menuid="itemEdit" style="margin:0 3px;">编辑</button>' +
+                                        '<button type="button" class="btn btn-danger btn-xs btn-itemDel confirmed" data-msg="确定删除商品?" data-optid="del" style="margin:0 3px;">删除</button>'
+                                    return ele
+                                }}],
+                        // 使用测试数据
+                        //data: dataSet,
+                        createdRow: function(row, data, dataIndex, cells){
+                            $(row).find('.btn').each(function () {
+                                var but = $(this)
+                                if (but.hasClass('btn-itemDetail')){
+                                    var paramJson = {}
+                                    paramJson['itemId'] = data.id
+                                    but.data('param', paramJson)
+                                    return
+                                }
+                                if (but.hasClass('btn-itemDel')){
+                                    var paramJson = {}
+                                    paramJson['ids'] = data.id
+                                    but.data('param', paramJson)
+                                    return
+                                }
+                                if (but.hasClass('btn-itemEdit')){
+                                    var paramJson = {}
+                                    paramJson['itemId'] = data.id
+                                    but.data('param', paramJson)
+                                    return
+                                }
+                            })
+                        },
+                        drawCallback:function (){
+                            // draw完成后回调
+                            resizeContentHeight()
+                            bindConfirmedCallback({
+                                selector: '.itemListPanels .confirmed',
+                                doneCallback: function (data) {
+                                    if(data.s){
+                                        //castSuccessMsg(data)
+                                        tablesInNavTab.showOrReloadTable('itemListNav')
+                                    }else{
+                                        castErrorMsg(data)
+                                    }
+                                }
+                            })
+
+                            function format ( d ) {
+                                if (ObjectCommonUtil.isNotUndefined(d.skus) && d.skus.length > 0) {
+                                    var subTable = '<table cellpadding="5" cellspacing="0" border="0" style="width: 100%;"><thead><tr><th class="col-lg-4">SKU标题</th><th class="col-lg-4">SKUID</th><th class="col-lg-2">一口价</th><th class="col-lg-1">销量</th><th class="col-lg-1">库存</th></tr></thead>'
+                                    for (var index in d.skus){
+                                        var sku = d.skus[index]
+                                        subTable += '<tr><td>'+  '<img class="float-left item-img" name="itemImg" src="'+ImgUtil.getImgUrl(d.img, 1)+'"/>'  +   sku.title+'</td><td>'+sku.id+'</td><td style="color:red">'+ '￥'+sku.price+'元</td><td>'+StringUtil.simplePrint(sku.sales)+'</td><td>'+StringUtil.simplePrint(sku.inventory)+'</td></tr>'
+                                    }
+                                    subTable += '</table>'
+                                    return subTable
+                                }else {
+                                    return '没有设置sku'
+                                }
+                            }
+
+                            if ($('#'+tablePanelId + " table:first tbody").data("hasBindDetailControlClick") == undefined){
+                                $('#'+tablePanelId + " table:first tbody").on('click', 'div.details-control', function () {
+                                    var tr = $(this).closest('tr');
+                                    var row = $('#'+tablePanelId + " table:first").DataTable().row( tr );
+
+                                    log(row)
+                                    log(row.data())
+                                    if ( row.child.isShown() ) {
+                                        // This row is already open - close it
+                                        row.child.hide();
+                                        tr.removeClass('shown');
+                                    }
+                                    else {
+                                        // Open this row
+                                        row.child( format(row.data()) ).show();
+                                        tr.addClass('shown');
+                                    }
+
+                                    resizeContentHeight()
+
+                                    return false
+                                } );
+                                $('#'+tablePanelId + " table:first tbody").data("hasBindDetailControlClick", true)
+                            }
+                        }
+                    } )
+                    activeTab.data('hasLoad', true)
+                }else if (activeTab.data('hasLoad') == false) {
+                    $('#'+tablePanelId + " table:first").DataTable().clear().ajax.reload()
+                }
+            }
+        })
+
+        $('#itemListForm .datetime').datetimepicker({
+            format: "yyyy-mm-dd hh:ii:ss",
+            todayBtn: "linked",
+            clearBtn: true,
+            language: "zh-CN",
+            keyboardNavigation: false,
+            forceParse: false,
+            autoclose:true,
+            todayHighlight: true
+        })
+
+        CateUtils.load()
+        $("#itemListForm #query").click()
+    })
+
+</script>

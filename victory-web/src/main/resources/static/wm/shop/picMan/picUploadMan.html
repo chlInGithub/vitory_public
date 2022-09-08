@@ -1,0 +1,46 @@
+<div class="loadedContent" id="picUploadMan">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b>图片上传</b></span>
+        </div>
+        <div class="panel-body">
+            <form class="form-default" id="picUploadManForm" enctype="multipart/form-data" data-am-validator>
+                <div class="small">
+                    <div class="panel panel-default panel-item">
+                        <div class="panel-body am-text-center">
+                            <div class="row">
+                                <div class="col-lg-1 col-md-3 col-sm-3">
+                                    <div class="input-group input-group-sm" style="height: 60px;">
+                                        <span class="input-group-addon">图片</span>
+                                        <span class="input-group-addon"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-11 col-md-11 col-sm-11">
+                                    <div class="input-group input-group-sm float-left uploaded-imgs">
+                                        <input type="hidden" name='imgs' class="form-control">
+                                    </div>
+                                    <div class="input-group input-group-sm am-form-file">
+                                        <div>
+                                            <button type="button" class="am-btn am-btn-secondary am-btn-sm item-img-upload">
+                                                <i class="am-icon-plus am-icon-lg"></i>
+                                            </button>
+                                            <input id="fileupload" type="file" name="imgFile" multiple  class="item-img-upload">
+                                            <span style="color: red;">要求图片大小 不大于 200KB</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(function () {
+        fileUploadUtils.bind({selecter:'#picUploadMan #fileupload',url:'/p/wm/img/upload',limitMax:100, size: 1024*200})
+    })
+</script>

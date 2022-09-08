@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.order.PayOrderMapper">
+  <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.order.PayOrderDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="type" jdbcType="TINYINT" property="type" />
+    <result column="desc" jdbcType="VARCHAR" property="desc" />
+    <result column="pay_fee" jdbcType="DECIMAL" property="payFee" />
+    <result column="pay_no" jdbcType="VARCHAR" property="payNo" />
+    <result column="context" jdbcType="VARCHAR" property="context" />
+    <result column="status" jdbcType="BIT" property="status" />
+    <result column="check" jdbcType="BIT" property="check" />
+    <result column="timeout" jdbcType="TIMESTAMP" property="timeout" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_time, modified_time, shop_id, operator_id, order_id, `type`, `desc`, pay_fee,
+    pay_no, context, status, `check`, timeout
+  </sql>
+  <sql id="conditionWithOrderAndPage">
+    <include refid="condition"/>
+    <include refid="order"/>
+    <include refid="page"/>
+  </sql>
+  <sql id="condition">
+    <where>
+      <if test="id != null"> id = #{id} </if>
+      <if test="shopId != null">
+        and shop_id = #{shopId,jdbcType=BIGINT}
+      </if>
+      <if test="orderId != null">
+        and order_id = #{orderId,jdbcType=BIGINT}
+      </if>
+      <if test="status != null">
+        and status = #{status,jdbcType=BIT}
+      </if>
+    </where>
+  </sql>
+  <sql id="delCondition">
+    <where>
+      <if test="id != null"> id = #{id} </if>
+        and shop_id = #{shopId,jdbcType=BIGINT}
+        and order_id = #{orderId,jdbcType=BIGINT}
+      <if test="status != null">
+        and status = #{status,jdbcType=BIT}
+      </if>
+    </where>
+  </sql>
+  <sql id="order">
+    <if test="orderColumn != null">
+      order by #{orderColumn} <if test="desc"> desc </if>
+    </if>
+    <if test="orderColumn = null and orderedColumns != null and orderedColumns.size > 0">
+      <trim suffixOverrides=",">
+        <foreach collection="orderedColumns" index="index" item="orderedColumn" open=" order by " separator="," close="">
+          #{item.orderColumn} <if test="item.desc"> desc </if>
+        </foreach>
+      </trim>
+    </if>
+  </sql>
+  <sql id="page">
+    <if test="rowStart != null and pageSize != null">
+      limit #{rowStart},#{pageSize}
+    </if>
+  </sql>
+
+  <select id="count" parameterType="com.chl.victory.dao.query.order.PayOrderQuery" resultType="java.lang.Integer">
+    select
+    count(1)
+    from pay_order
+    <include refid="condition" />
+  </select>
+
+  <select id="select" parameterType="com.chl.victory.dao.query.order.PayOrderQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from pay_order
+    <include refid="conditionWithOrderAndPage" />
+  </select>
+  <select id="selectOne" parameterType="com.chl.victory.dao.query.order.PayOrderQuery" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from pay_order
+    <include refid="condition" />
+  </select>
+
+  <delete id="delete" parameterType="com.chl.victory.dao.query.order.PayOrderQuery">
+    delete from pay_order
+    <include refid="delCondition" />
+  </delete>
+
+  <insert id="insert" parameterType="com.chl.victory.dao.model.order.PayOrderDO">
+    insert into pay_order (id, created_time, modified_time,
+      shop_id, operator_id, order_id, 
+      `type`, `desc`, pay_fee,
+       context, status,
+      `check`, timeout)
+    values (#{id,jdbcType=BIGINT}, now(), now(),
+      #{shopId,jdbcType=BIGINT}, #{operatorId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, 
+      #{type,jdbcType=TINYINT}, #{desc,jdbcType=VARCHAR}, #{payFee,jdbcType=DECIMAL}, 
+       #{context,jdbcType=VARCHAR}, #{status,jdbcType=BIT},
+      #{check,jdbcType=BIT}, #{timeout, jdbcType=TIMESTAMP})
+  </insert>
+  <update id="update" parameterType="com.chl.victory.dao.model.order.PayOrderDO">
+    update pay_order
+    <set>
+        modified_time = now(),
+      <if test="shopId != null">
+        shop_id = #{shopId,jdbcType=BIGINT},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="type != null">
+        `type` = #{type,jdbcType=TINYINT},
+      </if>
+      <if test="desc != null">
+        `desc` = #{desc,jdbcType=VARCHAR},
+      </if>
+      <if test="payFee != null">
+        pay_fee = #{payFee,jdbcType=DECIMAL},
+      </if>
+      <if test="payNo != null">
+        pay_no = #{payNo,jdbcType=VARCHAR},
+      </if>
+      <if test="context != null">
+        context = #{context,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=BIT},
+      </if>
+      <if test="check != null">
+        `check` = #{check,jdbcType=BIT},
+      </if>
+      <if test="timeout != null">
+        timeout = #{timeout,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT} and status = 0
+  </update>
+</mapper>

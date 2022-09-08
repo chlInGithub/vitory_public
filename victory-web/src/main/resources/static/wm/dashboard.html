@@ -1,0 +1,395 @@
+<!-- 为避免影响数据库，数据缓存1分钟
+销售总额 本月销售额
+订单总量 本月订单量 客单价 已付款订单量 未付款订单量
+用户总量 本月下单用户量 本月新增用户量
+商品总量 在售商品量 本月下单商品总量
+热销商品top5
+最新订单top5
+最新用户top5
+-->
+<div id="app-dashboard" style="background-color: #f1f2f7;/*display: flex;*/">
+    <br/>
+
+    <div class="row admin-dashboard-panel-parent">
+        <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="am-alert am-alert-warning" data-am-alert style="text-align: center;">
+                页面数据，每一分钟刷新一次。
+            </div>
+        </div>
+    </div>
+    <!--销售额-->
+    <div class="row admin-dashboard-panel-parent">
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <div class="am-panel am-panel-primary">
+                <div class="am-panel-hd">销售总额</div>
+                <div class="am-panel-bd" v-if="saleSummary.total >= 0">
+                    ￥{{saleSummary.total}}元
+                </div>
+                <div class="am-panel-bd" v-else>
+                    暂无数据
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <div class="am-panel am-panel-primary">
+                <div class="am-panel-hd">本月销售额</div>
+                <div class="am-panel-bd" v-if="saleSummary.currentMonthTotal >= 0">
+                    ￥{{saleSummary.currentMonthTotal}}元
+                </div>
+                <div class="am-panel-bd" v-else>
+                    暂无数据
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--订单-->
+    <div class="row admin-dashboard-panel-parent">
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <div class="am-panel am-panel-success">
+                <div class="am-panel-hd">订单总量</div>
+                <div class="am-panel-bd" v-if="orderSummary.total >= 0">
+                    {{orderSummary.total}}单
+                </div>
+                <div class="am-panel-bd" v-else>
+                    暂无数据
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <div class="am-panel am-panel-success">
+                <div class="am-panel-hd">客单价</div>
+                <div class="am-panel-bd" v-if="orderSummary.avgOrderFee >= 0">
+                    ￥{{orderSummary.avgOrderFee}}元
+                </div>
+                <div class="am-panel-bd" v-else>
+                    暂无数据
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <div class="am-panel am-panel-success">
+                <div class="am-panel-hd">本月订单量</div>
+                <div class="am-panel-bd" v-if="orderSummary.currentMonthTotal >= 0">
+                    {{orderSummary.currentMonthTotal}}单
+                </div>
+                <div class="am-panel-bd" v-else>
+                    暂无数据
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <div class="am-panel am-panel-success">
+                <div class="am-panel-hd">本月客单价</div>
+                <div class="am-panel-bd" v-if="orderSummary.currentMonthAvgOrderFee >= 0">
+                    ￥{{orderSummary.currentMonthAvgOrderFee}}元
+                </div>
+                <div class="am-panel-bd" v-else>
+                    暂无数据
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <div class="am-panel am-panel-success">
+                <div class="am-panel-hd">本月已付款订单量</div>
+                <div class="am-panel-bd" v-if="orderSummary.currentMonthPayedOrders >= 0">
+                    {{orderSummary.currentMonthPayedOrders}}单
+                </div>
+                <div class="am-panel-bd" v-else>
+                    暂无数据
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <div class="am-panel am-panel-success">
+                <div class="am-panel-hd">本月未付款订单量</div>
+                <div class="am-panel-bd" v-if="orderSummary.currentMonthNotPayedOrders >= 0">
+                    {{orderSummary.currentMonthNotPayedOrders}}单
+                </div>
+                <div class="am-panel-bd" v-else>
+                    暂无数据
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--用户-->
+    <div class="row admin-dashboard-panel-parent">
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <div class="am-panel am-panel-primary">
+                <div class="am-panel-hd">用户总量</div>
+                <div class="am-panel-bd" v-if="memSummary.total >= 0">
+                    {{memSummary.total}}位
+                </div>
+                <div class="am-panel-bd" v-else>
+                    暂无数据
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <div class="am-panel am-panel-primary">
+                <div class="am-panel-hd">本月下单用户量</div>
+                <div class="am-panel-bd" v-if="memSummary.currentMonthShoppingTotal >= 0">
+                    {{memSummary.currentMonthShoppingTotal}}位
+                </div>
+                <div class="am-panel-bd" v-else>
+                    暂无数据
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <div class="am-panel am-panel-primary">
+                <div class="am-panel-hd">本月新增用户量</div>
+                <div class="am-panel-bd" v-if="memSummary.currentMonthNewTotal >= 0">
+                    {{memSummary.currentMonthNewTotal}}位
+                </div>
+                <div class="am-panel-bd" v-else>
+                    暂无数据
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--商品-->
+    <div class="row admin-dashboard-panel-parent">
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <div class="am-panel am-panel-success">
+                <div class="am-panel-hd">商品总量</div>
+                <div class="am-panel-bd" v-if="itemSummary.total >= 0">
+                    {{itemSummary.total}}个
+                </div>
+                <div class="am-panel-bd" v-else>
+                    暂无数据
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <div class="am-panel am-panel-success">
+                <div class="am-panel-hd">在售商品量</div>
+                <div class="am-panel-bd" v-if="itemSummary.onSaleTotal >= 0">
+                    {{itemSummary.onSaleTotal}}个
+                </div>
+                <div class="am-panel-bd" v-else>
+                    暂无数据
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-2 col-sm-2">
+            <div class="am-panel am-panel-success">
+                <div class="am-panel-hd">本月下单商品总量</div>
+                <div class="am-panel-bd" v-if="itemSummary.currentMonthSoldTotal >= 0">
+                    {{itemSummary.currentMonthSoldTotal}}件
+                </div>
+                <div class="am-panel-bd" v-else>
+                    暂无数据
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row admin-dashboard-panel-parent">
+        <!--最新用户-->
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <div class="am-panel am-panel-primary">
+                <div class="am-panel-hd">最新用户top5</div>
+                <div class="am-panel-bd">
+                    <table width="100%" class="am-table am-table-bordered am-table-radius am-table-striped am-table-hover">
+                        <thead>
+                        <tr class="am-success">
+                            <th class="table-title">手机号</th>
+                            <th class="table-author am-hide-sm-only">昵称</th>
+                        </tr>
+                        </thead>
+                        <tbody v-if="newMems.length > 0">
+                        <tr v-for="item in newMems">
+                            <td>{{item.mobile}}</td>
+                            <td>{{item.nick}}</td>
+                        </tr>
+                        </tbody>
+                        <tbody v-else>
+                        <td colspan="3" style="text-align:center;">暂无数据</td>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--最新订单-->
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <div class="am-panel am-panel-success">
+                <div class="am-panel-hd">最新订单top5</div>
+                <div class="am-panel-bd">
+                    <table width="100%" class="am-table am-table-bordered am-table-radius am-table-striped am-table-hover">
+                        <thead>
+                        <tr class="am-success">
+                            <th class="table-title">订单编号</th>
+                            <th class="table-author am-hide-sm-only">购买人</th>
+                            <th class="table-date am-hide-sm-only">总价</th>
+                            <th class="table-date am-hide-sm-only">状态</th>
+                        </tr>
+                        </thead>
+                        <tbody v-if="orders && orders.length > 0">
+                        <tr v-for="item in orders">
+                            <td>{{item.id}}</td>
+                            <td>{{item.nick}}|{{item.mobile}}</td>
+                            <td style="text-align: right">￥{{item.realFee}}元</td>
+                            <td>{{item.status}}</td>
+                        </tr>
+                        </tbody>
+                        <tbody v-else>
+                        <td colspan="3" style="text-align:center;">暂无数据</td>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row admin-dashboard-panel-parent">
+        <!--热销商品-->
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <div class="am-panel am-panel-primary">
+                <div class="am-panel-hd">热销商品top5</div>
+                <div class="am-panel-bd">
+                    <table width="100%" class="am-table am-table-bordered am-table-radius am-table-striped am-table-hover">
+                        <thead>
+                        <tr class="am-success">
+                            <th class="table-title">商品名称</th>
+                            <th class="table-author am-hide-sm-only">销量</th>
+                            <th class="table-date am-hide-sm-only">价格</th>
+                        </tr>
+                        </thead>
+                        <tbody v-if="hotItems.length > 0">
+                        <tr v-for="item in hotItems">
+                            <td>{{item.id}}|{{item.title}}</td>
+                            <td style="text-align: right">{{item.sales}}件</td>
+                            <td style="text-align: right">￥{{item.price}}元</td>
+                        </tr>
+                        </tbody>
+                        <tbody v-else>
+                        <td colspan="3" style="text-align:center;">暂无数据</td>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<script>
+// 每个子页面 单独定义一个独立的vue对象
+var appDashboard = new mixined_vue({
+    el: '#app-dashboard',
+    data: {
+        saleSummary: {},
+        orderSummary: {},
+        memSummary: {},
+        itemSummary: {},
+        hotItems: [],
+        orders: [],
+        newMems: []
+    },
+    methods: {
+    }
+})
+
+var resizeHeight = function () {
+    /*var max = Math.max($("#app-dashboard").height(), window.innerHeight - $("header").height() - $("footer").height())
+    $("#app-dashboard").css("height", max)*/
+    $("#app-dashboard").css("height",  window.innerHeight - $("header").height() - $("footer").height())
+};
+$(function () {
+    var refreshData = function () {
+        AjaxUtil.doAjax(
+            {
+                url:"/p/wm/dashboard/saleOrderSummary",
+                doneCallback:function(result){
+                    if (result.s) {
+                        if (!ObjectCommonUtil.isUndefined(result.d)) {
+                            var data = JsonUtil.toJson(result.d)
+                            appDashboard.saleSummary = data.saleSummary
+                            appDashboard.orderSummary = data.orderSummary
+                        }
+                    }else {
+                        castErrorMsg(result.m)
+                    }
+                },
+                mask:false
+            }
+        )
+        AjaxUtil.doAjax(
+            {
+                url:"/p/wm/dashboard/memSummary",
+                doneCallback:function(result){
+                    if (result.s) {
+                        if (!ObjectCommonUtil.isUndefined(result.d)) {
+                            appDashboard.memSummary = JsonUtil.toJson(result.d)
+                        }
+                    }else {
+                        castErrorMsg(result.m)
+                    }
+                },
+                mask:false
+            }
+        )
+        AjaxUtil.doAjax(
+            {
+                url:"/p/wm/dashboard/itemSummary",
+                doneCallback:function(result){
+                    if (result.s) {
+                        if (!ObjectCommonUtil.isUndefined(result.d)) {
+                            appDashboard.itemSummary = JsonUtil.toJson(result.d)
+                        }
+                    }else {
+                        castErrorMsg(result.m)
+                    }
+                },
+                mask:false
+            }
+        )
+        AjaxUtil.doAjax(
+            {
+                url:"/p/wm/dashboard/hotItems",
+                doneCallback:function(result){
+                    if (result.s) {
+                        if (!ObjectCommonUtil.isUndefined(result.d)) {
+                            appDashboard.hotItems = JsonUtil.toJson(result.d)
+                        }
+                    }else {
+                        castErrorMsg(result.m)
+                    }
+                },
+                mask:false
+            }
+        )
+        AjaxUtil.doAjax(
+            {
+                url:"/p/wm/dashboard/orders",
+                doneCallback:function(result){
+                    if (result.s) {
+                        if (!ObjectCommonUtil.isUndefined(result.d)) {
+                            appDashboard.orders = JsonUtil.toJson(result.d)
+                        }
+                    }else {
+                        castErrorMsg(result.m)
+                    }
+                },
+                mask:false
+            }
+        )
+        AjaxUtil.doAjax(
+            {
+                url:"/p/wm/dashboard/newMems",
+                doneCallback:function(result){
+                    if (result.s) {
+                        if (!ObjectCommonUtil.isUndefined(result.d)) {
+                            appDashboard.newMems = JsonUtil.toJson(result.d);
+                        }
+                    }else {
+                        castErrorMsg(result.m)
+                    }
+                },
+                mask:false
+            }
+        )
+    };
+
+    refreshData()
+
+    setInterval(refreshData, 1000 * 60)
+})
+</script>

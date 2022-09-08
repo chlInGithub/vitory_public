@@ -1,0 +1,99 @@
+
+            var $pre = $( "pre" );
+            var $picker = $( ".picker" );
+            $.getJSON( "static/json/area.json" ).done(function ( res ) {
+                // 常规用法
+                $( "#demo-1" ).iPicker({
+                    data: res,
+                    onSelect: function ( v, t, set ) {
+                        var text = "[ " + t + " ]";
+                        var value = "[ " + v + " ]";
+                        $pre.eq( 0 ).html( text + "<br><br>" + value );
+                    }
+                });
+                // 设置层级
+                $( "#demo-2-1" ).iPicker({
+                    data: res,
+                    level: 1,
+                    onSelect: function ( v, t, set ) {
+                        var text = "[ " + t + " ]";
+                        var value = "[ " + v + " ]";
+                        $pre.eq( 1 ).html( text + "<br><br>" + value );
+                    }
+                });
+                $( "#demo-2-2" ).iPicker({
+                    data: res,
+                    level: 2,
+                    onSelect: function ( v, t, set ) {
+                        var text = "[ " + t + " ]";
+                        var value = "[ " + v + " ]";
+                        $pre.eq( 2 ).html( text + "<br><br>" + value );
+                    }
+                });
+                $( "#demo-2-3" ).iPicker({
+                    data: res,
+                    level: 3,
+                    onSelect: function ( v, t, set ) {
+                        var text = "[ " + t + " ]";
+                        var value = "[ " + v + " ]";
+                        $pre.eq( 3 ).html( text + "<br><br>" + value );
+                    }
+                });
+                // 设置宽度
+                $( "#demo-3" ).iPicker({
+                    data: res,
+                    width: 120,
+                    onSelect: function ( v, t, set ) {
+                        var text = "[ " + t + " ]";
+                        var value = "[ " + v + " ]";
+                        $pre.eq( 4 ).html( text + "<br><br>" + value );
+                    }
+                });
+                // 默认值
+                $( "#demo-4" ).iPicker({
+                    data: res,
+                    defaultValue: [ "230000", "230800", "230805" ],
+                    onSelect: function ( v, t, set ) {
+                        var text = "[ " + t + " ]";
+                        var value = "[ " + v + " ]";
+                        $pre.eq( 5 ).html( text + "<br><br>" + value );
+                    }
+                });
+                // 禁用
+                $( "#demo-5" ).iPicker({
+                    data: res,
+                    disabled: [ 1, 2 ],
+                    onSelect: function ( v, t, set ) {
+                        var text = "[ " + t + " ]";
+                        var value = "[ " + v + " ]";
+                        $pre.eq( 6 ).html( text + "<br><br>" + value );
+                    }
+                });
+                // placeholder
+                $( "#demo-6" ).iPicker({
+                    data: res,
+                    placeholder: [ "选择省份", "选择市", "选择区" ],
+                    onSelect: function ( v, t, set ) {
+                        var text = "[ " + t + " ]";
+                        var value = "[ " + v + " ]";
+                        $pre.eq( 7 ).html( text + "<br><br>" + value );
+                    }
+                });
+                // 高度
+                $( "#demo-7" ).iPicker({
+                    data: res,
+                    maxHeight: 180,
+                    onSelect: function ( v, t, set ) {
+                        var text = "[ " + t + " ]";
+                        var value = "[ " + v + " ]";
+                        $pre.eq( 8 ).html( text + "<br><br>" + value );
+                    }
+                });
+            })
+            $( "button.reset" ).each(function ( i ) {
+                $( this ).click(function () {
+                    $( this ).parents( ".picker" ).next().find( "pre" ).empty();
+                    $picker.eq( i ).children( ".demo" ).iPicker( "reset" );
+                })
+            })
+        

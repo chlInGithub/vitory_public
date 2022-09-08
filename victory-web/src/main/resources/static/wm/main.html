@@ -1,0 +1,326 @@
+<!Doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>博予微商城-管理系统</title>
+    <meta name="description" content="博予微商城-管理系统">
+    <meta name="keywords" content="index">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <!--用于浏览器收藏夹图标，屏蔽请求配置如下-->
+    <link rel="icon" href="data:;base64,=">
+    <link rel="alternate icon" type="image/png" href="r/i/favicon.png">
+    <meta name="apple-mobile-web-app-title" content="Amaze UI"/>
+    <!--第三方css-->
+    <link rel="stylesheet" href="r/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="r/datatables/datatables.min.css">
+    <link rel="stylesheet" href="r/css/amazeui.min.css"/>
+    <link rel="stylesheet" href="r/fontawesome/css/all.min.css"/>
+    <link rel="stylesheet" href="r/bootstrap-3.3.7-dist/css/bootstrap.min.css"/>
+    <!--个性化css-->
+    <link rel="stylesheet" href="r/css/admin.css">
+
+</head>
+<body class="am-sans-serif">
+<div id='app'>
+
+    <!--[if lte IE 9]><p class="browsehappy">升级你的浏览器吧！ <a href="http://se.360.cn/" target="_blank">升级浏览器</a>以获得更好的体验！
+</p>
+    <![endif]-->
+    <header class="am-topbar admin-header">
+        <div class="am-topbar-brand"
+                style="width: 20%;
+                border-radius: 1rem;
+                text-align: center;
+                margin-left: 1rem;
+                margin-top: .1rem;
+                background: linear-gradient(to right,#FF7300,#FF4B00);">
+            <img style="height: 50px;" src="r/i/logo-white.png"><span style="color: white;">商城管理系统</span></div>
+        <div class="topbar am-collapse am-topbar-collapse" id="topbar-collapse" style="width: 79%;padding: 0 10px;">
+            <div class="top-menu">
+                <ul class="nav nav-pills" role="tablist">
+                    <li role="presentation"><a href="#home" id="main-tab-home" class="my-top-tab" aria-controls="home"
+                                               role="tab" data-toggle="tab" data-loadtype="loadUrl"
+                                               data-url="dashboard.html">首页</a></li>
+                </ul>
+            </div>
+            <ul class="am-nav am-nav-pills am-topbar-nav admin-header-list wait-vue" style="display:none;">
+                <li class="topbar-common">
+                    <button id="valid-btn" class="am-btn am-btn-danger am-btn-xs am-radius">{{m_get_shop()}}</button>
+                </li>
+                <li class="topbar-common">
+                    <button id="service-btn" class="am-btn am-btn-primary am-btn-xs am-radius am-icon-phone">&nbsp;客服</button>
+                </li>
+                <li class="am-dropdown tongzhi" data-am-dropdown>
+                    <button class="am-btn am-btn-warning am-dropdown-toggle am-btn-xs am-radius am-icon-bell-o" data-am-dropdown-toggle>
+                        &nbsp;消息管理
+                        <span class="am-icon-caret-down"></span>
+                        <span class="am-badge am-badge-danger am-round" v-if="infos.length > 0">{{m_get_not_see_info_count()}}</span>
+                    </button>
+                    <ul class="am-dropdown-content" style="font-size: .5rem">
+                        <li class="am-dropdown-header">仅最近20条消息</li>
+                        <li v-if="infos.length > 0" v-for="item in infos">
+                            <div class="col-lg-12 col-md-12 col-sm-12" style="border-bottom: 1px solid gray;" @click.stop="m_show_info(item)">
+                                {{item.title}}<span v-if="item.see == 0" style="color:red;">(未读)</span>
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <li class="am-dropdown tongzhi" data-am-dropdown>
+                    <button class="am-btn am-btn-primary am-dropdown-toggle am-btn-xs am-radius am-icon-user-"
+                            data-am-dropdown-toggle>&nbsp;{{user.mobile}}&nbsp;<span class="am-icon-caret-down"></span>
+                    </button>
+                    <ul class="am-dropdown-content" style="font-size: .5rem">
+                        <li class="am-dropdown-header" style="padding-right: 2px;">用户&nbsp;&nbsp;{{user.id}}</li>
+                        <li><a id="logout" href="javascript:void(0)">退出</a></li>
+                        <li id="show_merchant_qrcode" style="padding: 6px 20px;" @click.stop="m_show_merchant_qrcode()">获取店铺人员二维码</li>
+                        <li id="merchant_qrcode" style="display: none; padding: 6px 20px;">
+                            <canvas id="canvas"></canvas>
+                            <div style="color: red; font-size: .8rem;">保存好，避免损失。</div>
+                        </li>
+                    </ul>
+                </li>
+                <!--<li data-toggle="tooltip" data-placement="left" title="全屏"><a href="javascript:void(0);"
+                                                                              id="admin-fullscreen"><span
+                        class="am-icon-arrows-alt"></span></a></li>-->
+            </ul>
+        </div>
+    </header>
+
+    <div class="am-cf admin-main">
+        <!-- Tab panes -->
+        <div class="tab-content main-panel">
+            <div role="tabpanel" class="tab-pane" id="home"></div>
+        </div>
+    </div>
+    <footer class="foods">
+        <ul>
+            版权所有 @ 2020 博予科技有限公司
+        </ul>
+        <dl>
+            <a href="#top" title="回到顶部" class="am-icon-btn am-icon-arrow-up"></a>
+        </dl>
+    </footer>
+
+    <!--可复用的菜单和tabs模板代码块-->
+    <div class="menu-content-template" style="display: none">
+        <div class="nav-navicon admin-main admin-sidebar">
+            <div class="sideMenu">
+
+            </div>
+        </div>
+        <div class="daohang am-tabs" data-am-tabs="{noSwipe: 1}" id="doc-tab-demo-1">
+            <ul class="daohang-tabs-menu tabs-nav am-tabs-nav am-nav am-nav-tabs">
+            </ul>
+            <div class="daohang-panels am-tabs-bd">
+            </div>
+        </div>
+    </div>
+
+    <!--alert 提示-->
+    <div class="am-modal am-modal-alert" tabindex="-1" id="alert-menus-error">
+        <div class="am-modal-dialog">
+            <div class="am-modal-bd">
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn">确定</span>
+            </div>
+        </div>
+    </div>
+    <!--消息 提示-->
+    <div class="am-modal am-modal-alert" tabindex="-1" id="alert-info">
+        <div class="am-modal-dialog">
+            <div class="am-modal-hd">
+            </div>
+            <div class="am-modal-bd">
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn">确定</span>
+            </div>
+        </div>
+    </div>
+    <!--请求返回前的蒙版-->
+    <div class="am-modal am-modal-loading am-modal-no-btn" tabindex="-1" id="mask-before-response">
+        <div class="am-modal-dialog">
+            <div class="am-modal-hd">努力处理请求中……</div>
+            <div class="am-modal-bd">
+                <span class="am-icon-spinner am-icon-spin"></span>
+            </div>
+        </div>
+    </div>
+    <div class="am-modal am-modal-confirm" tabindex="-1" id="confirmModel">
+        <div class="am-modal-dialog">
+            <div class="am-modal-hd">
+                <div id="msg"></div>
+            </div>
+            <div class="am-modal-bd">
+                <div><textarea id="param" style="width: 100%" disabled></textarea></div>
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+    </div>
+    <!--信息弹层-->
+    <div class=" am-modal am-modal-alert" tabindex="-1" id="err-msg-alert">
+        <div class="am-modal-dialog">
+            <div class="am-modal-bd">
+            </div>
+        </div>
+    </div>
+    <!--客服弹层-->
+    <div class="am-modal am-modal-alert" tabindex="-1" id="service-popup">
+        <div class="am-modal-dialog">
+            <div class="am-modal-bd" style="    text-align: left;display: inline-block;">
+                <div>
+                    客服电话: 123 4567 8907/ 123 4567 4321
+                </div>
+                <div>
+                    客服微信: 123 4567 8907
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+    <script src="r/js/jquery-3.3.1.min.js"></script>
+
+    <script src="r/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="r/datatables/datatables.min.js"></script>
+    <script src="r/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="r/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+    <script src="r/js/amazeui.min.js"></script>
+    <script src="r/jqueryFileUpload/js/vendor/jquery.ui.widget.js"></script>
+    <script src="r/jqueryFileUpload/js/jquery.fileupload.js"></script>
+
+    <script src="r/ueditor/ueditor.config.js"></script>
+    <script src="r/ueditor/ueditor.all.js"></script>
+
+    <script src="r/js/main.js"></script>
+
+    <script src="r/js/vue.js"></script>
+    <script src="r/js/mixin_vue.js"></script>
+
+    <script src="r/js/qrcode.min.js"></script>
+
+    <script>
+        /*vue code*/
+        var mixined_vue = Vue.extend({
+            mixins: [common_mixin]
+        })
+        var app = new mixined_vue({
+            el: '#app',
+            data: {
+                infos : []
+            },
+            methods: {
+                m_show_merchant_qrcode: function(){
+                    $("#merchant_qrcode").show()
+                    var origin = this.user.shopId + "_" + this.user.id
+                    QRCode.toCanvas(document.getElementById('canvas'), origin, function (error) {
+                        $("#show_merchant_qrcode").hide()
+                    })
+                },
+                m_get_not_see_info_count: function () {
+                    var notSeeCount = 0
+                    this.infos.forEach(function (value) {
+                        if (value.see == 0) {
+                            notSeeCount++
+                        }
+                    })
+                    return notSeeCount
+                },
+                m_show_info: function (info) {
+                    showInfo(info)
+                    hasSeeInfo(info)
+                },
+                m_get_shop: function () {
+                    return this.user.shopName + "(失效时间为" + this.user.invalidTime +")"
+                }
+            }
+        })
+
+        var hasSeeInfo = function(info){
+            AjaxUtil.doAjax({
+                url: '/p/wm/info/see',
+                data: {id: info.id},
+                config: {
+                    method: 'POST'
+                },
+                mask: false,
+                doneCallback: function (d) {
+                }
+            })
+            info.see = 1
+        }
+
+        var refreshInfo = function(){
+            AjaxUtil.doAjax({
+                url: '/p/wm/info/get',
+                mask: false,
+                doneCallback: function (d) {
+                    if (d.s) {
+                        if (ObjectCommonUtil.isNotUndefined(d.d)) {
+                            app.infos = JsonUtil.toJson(d.d);
+                        }
+                    } else {
+                        castErrorMsg(d.m)
+                    }
+                }
+            })
+        }
+
+        $(function () {
+            doReady({
+                    'menuUrl': "/p/wm/menus",
+                    'submitUrl': '/p/wm/submits'
+                }
+            )
+
+            var getUser = function(){
+                AjaxUtil.doAjax({
+                    url: '/p/wm/shop/loginUser',
+                    doneCallback: function (d) {
+                        if (d.s) {
+                            app.user = JsonUtil.toJson(d.d)
+                            $(".wait-vue").show()
+                        } else {
+                            castErrorMsg(d.m)
+                        }
+                    }
+                })
+            }
+            getUser()
+
+            refreshInfo()
+
+            $('#logout').on('click', function () {
+                AjaxUtil.doAjax({
+                    url: '/p/wm/logout',
+                    doneCallback: function (d) {
+                        if (d.s) {
+                            window.location.href = "/wm/login.html"
+                        } else {
+                            castErrorMsg(d)
+                        }
+                    }
+                })
+            });
+            $('#service-btn').on('click', function () {
+                $("#service-popup").modal('toggle');
+            })
+            $('#help-btn').on('click', function () {
+                $("#service-popup").modal('toggle');
+            })
+        });
+
+        setInterval(refreshInfo, 1000*60)
+        setInterval(resizeContentHeight, 1000)
+    </script>
+
+</div>
+</body>
+</html>

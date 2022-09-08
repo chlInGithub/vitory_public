@@ -1,0 +1,94 @@
+<div class="loadedContent" id="smsRecharge">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b>短信充值</b></span>
+        </div>
+        <div class="panel-body">
+
+            <div class="alert currentCanUsedSmsNum" role="alert">可用短信数量<b class="am-text-lg" style="margin: 0 10px;"></b>条</div>
+
+            <form class="form-default" id="smsRechargeForm" data-am-validator>
+                <div class="small">
+                    <div class="panel panel-default panel-smsSets">
+                        <div class="panel-heading">
+                            短信套餐
+                        </div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row" align="center">
+                    <button id="save" type="button" class="btn btn-primary btn-sm am-animation-fade confirmed" data-msg="充值确认" data-optid="charge">
+                        <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+                        充值
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    var queryCurrentCanUsedSmsNum = function () {
+        AjaxUtil.doAjax({
+            url:getSubmitUrl('smsRecharge','query'),
+            doneCallback:function (data) {
+                if (data.s){
+                    $('#smsRecharge .currentCanUsedSmsNum b').html(data.d)
+                    $('#smsRecharge .currentCanUsedSmsNum').removeClass('alert-success alert-danger')
+                    if (data.d > 100) {
+                        $('#smsRecharge .currentCanUsedSmsNum').addClass('alert-success')
+                    }else {
+                        $('#smsRecharge .currentCanUsedSmsNum').addClass('alert-danger')
+                    }
+                }
+            }
+        })
+    }
+    var querySmsSet = function () {
+        AjaxUtil.doAjax({
+            url:getSubmitUrl('smsRecharge','sets'),
+            doneCallback:function (data) {
+                if (data.s){
+                    var div = $('#smsRecharge .panel-smsSets .panel-body .form-group')
+                    for (var index in data.d){
+                        var option = '<div class="col-lg-12 radio"><div class="alert alert-info" role="alert"><label><input type="radio" class="form-control my-radio my-radio-checked" name="smsSet" value="'+ data.d[index]['id']+'"><b class="am-text-lg" style="margin-right: 50px;">￥'+ data.d[index]['fee']+'</b><b class="am-text-lg">'+ data.d[index]['desc']+'</b></label></div></div>'
+                        div.append(option)
+                    }
+                    $('#smsRecharge .panel-smsSets .panel-body .form-group input[name="smsSet"]:first').click()
+                    resizeContentHeight()
+                }
+            }
+        })
+    }
+
+    bindConfirmedCallback({
+        selector: '#smsRecharge .confirmed',
+        doneCallback: function (data) {
+            log(data)
+            if (data.s){
+                alert('接下来该支付了')
+            }
+        },
+        genParam:function () {
+            if ($('#smsRecharge .panel-smsSets .panel-body .form-group input[name="smsSet"]:checked').length > 0){
+                var param = {id:$('#smsRecharge .panel-smsSets .panel-body .form-group input[name="smsSet"]:checked').val()}
+                return param
+            }
+        },
+        genParamDesc:function () {
+            var msg = []
+            $('#smsRecharge .panel-smsSets .panel-body .form-group input[name="smsSet"]:checked').nextAll('b').each(function () {
+                msg.push($(this).text())
+            })
+            return msg.join(',')
+        }
+    })
+
+    queryCurrentCanUsedSmsNum()
+    querySmsSet()
+
+</script>

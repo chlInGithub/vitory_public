@@ -1,0 +1,69 @@
+.list-col-50{
+    width:50%;display: inline-block;vertical-align: top;
+}
+
+.col-50-item {
+    padding: .5rem .3rem 0rem .3rem;
+    text-align: left;
+}
+
+.col-50-item .item-img img {
+    width: 100%;
+    border-radius: .4rem;
+}
+
+.col-50-item .item-outline .item-price-unit {
+    font-size: .5rem;
+}
+
+.col-50-item .item-outline .item-outline-title {
+    font-size: 0.6rem;
+    color: black;
+}
+.col-50-item .item-outline .item-outline-sale {
+    font-size: .4rem;
+    color: red;
+    display: inline-block;
+}
+.col-50-item .item-outline .item-outline-presell {
+    font-size: .4rem;
+    color: green;
+    display: inline-block;
+}
+.col-50-item .item-outline .item-exist-sku {
+    font-size: .4rem;
+    color: white;
+    display: inline-block;
+     margin: 1px;
+    background-color: darkgreen;
+}
+
+.col-50-item .item-outline-price {
+    display: inline-block;
+    font-size: 0.7rem;
+    color: red;
+}
+
+/*.col-50-item .item-outline .item-outline-buycar .icon {
+    font-size: .6rem;
+}
+.col-50-item .item-outline .item-outline-buycar {
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    background-color: forestgreen;
+    border-color: forestgreen;
+    width: 1.1rem;
+    height: .9rem;
+    display: inline-grid;
+}*/
+.col-50-item .item-outline .item-outline-sellout {
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 5px;
+    background-color: red;
+    border-color: red;
+    height: .9rem;
+    display: inline-grid;
+    font-size: .5rem;
+}

@@ -1,0 +1,88 @@
+<div class="loadedContent" id="shopOverview">
+    <div class="panel panel-primary panel-base-info">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b>店铺基本信息</b></span>
+        </div>
+        <div class="panel-body" v-if="shopInfo.id">
+            <ul data-am-widget="gallery" class="am-gallery am-avg-sm-3 am-avg-md-3 am-avg-lg-4 am-gallery-default" data-am-gallery="{ pureview: false }" >
+                <li>
+                    <div class="am-gallery-item" style="display: inline-block;">
+                        <a :href="m_get_img(shopInfo.imgs)" target="_blank"><img class="item-img" :src="m_get_img(shopInfo.imgs, 4)"/></a>
+                    </div>
+                </li>
+                <li>
+                    <div class="am-gallery-item" style="display: inline-block;">
+                        <h3 class="am-gallery-title name">店铺名称<b style="margin-left: 1rem;">{{shopInfo.name}}</b></h3>
+                        <h3 class="am-gallery-title mobile">联系电话<b style="margin-left: 1rem;">{{shopInfo.mobile}}</b></h3>
+                    </div>
+                </li>
+                <li>
+                    <div class="am-gallery-item" style="display: inline-block;">
+                        <h3 class="am-gallery-title mobile">店铺地址<b style="margin-left: 1rem;">{{shopInfo.address}}</b></h3>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="panel-footer">
+            可前往 <b>配置中心</b> 进行配置。
+        </div>
+    </div>
+    <div class="panel panel-primary panel-base-info">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b>小程序相关信息</b></span>
+        </div>
+        <div class="panel-body">
+            <div v-if="shopInfo.authedAppNum > 0">
+                已授权{{shopInfo.authedAppNum}}个小程序
+            </div>
+            <div v-else>
+                快去授权小程序吧
+            </div>
+            <ul v-if="shopInfo.weixin" data-am-widget="gallery" class="am-gallery am-avg-sm-3 am-avg-md-3 am-avg-lg-4 am-gallery-default" data-am-gallery="{ pureview: false }" >
+                <li>
+                    <div class="am-gallery-item" style="display: inline-block;">
+                            <h3 class="am-gallery-title name">小程序appId<b style="margin-left: 1rem;">{{shopInfo.weixin.appId}}</b></h3>
+                            <h3 class="am-gallery-title mobile">小程序secret<b style="margin-left: 1rem;">{{shopInfo.weixin.secret}}</b></h3>
+                    </div>
+                </li>
+                <li>
+                    <div class="am-gallery-item" style="display: inline-block;">
+                            <h3 class="am-gallery-title name">API密钥&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b style="margin-left: 1rem;">{{shopInfo.weixin.payApiKey}}</b></h3>
+                            <h3 class="am-gallery-title mobile">微信支付商户号<b style="margin-left: 1rem;">{{shopInfo.weixin.payMchId}}</b></h3>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="panel-footer">
+            可前往 <b>配置中心</b> 进行配置。
+        </div>
+    </div>
+</div>
+
+
+<script>
+    log("queryShopBaseInfo4Overview1")
+    var appShopOverview = new mixined_vue({
+        el: '#shopOverview',
+        data: {
+            shopInfo: {}
+        },
+        methods: {
+        }
+    })
+    $(function () {
+
+        var queryShopBaseInfo4Overview = function () {
+            log("queryShopBaseInfo4Overview2")
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('shopOverview','query'),
+                doneCallback:function (data) {
+                    appShopOverview.shopInfo = data.d;
+                    resizeContentHeight()
+                }
+            })
+        }
+
+        queryShopBaseInfo4Overview()
+    })
+</script>

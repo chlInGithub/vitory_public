@@ -1,0 +1,127 @@
+.float-left {
+    float: left !important;
+}
+
+.float-right {
+    float: right !important;
+}
+
+.bar {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.bar-nav {
+    height: 1.3rem;
+    font-size: .6rem;
+    background-color: #FF0000;
+    border-radius: 0 0 1rem 1rem;
+    border: 0;
+}
+.bar-nav ~ .content {
+    top: 1.1rem;
+}
+
+.bar-nav .nav-history {
+    padding: 0 .5rem;
+/*    background-color: black;
+    border-radius: 0 .5rem .5rem .5rem;
+    height: 1.3rem;*/
+}
+.bar-nav .nav-refresh {
+    padding: 0 .5rem;
+/*    background-color: black;
+    border-radius: .5rem 0 .5rem .5rem;
+    height: 1.3rem;*/
+}
+
+.bar-nav .icon{
+    font-size: .6rem;
+    padding: 0;
+    color: white;
+}
+
+.bar-nav .title {
+    line-height: 1.4rem;
+    color: white;
+
+}
+
+/*header*/
+.header-title {
+    display: contents;
+    font-size: .5rem
+}
+
+.header-shop {
+
+}
+
+.header-user {
+margin-right: .5rem
+}
+
+.header-img {
+    width: 1rem;
+    height: 1rem;
+    margin: 0.15rem .1rem 0 0;;
+    border-radius: .5rem;
+    margin-left: .5rem;
+}
+
+.card{
+    margin: .3rem 0 !important;
+}
+
+.card .card-header .icon{
+    font-size: .5rem;
+}
+.card .card-header {
+    font-size: .6rem;
+    height: 1.5rem;
+    min-height: 1.5rem;
+}
+.bar-tab {
+    height: 2rem;
+}
+.bar-tab .tab-item {
+    height: 2rem;
+}
+.bar-tab .tab-item .icon {
+    height: .7rem;
+    font-size: .7rem;
+    line-height: .8rem;
+    display: block;
+}
+
+.popup {
+    background: #efeff4;
+    top: 30% !important;
+    height: 70%;
+    overflow: scroll !important;
+}
+
+.item-img-swiper-container{
+    height: auto !important;
+    margin: .5rem;
+    padding-bottom: 0;
+}
+
+.salestrategy-div{
+    display: inline-block;
+}
+.salestrategy-div .salestrategy-tag {
+    font-size: .4rem;
+    color: white;
+    margin: 1px 1px;
+    display: inline-block;
+}
+.salestrategy-div .salestrategy-tag-1 {
+    background-color: red;
+}
+.salestrategy-div .salestrategy-tag-2 {
+    background-color: orangered;
+}
+.salestrategy-div .salestrategy-tag-3 {
+    background-color: darkgreen;
+}

@@ -1,0 +1,111 @@
+dubbo:
+  registry:
+    timeout: 30000
+  consumer:
+    version: 1.0.0
+    check: false
+    timeout: 5000
+    retries: 0
+
+
+server:
+  port: 8081
+  # tomcat配置，优先级高于通过代码对容器的配置WebServerConfiguration
+  tomcat:
+    max-connections: 10000 # 10000
+    max-threads: 500 # 200
+    min-spare-threads: 20 # 10
+    accept-count: 200 # 100
+    uri-encoding: utf-8
+  servlet:
+    session:
+      timeout: 3600s
+  connection-timeout: 5s
+
+#datasource配置
+spring:
+# task 目前使用默认配置
+#  task:
+#    scheduling:
+#    execution:
+  profiles:
+    active: prod
+  datasource:
+    druid:
+      initial-size: 20
+      max-active: 200
+      filter:
+        config:
+          enabled: true
+        log4j2:
+          enabled: true
+        wall:
+          enabled: true
+        stat:
+          enabled: false
+          slow-sql-millis: 100
+          log-slow-sql: true
+          db-type: mysql
+      filters: config,stat,wall,log4j2
+      min-evictable-idle-time-millis: 1800000
+      time-between-eviction-runs-millis: 60000
+      test-while-idle: true
+      test-on-return: false
+      test-on-borrow: false
+      validation-query: select 1 from dual
+      max-pool-prepared-statement-per-connection-size: 20
+      pool-prepared-statements: false
+      max-wait: 5000
+      min-idle: 10
+        # 监控配置
+        # WebStatFilter配置，说明请参考Druid Wiki，配置_配置WebStatFilter
+      web-stat-filter:
+        enabled: false #是否启用StatFilter默认值true
+        url-pattern: /*
+        exclusions: '*.js,*.gif,*.jpg,*.png,*.css,*.ico,/druid/*'
+        profile-enable: false
+      stat-view-servlet:
+        enabled: false #是否启用StatViewServlet默认值true
+        url-pattern: /druid/*
+        login-username: root
+        login-password: root
+  transaction:
+    rollback-on-commit-failure: true #commit失败后回滚
+    default-timeout: 1s
+
+pagehelper:
+  params: count=countSql
+  support-methods-arguments: true
+  reasonable: false
+  helper-dialect: mysql
+
+mybatis:
+  configuration:
+    default-statement-timeout: 5000
+  mapper-locations: classpath:mapper/*.xml,classpath*:com/**/mapper/*.xml
+
+##tk.mapper https://github.com/abel533/Mapper/wiki/3.config
+mapper:
+  not-empty: true
+  before: true
+  identity: MYSQL
+  style: camelhumpandlowercase
+  #wrapKeyword: `{0}`
+  safe-delete: true
+  safe-update: true
+  mappers:
+  #mappers: com.chl.victory.dao.mapper.BaseMapper4TkMybatis
+
+
+myFirst:
+  name: default
+  count: 10
+  innerConfig:
+    enable: true
+
+
+login:
+    refreshTokenLastInterval: 10000
+
+debug: true
+

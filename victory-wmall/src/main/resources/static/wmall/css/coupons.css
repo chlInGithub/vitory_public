@@ -1,0 +1,29 @@
+.coupons-container {
+    display:inline-block;width: 80%;border: 1px solid white;margin: .3rem 0;color: white;
+}
+
+.coupons-container .coupons-left-div {
+    line-height: 1rem;width: 10%;float: left;font-size: .4rem;display: none;
+}
+.coupons-container .coupons-right-div {
+    line-height: 1rem;width: 15%;float: right;font-size: .4rem;border-radius: .3rem;
+    background-color: rgb(255,0,54);
+}
+
+.coupons-container .coupons-content-div {
+    height: 3rem;padding: .2rem 0;width: 85%;float: left;border-right: 1px dotted white;line-height: 1.2;border-radius: .3rem;
+    background-color: rgb(255,0,54);
+}
+
+.coupons-container .coupons-content-div .coupons-discount{
+    margin-right: .3rem;display: inline-block;font-size: 1rem;color: white;
+}
+.coupons-container .coupons-content-div .coupons-discount-desc{
+    display: inline-block;font-size: .6em;color: whitesmoke;
+}
+.coupons-container .coupons-content-div .coupons-title{
+    font-size: .5rem;color: whitesmoke;
+}
+.coupons-container .coupons-content-div .coupons-valid-time{
+    font-size: .4rem;color:whitesmoke;margin-top: .3rem;
+}

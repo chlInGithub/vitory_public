@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>下单</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- <link rel="shortcut icon" href="/favicon.ico"> -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <link rel="stylesheet" href="css/common.css">
+
+    <style>
+
+        .other-info {
+            width: 100%;
+            display: inline-flex;
+            margin-top: .5rem;
+            padding-left: .5rem;
+            font-size: .6rem
+        }
+
+        .other-info .col-40 {
+            text-align: right;
+        }
+
+        .other-info .col-60 {
+            padding-left: 1rem;
+            color: gray;
+        }
+
+        .other-info .col-60 input {
+            border: solid gray 1px;
+            height: 1rem;
+            font-size: .5rem !important;
+        }
+
+        .popup .list-block {
+            font-size: .6rem
+        }
+
+        .popup .list-block input {
+            font-size: .6rem
+        }
+
+        .toastClass{
+            display: inline-table !important;
+        }
+
+        .list-block .item-content{
+            padding-right: .75rem !important;
+        }
+        /*.list-block .item-inner {
+            padding: 0 !important;
+        }*/
+        .list-block .item-input{
+            margin: 0 !important;
+        }
+        .list-block .item-input input{
+            border: 1px whitesmoke solid;
+            font-size: .5rem;
+            line-height: 1rem;
+            height: 1.5rem;
+            margin: 0 !important;
+            border-radius: .2rem;
+        }
+        .list-block .item-input textarea{
+            border: 1px whitesmoke solid;
+            font-size: .5rem;
+            line-height: 1rem;
+            height: 3rem;
+            margin: 0 !important;
+            border-radius: .2rem;
+        }
+        .label-switch .checkbox{
+            height: 1.25rem !important;
+        }
+        .label-switch .checkbox:before {
+            height: 1rem !important;
+        }
+        .label-switch .checkbox:after {
+            height: 1rem !important;
+            width: 1.3rem !important;
+        }
+
+        .picker-modal-inner {
+            font-size: .6rem;
+        }
+
+        .iPicker-container {
+            width: 30% !important;
+            font-size: .5rem !important;
+            height: 1.2rem !important;
+        }
+        .iPicker-container .iPicker-result{
+            padding: 0 10px 0 10px !important;
+            line-height: 1.2rem !important;
+            height: 1.2rem !important;
+        }
+        .iPicker-container .iPicker-list ul{
+            padding: 0 !important;
+            text-align: center;
+            background-color: white;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div id="app" class="page-group">
+    <template>
+        <div class="page page-current">
+
+            <header class="bar bar-nav">
+                <a href="javascript:goHistroy()" class="float-left nav-history">
+                    <span class="icon icon-left"></span>
+                </a>
+                <a href="javascript:window.location.reload()" class="float-right nav-refresh">
+                    <span class="icon icon-refresh"></span>
+                </a>
+                <h1 class="title header-title">
+                    <div class="header-shop float-left" style="display: flex;" @click="m_go_shop()">
+                        <img :src="m_get_img(shop.img)" class="header-img"/>
+                        <span><b>{{shop.name}}</b></span>
+                    </div>
+                    <div class="header-user float-right" style="display: flex;" @click="m_go_me()">
+                        <img :src="user.img" class="header-img"/>
+                        <span><b>{{user.name}}</b></span>
+                    </div>
+                </h1>
+            </header>
+
+            <nav class="bar bar-tab">
+                <div class="row" style="height: 100%;">
+                    <div class="col-100">
+                            <div class="item-inner float-right" style="margin-right: .5rem;">
+                                <div class="item-title-row">
+                                    <div class="item-title float-left" style="margin-top: .6rem;font-size: .7rem">
+                                        <div>
+                                            <span style="color: gray">共{{itemCount}}件,</span>
+                                            <span style="color: black">合计:</span>
+                                            <b style="color: red">￥{{ total }}</b>
+                                        </div>
+                                    </div>
+                                    <div class="item-after float-right" style="margin-left: .5rem; margin-right: 0rem">
+                                        <a @click="m_gen_settle()"
+                                           class="button button-fill button-danger button-big"
+                                           style="background-color: red;font-size: .8rem;top: .1rem;height: 1.9rem;line-height: 2rem;">提交订单</a>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="content">
+                <div class="page-index">
+                    <!-- 收货信息 -->
+                    <div class="card card-receive-info">
+                        <div class="card-header">收货地址</div>
+                        <div class="card-content">
+                            <div class="card-content-inner" v-if="usedReceiveInfo && usedReceiveInfo.id"  style="font-size: .6rem">
+                                <div >
+                                    <input type="hidden" :value="usedReceiveInfo.id">
+                                    <b style="float: left; margin-right: 1rem;">
+                                        {{ usedReceiveInfo.name }}
+                                    </b>
+                                    <div>
+                                        {{ usedReceiveInfo.mobile }}
+                                    </div>
+                                </div>
+                                <div>
+                                    {{ usedReceiveInfo.city + " " + usedReceiveInfo.address}}
+                                </div>
+                            </div>
+                            <div class="card-content-inner"  style="font-size: .6rem" v-else>
+                                请添加收货信息
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 商品信息 -->
+                    <div class="card card-item-info">
+                        <div class="card-content">
+                            <div class="card-content-inner">
+                                <div class="list-block media-list" v-if="itemList.length > 0">
+                                    <div class="row no-gutter">
+                                        <div class="col-100">
+                                            <div class="item-inner" style="padding-right: 0 !important">
+                                                <div class="row" v-for="item in itemList"
+                                                     style="display: inline-flex;margin: 0;padding-left: .5rem;width: 100%;">
+                                                    <div class="col-40">
+                                                        <img class="buycar-item-img" :src="m_get_img(item.img)"
+                                                             style="width: 100%"/>
+                                                    </div>
+                                                    <div class="col-60" style="margin-left: .5rem;font-size: .6rem;">
+                                                        <div class="buycar-item-title">
+                                                            {{ item.title }}
+                                                        </div>
+                                                        <div class="buycar-item-sku-title" style="color: gray;">
+                                                            {{ item.skuTitle }}
+                                                        </div>
+                                                        <div v-if="item.presell == 1" class="buycar-item-sku-title" style="color: red;">
+                                                            [预售]
+                                                        </div>
+                                                        <div class="buycar-item-sku-title" style="color: gray;font-size:.4rem;">
+                                                            <span v-if="item.minimum">
+                                                                {{ item.minimum }}件起卖 &nbsp;&nbsp;
+                                                            </span>
+                                                            <span v-if="item.inventory">
+                                                                库存{{ item.inventory }}
+                                                            </span>
+                                                        </div>
+                                                        <div class="buycar-item-price"
+                                                             style="color: red;">
+                                                            ￥<span>{{ item.price }}</span>
+                                                        </div>
+                                                        <div class="buycar-item-count">
+                                                            x{{ item.count }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row other-info" style="line-height: 1.25rem !important;">
+                                                    <div class="col-40">
+                                                        配送方式
+                                                    </div>
+                                                    <div class="col-60" style="display: flex;">
+                                                        <div class="">
+                                                            <div class="item-input">
+                                                                <label class="label-switch">
+                                                                    <input type="checkbox" v-model="selectedDeliver">
+                                                                    <div class="checkbox"></div>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="" style="margin-left: .5rem">
+                                                            {{c_deliver_desc}}
+                                                        </div>
+                                                        <div class="" style="margin-left: .5rem" v-if="!selectedDeliver">
+                                                            ￥{{freight}}元
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row other-info" v-if="estimatedDatesBeforeReceive > 0">
+                                                    <div class="col-40">
+                                                        配送时间
+                                                    </div>
+                                                    <div class="col-60">
+                                                        现在付款，预计{{estimatedDatesBeforeReceive}}天送达
+                                                    </div>
+                                                </div>
+                                                <div class="row other-info">
+                                                    <div class="col-40">
+                                                        店铺优惠
+                                                    </div>
+                                                    <div class="col-60 coupon-detail">
+                                                        ￥{{coupon}}<span style="font-size:.3rem">(查看详情)</span>
+                                                    </div>
+                                                </div>
+                                                <div class="row other-info" style="margin-bottom: .5rem;">
+                                                    <div class="col-40">
+                                                        订单备注
+                                                    </div>
+                                                    <div class="col-60">
+                                                        <div class="item-input">
+                                                            <input style="height:1rem !important;" type="text" placeholder="选填"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-else-if="loading"  style="font-size: .6rem">
+                                    查询中
+                                </div>
+                                <div v-else="!loading" style="font-size: .6rem">
+                                    购物车空空的
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card card-paytype-info" style="margin-bottom: 2rem;">
+                        <div class="card-header">
+                            支付类型
+                            <div style="font-size: .4rem;" class=" other-types float-right" v-if="paytypeList.length > 0">其他方式</div>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-content-inner" style="font-size: .6rem;padding: .3rem 1rem 1rem 1rem;">
+                                <div v-if="usedPaytype.desc">
+                                    <input type="hidden" :value="usedPaytype.code">
+                                    <b style="float: left; margin-right: 1rem;">
+                                        {{ usedPaytype.desc }}
+                                    </b>
+                                </div>
+                                <div v-else>
+                                    请选择支付方式
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- 选择收货地址列表 -->
+        <div class="popup popup-receiver-list">
+            <div class="content-block">
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="popup-close float-left" style="display: inline-block;"
+                             @click="m_cancel_choose_receiver">
+                            <span class="icon icon-left"></span>
+                        </div>
+                        <div>
+                            收货地址列表
+                        </div>
+                        <div class="create-recerver float-right" style="display: inline-block;">
+									<span>
+										新增地址
+									</span>
+                        </div>
+                        <div class="popup-close float-right" @click="m_cancel_choose_receiver" style="margin-left:-3rem;display: inline-block;">
+                            <span>X</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-content-inner" v-if="receiveInfoList.length > 0">
+                            <div class="list-block media-list">
+                                <ul>
+                                    <li v-for="receive_info in receiveInfoList">
+                                        <div class="item-content">
+                                            <div class="item-inner">
+                                                <div @click="m_choose_some_receiver(receive_info.id)">
+                                                    <div>
+                                                        <b style="float: left; margin-right: 1rem;" v-if="m_is_default(receive_info.id)">
+                                                            [默认地址]
+                                                        </b>
+                                                        <b style="float: left; margin-right: 1rem;">
+                                                            {{ receive_info.name }}
+                                                        </b>
+                                                        <div>
+                                                            {{ receive_info.mobile }}
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        {{ receive_info.city + " " + receive_info.address }}
+                                                    </div>
+                                                </div>
+                                                <div class="float-right"
+                                                     @click="m_modifing_some_receiver(receive_info.id)">
+                                                    编辑
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-content-inner" v-else  style="font-size: .6rem">
+                            请添加收货信息
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- 选择支付方式 -->
+        <div class="popup popup-paytype-list">
+            <div class="content-block">
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="popup-close float-left" style="display: inline-block;"
+                             @click="m_cancel_choose_paytype">
+                            <span class="icon icon-left"></span>
+                        </div>
+                        <div>
+                            支付方式列表
+                        </div>
+                        <div class="popup-close float-right" @click="m_cancel_choose_paytype" style="display: inline-block;">
+                            <span>X</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-content-inner" v-if="paytypeList.length > 0">
+                            <div class="list-block media-list">
+                                <ul>
+                                    <li v-for="paytype in paytypeList">
+                                        <div class="item-content">
+                                            <div class="item-inner" @click="m_choose_paytype(paytype)">
+                                                <b style="float: left; margin-right: 1rem;">
+                                                    {{ paytype.desc }}
+                                                </b>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 编辑收货地址 -->
+        <div class="popup popup-modify-receiver" style="">
+            <div class="content-block">
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="popup-close float-left" @click="m_cancel_modify_receiver">
+                            <span class="icon icon-left"></span>
+                        </div>
+                        <div>
+                            编辑收货地址
+                        </div>
+                        <div class="popup-close float-right" @click="m_cancel_modify_receiver" style="display: inline-block;">
+                            <span>X</span>
+                        </div>
+                    </div>
+                    <div class="card-content" style="padding-bottom: 1rem;">
+                        <div class="card-content-inner">
+                            <div class="list-block" style="margin-bottom: 1rem;">
+                                <ul>
+                                    <li>
+                                        <div class="item-content">
+                                            <div class="item-inner">
+                                                <div class="item-input">
+                                                    <input class="" v-model="modifingReceiverInfo.name" type="text"
+                                                           placeholder="收货人">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="item-content">
+                                            <div class="item-inner">
+                                                <div class="item-input">
+                                                    <input v-model="modifingReceiverInfo.mobile" type="number"
+                                                           placeholder="手机号码">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="item-content" style="width:100%; display: block; min-height: 1.5rem;">
+                                            <div id="city-picker" style="margin-top: .3rem;    width: 100%; display: inline-block;"></div>
+                                            <div v-if="shopDeliveryAreas.length > 0">
+                                                <span style="color: red; font-size:.5rem;">*仅为如下区域提供服务</span>
+                                                <br/>
+                                                <span style="color: red; font-size:.5rem;" v-for="shopDeliveryArea in shopDeliveryAreas">{{m_showShopDeliveryArea(shopDeliveryArea)}}</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="item-content">
+                                            <div class="item-inner" style="padding-bottom: .35rem !important;">
+                                                <div class="item-input">
+                                                    <textarea style="" rows=2 v-model="modifingReceiverInfo.address"
+                                                              placeholder="详细地址：如道路、门牌号、小区、楼栋号、单元、室等"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="item-content">
+                                            <div class="item-inner">
+                                                <div class="item-title label" style="display: contents;">设为默认地址</div>
+                                                <div class="item-input" style="margin-top: .3rem !important;">
+                                                    <label class="label-switch float-right">
+                                                        <input type="checkbox" @checked="m_is_default()" v-model="modifingReceiverInfo.defaultSelected">
+                                                        <div class="checkbox"></div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li v-if="modifingReceiverInfo.id">
+                                        <div class="item-content" @click="m_del_receive_info(modifingReceiverInfo.id)">
+                                            <div class="item-inner">
+                                                <div class="item-input">
+                                                    <span style="color: red">删除收货地址</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="content-block">
+                                <div class="row">
+                                    <div class="col-50"><a href="#" class="button button-sm button-fill button-danger"
+                                                           @click="m_cancel_modify_receiver" style="font-size: .6rem">取消</a></div>
+                                    <div class="col-50"><a href="#" class="button button-sm button-fill button-success"
+                                                           @click="m_modified_some_receiver" style="font-size: .6rem">提交</a></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 展示优惠信息 -->
+        <div class="popup popup-coupon-detail">
+            <div class="content-block">
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="popup-close float-left" style="display: inline-block;">
+                            <span class="icon icon-left"></span>
+                        </div>
+                        <div>
+                            优惠详情
+                        </div>
+                        <div class="popup-close float-right" style="display: inline-block;">
+                            <span>X</span>
+                        </div>
+                    </div>
+                    <div class="card-content" style="font-size:.8rem">
+                        <div class="card-content-inner" v-if="couponDetailList.length > 0">
+                            <div class="list-block media-list">
+                                <ul>
+                                    <li v-for="coupon_detail in couponDetailList">
+                                        <div class="item-content">
+                                            <div class="item-inner">
+                                                <div>
+                                                    <b style="float: left; margin-right: 1rem;">
+                                                        {{ coupon_detail.name }}
+                                                    </b>
+                                                    优惠金额:<b style="color: red">￥{{ coupon_detail.coupon}}</b>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-content-inner" v-else>
+                            无优惠信息
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </template>
+</div>
+
+
+</body>
+
+
+<script type='text/javascript' src='js/jquery-3.4.1.min.js' charset='utf-8'></script>
+<script src="js/ipicker/ipicker.js"></script>
+<script type="text/javascript">
+    jQuery.noConflict()
+</script>
+
+<script src="js/vue.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/miniprogram.js"></script>
+<script type='text/javascript' src='https://res.wx.qq.com/open/js/jweixin-1.4.0.js' charset='utf-8'></script>
+<script type="text/javascript" src="js/mixin_vue.js"></script>
+<script type='text/javascript' src='https://g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='https://g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script><!--
+<script type="text/javascript" src="https://g.alicdn.com/msui/sm/0.6.2/js/sm-city-picker.min.js"
+        charset="utf-8"></script>-->
+<script type="text/javascript">
+    $.showPreloader();
+    //打开自动初始化页面的功能
+    //建议不要打开自动初始化，而是自己调用 $.init 方法完成初始化
+    $.config = {
+        autoInit: false,
+        router: false
+    }
+</script>
+
+<script type="text/javascript">
+    var paramJson = genJsonFromUrlParams();
+    if (paramJson.items == undefined) {
+        $.toast("订单页缺少参数!", 5000)
+        throw "订单页缺少参数"
+    }
+    var items = paramJson.items
+
+    /*vue code*/
+    var mixined_vue = Vue.extend({
+        mixins: [common_mixin]
+    });
+    var app = new mixined_vue({
+        el: '#app',
+        data: {
+            total: 0,
+            itemCount: 0,
+            checkedItemSkus: [],
+            itemList: [],
+            loading: true,
+            /*选用的收货地址*/
+            usedReceiveInfo: {},
+            defaultReceiveId: -1,
+            /*优惠总金额*/
+            coupon: 0,
+            /*预估到达天数*/
+            estimatedDatesBeforeReceive: -1,
+            selectedDeliver: true,
+            freight: 0,
+            /*可用收货地址s*/
+            receiveInfoList: [],
+            modifingReceiverInfo: {},
+            couponDetailList: [],
+            paytypeList: [
+                {
+                    desc: '微信支付',
+                    code: 0
+                },
+                {
+                    desc: '线下支付',
+                    code: 2
+                }
+            ],
+            usedPaytype: {},
+            hasGotShopDeliveryAreas: false,
+            shopDeliveryAreas: []
+        },
+        watch: {
+            selectedDeliver : function (newVal, oldVal) {
+                compute_cart()
+            }
+        },
+        methods: {
+            m_showShopDeliveryArea: function(shopDeliveryArea){
+                log(shopDeliveryArea)
+                var result = ""
+                if (shopDeliveryArea.desc != undefined) {
+                    result += shopDeliveryArea.desc
+                }
+                if (shopDeliveryArea.other != undefined){
+                    result += " " + shopDeliveryArea.other
+                }
+                return result
+            },
+            m_choose_paytype: function (paytype) {
+                this.usedPaytype = paytype
+                this.m_cancel_choose_paytype()
+                compute_cart()
+            },
+            m_is_default: function(receiver_id){
+                return app.defaultReceiveId == receiver_id
+            },
+
+            /*选择收货地址*/
+            m_choose_some_receiver: function (receiver_id) {
+                log(receiver_id)
+                /*修改使用的收货地址*/
+                this.usedReceiveInfo = this.receiveInfoList.filter(function (receive_info) {
+                    return receive_info.id === receiver_id;
+                })[0]
+                /*关闭popup*/
+                $.closeModal('.popup-receiver-list');
+
+                compute_cart()
+            },
+            m_cancel_choose_paytype: function(){
+                $.closeModal('.popup-paytype-list');
+            },
+            m_cancel_choose_receiver: function () {
+                if (this.receiveInfoList.length < 1) {
+                    this.usedReceiveInfo = {}
+                }
+                $.closeModal('.popup-receiver-list');
+            },
+            /*进入修改收货地址*/
+            m_modifing_some_receiver: function (receiver_id) {
+                this.modifingReceiverInfo = this.receiveInfoList.filter(function (receive_info) {
+                    return receive_info.id === receiver_id;
+                })[0]
+
+                $.popup('.popup-modify-receiver');
+
+                var cityCode = []
+                if (this.modifingReceiverInfo.code != undefined) {
+                    cityCode = this.modifingReceiverInfo.code.split(" ")
+                }
+
+                var modifingReceiverInfo = this.modifingReceiverInfo
+                setCityPicker(modifingReceiverInfo, cityCode)
+            },
+            /*删除收货地址*/
+            m_del_receive_info: function (receiver_id) {
+                del_receive_info(receiver_id);
+
+                this.receiveInfoList = this.receiveInfoList.filter(function (receive_info) {
+                    return receive_info.id != receiver_id;
+                })
+
+                if (this.usedReceiveInfo.id == receiver_id) {
+                    this.usedReceiveInfo = {}
+                }
+
+                this.m_cancel_modify_receiver();
+            },
+            /*已修改收货地址*/
+            m_modified_some_receiver: function () {
+                log(this.modifingReceiverInfo)
+                // 验证
+                if (jQuery.trim(this.modifingReceiverInfo.address).length < 6){
+                    return $.toast("请填写完整的配送地址", 1000)
+                }
+                if (jQuery.trim(this.modifingReceiverInfo.name).length < 1){
+                    return $.toast("请填写收货人", 1000)
+                }
+                if (jQuery.trim(this.modifingReceiverInfo.mobile).length < 11){
+                    return $.toast("请填写收货人手机号", 1000)
+                }
+                if (this.modifingReceiverInfo.code.split(" ").length < 3){
+                    return $.toast("请填写完整的配送地址", 1000)
+                }
+                // 验证是否在商家服务区域内
+                if (this.shopDeliveryAreas.length > 0) {
+                    for (var index = 0; index < this.shopDeliveryAreas.length; index++) {
+                        var matchIndex = this.modifingReceiverInfo.code.indexOf(this.shopDeliveryAreas[index].code);
+                        if (matchIndex < 0) {
+                            return $.toast("配送地址不在服务区域内", 1000)
+                        }
+                    }
+                }
+                save_receive_info(this.modifingReceiverInfo, this.m_modified_some_receiver_callback);
+            },
+            m_modified_some_receiver_callback: function (receiver_id) {
+                this.modifingReceiverInfo.id = receiver_id
+
+                var done = false
+                for (var i = 0; i < this.receiveInfoList.length; i++) {
+                    if (this.receiveInfoList[i].id === this.modifingReceiverInfo.id) {
+                        this.receiveInfoList[i] = this.modifingReceiverInfo
+                        done = true
+                        break
+                    }
+                }
+
+                if (!done) {
+                    this.receiveInfoList.push(this.modifingReceiverInfo)
+                }
+
+                if (this.modifingReceiverInfo.defaultSelected) {
+                    this.defaultReceiveId = this.modifingReceiverInfo.id
+                    this.receiveInfoList.forEach(function (item) {
+                        if (item.id != app.modifingReceiverInfo.id) {
+                            item.defaultSelected = false
+                        }
+                    })
+                }
+
+                this.m_cancel_modify_receiver();
+
+                if (this.receiveInfoList.length == 1) {
+                    this.m_choose_some_receiver(this.receiveInfoList[0].id)
+                }
+            },
+            /*取消修改收货地址*/
+            m_cancel_modify_receiver: function () {
+                this.modifingReceiverInfo = {}
+                $.closeModal('.popup-modify-receiver');
+                $.popup('.popup-receiver-list');
+            },
+            /*下单*/
+            m_gen_settle: function () {
+
+                if (app.itemList.length < 1) {
+                    $.toast("订单页缺少商品", 1000)
+                    return false
+                }
+                if (app.total <= 0) {
+                    $.toast("订单页缺少总价", 1000)
+                    return false
+                }
+                if (app.usedReceiveInfo.id == undefined) {
+                    $.toast("订单页缺少收货地址", 1000)
+                    return false
+                }
+                if (app.usedPaytype.code == undefined) {
+                    $.toast("请选择支付类型", 500)
+                    return false
+                }
+
+                gen_settle()
+            }
+        },
+        computed: {
+            c_deliver_desc: function () {
+                return this.selectedDeliver == true ? "自提" : "快递/配送"
+            },
+            c_deliver_type: function () {
+                return this.selectedDeliver == true ? 0 : 1
+            }
+        }
+    })
+
+    // city picker
+    var cityData
+    var setCityPicker = function(model, defaultCode){
+        getShopDeliveryAreas()
+
+        var cityCode = []
+        if (defaultCode != null && defaultCode.length != undefined) {
+            cityCode = defaultCode
+        }
+
+        var cityPicker = function (){
+            jQuery( "#city-picker" ).iPicker({
+                data: cityData,
+                maxHeight: 180,
+                defaultValue: cityCode,
+                onSelect: function ( v, t, set ) {
+                    /*if (v.length < 3) {
+                        return
+                    }*/
+                    log(v + " " + t)
+                    model.city = t.join(" ")
+                    model.code = v.join(" ")
+                    log(model.city)
+                }
+            })
+        };
+
+        if (cityData != undefined) {
+            cityPicker()
+        }else {
+            jQuery.get("js/ipicker/area.json", {}, function (data) {
+                cityData = data
+                cityPicker()
+            }, "json");
+        }
+    }
+
+    var getShopDeliveryAreas = function(){
+        if (!app.hasGotShopDeliveryAreas) {
+            AjaxUtil.get("/wmall/shop/deliveryAreas", {}, function (result) {
+                if (result.d != undefined) {
+                    app.shopDeliveryAreas = result.d
+                }
+            });
+        }
+    }
+
+    /*sui code*/
+
+    $(document).on('click', '.card-item-info .coupon-detail', function () {
+        $.popup('.popup-coupon-detail');
+    });
+    $(document).on('click', '.popup-coupon-detail .popup-close', function () {
+        $.closeModal('.popup-coupon-detail');
+    });
+
+    $(document).on('click', '.card-receive-info .card-content-inner', function () {
+        $.popup('.popup-receiver-list');
+    });
+    $(document).on('click', '.card-paytype-info .card-content-inner', function () {
+        $.popup('.popup-paytype-list');
+    });
+    $(document).on('click', '.card-paytype-info .other-types', function () {
+        $.popup('.popup-paytype-list');
+    });
+
+    $(document).on('click', '.popup-receiver-list .content-block .create-recerver', function () {
+        $.popup('.popup-modify-receiver');
+        var modifingReceiverInfo = app.modifingReceiverInfo
+        setCityPicker(modifingReceiverInfo)
+    });
+
+    /*jQuery code*/
+
+    /*通过接口从服务器获取数据。*/
+    var gen_settle = function () {
+        if (!itemFuncs.check_item_valid(app.itemList)) {
+            return false
+        }
+
+        var temp = [];
+        app.itemList.forEach(function (item) {
+            temp.push(item.itemId+"_"+item.skuId+"_"+item.count)
+        })
+
+        var data = {
+            items : temp.toString(),
+            deliverId: app.usedReceiveInfo.id,
+            deliverType: app.c_deliver_type,
+            referTotal: app.total,
+            payType : app.usedPaytype.code
+        }
+
+        $.showPreloader("下单中……");
+
+        AjaxUtil.post("/wmall/order/new", data, function (result) {
+
+            $.hidePreloader()
+            if (app.usedPaytype.code == 2) {
+                return app.m_go_order_detail(result.d)
+            }
+            if (result.d != undefined) {
+                log(result.d);
+                go_weixin_pay(result.d);
+            }
+        }, function (result) {
+            $.hidePreloader()
+            //$.toast("下单失败["+msg+"],刷新后若无商品，可前往我的订单查看。", 500, "toastClass")
+            $.alert("下单失败["+result.m+"],刷新后若无商品，可前往我的订单查看。", function () {
+                window.location.reload()
+            });
+        });
+    }
+
+    var go_weixin_pay = function (orderId) {
+        $.showPreloader("跳转微信支付……");
+
+        AjaxUtil.post("/wmall/wxpay/prePay", {orderId: orderId}, function (result) {
+
+            $.hidePreloader()
+
+            if (result.d != undefined) {
+                log(result.d)
+
+                weixin.gotoPay(result.d)
+            }
+        }, function () {
+            $.hidePreloader()
+            $.toast("跳转失败，请前往订单详情页", 500)
+        });
+    }
+
+    var del_receive_info = function (receiveId) {
+        AjaxUtil.post("/wmall/deliver/del", {id:receiveId}, function (result) {
+            /*if (result.s) {
+                $.toast("删除成功", 500)
+            }*/
+        })
+    }
+    var save_receive_info = function (receiveInfo, callback) {
+        AjaxUtil.post("/wmall/deliver/save", receiveInfo, function (result) {
+            if (result.d != undefined) {
+                callback(result.d)
+            }
+        }, function () {
+            $.toast("处理失败,请检查手机号等",500)
+        })
+    }
+    var query_receive_info_list = function (callback) {
+        AjaxUtil.get("/wmall/deliver/list", {}, function (result) {
+            if (result.d != undefined) {
+                app.receiveInfoList = result.d
+
+                app.receiveInfoList.forEach(function (item) {
+                    if (item.defaultSelected) {
+                        app.defaultReceiveId = item.id
+                        app.usedReceiveInfo = item
+                    }
+                })
+
+                if (app.usedReceiveInfo.id == undefined) {
+                    app.usedReceiveInfo = app.receiveInfoList[0];
+                }
+            }
+
+            if (result.s && callback != undefined) {
+                callback()
+            }
+        })
+    }
+    var query_cart_items = function (callback) {
+        AjaxUtil.get("/wmall/cart/items", {items: items}, function (result) {
+            if (result.d != undefined) {
+                app.itemList = result.d
+            }
+
+            callback(query_pay_types)
+        })
+    }
+    var query_pay_types = function (callback) {
+        AjaxUtil.get("/wmall/shop/payType", {items: items}, function (result) {
+            if (result.d != undefined) {
+                app.paytypeList = result.d
+            }
+
+            setDefault()
+        })
+    }
+    var setDefault = function () {
+        app.usedPaytype = app.paytypeList[0]
+        compute_cart()
+    }
+    //var defaultComputeResult = app.computeResult
+    var compute_cart = function (callback) {
+        if (app.itemList.length < 1) {
+            $.toast("缺少商品", 500)
+            return false
+        }
+
+        if (app.usedReceiveInfo == undefined || app.usedReceiveInfo.id == undefined) {
+            $.toast("请选择收货地址", 500)
+            return false
+        }
+
+        if (app.usedPaytype.code == undefined) {
+            $.toast("请选择支付类型", 500)
+            return false
+        }
+
+         $.showPreloader("处理中");
+        setTimeout(function () {
+            $.hidePreloader()
+        }, 2000)
+        if (!itemFuncs.check_item_valid(app.itemList)) {
+            return false
+        }
+
+        var temp = [];
+
+        app.itemList.forEach(function (item) {
+            temp.push(item.itemId+"_"+item.skuId+"_"+item.count);
+        })
+
+        var data = {
+            items : temp.toString(),
+            deliverId: app.usedReceiveInfo.id,
+            deliverType: app.c_deliver_type,
+            payType: app.usedPaytype.code
+        }
+
+        AjaxUtil.get("/wmall/settle/compute", data, function (result) {
+
+            $.hidePreloader()
+
+            if (result.d != undefined) {
+                app.coupon = result.d.coupon
+                app.total = result.d.total
+                app.itemCount = result.d.itemCount
+                app.freight = result.d.freight
+                app.couponDetailList = result.d.couponDetailList
+            }
+        }, function () {
+            $.hidePreloader()
+        });
+    }
+    var callback = function () {
+        query_cart_items(query_receive_info_list)
+    }
+    initPage(callback)
+
+</script>
+
+<script type="text/javascript">
+    $.init()
+</script>
+</html>

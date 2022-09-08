@@ -1,0 +1,151 @@
+<div class="loadedContent" id="modifyPw">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b>修改密码</b></span>
+        </div>
+        <div class="panel-body">
+            <!-- Nav tabs -->
+            <ul id="modifyPwNav" class="nav nav-tabs" role="tablist">
+                <li role="presentation"><a data-val="" id="tab_modifyPw" class="btn-xs" href="#panel_modifyPw" aria-controls="panel_modifyPw" role="tab" data-toggle="tab">修改密码</a></li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content modifyPwPanels">
+                <div role="tabpanel" class="tab-pane table-responsive" id="panel_modifyPw" style="overflow: hidden;">
+                    <form class="form-default" id="modifyPwForm" enctype="multipart/form-data" data-am-validator>
+                        <div class="small">
+                            <div class="panel panel-default panel-item">
+                                <div class="panel-body am-text-center">
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-addon">手机号码</span>
+                                                <input type="number" name="mobile" class="form-control" placeholder="当前登录的手机号" pattern="^(1\d{10})$" required/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-addon">密码</span>
+                                                <input type="password" name="oldPw" class="form-control" placeholder="密码" required  minlength="6"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-addon">新密码</span>
+                                                <input type="password" name="newPw" class="form-control" placeholder="新密码" required  minlength="6"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-addon">确认新密码</span>
+                                                <input type="password" name="againNewPw" class="form-control" placeholder="再输一次新密码" required  minlength="6"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" align="center">
+                            <button id="save" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                保存
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/wm/r/jsencrypt/jsencrypt.min.js"></script>
+<script>
+    $(function () {
+        bindNavTabCallback({
+            pageId:'modifyPw',
+            navId:'modifyPwNav',
+            navShown: function (target, relatedTarget) {
+                var activeTab = $('#modifyPwNav .active a')
+                var tablePanelId = activeTab.attr('aria-controls')
+                if (undefined == activeTab.data('hasLoad')) {
+                    //TODO
+                    activeTab.data('hasLoad', true)
+                }else if (activeTab.data('hasLoad') == false) {
+                    //TODO
+                }
+            }
+        })
+
+        /*开启表单验证*/
+        $('#modifyPw #modifyPwForm').validator({})
+
+        var saveBtn = $('#modifyPw #modifyPwForm #save')
+        saveBtn.bind('click',function () {
+            var result = $('#modifyPw #modifyPwForm').validator('isFormValid')
+            if (!result) {
+                return false
+            }
+
+            var mobile = $('#modifyPw #modifyPwForm input[name="mobile"]').val()
+            var oldPw = $('#modifyPw #modifyPwForm input[name="oldPw"]').val()
+            var newPw = $('#modifyPw #modifyPwForm input[name="newPw"]').val()
+            var againNewPw = $('#modifyPw #modifyPwForm input[name="againNewPw"]').val()
+
+            if (newPw != againNewPw) {
+                castErrorMsg("两次输入新密码不一致，请重新输入。")
+                return false
+            }
+
+            saveBtn.attr("disabled", true);
+            saveBtn.val("处理中……")
+            setTimeout(function () {
+                saveBtn.removeAttr("disabled")
+                saveBtn.val("保存")
+            }, 3000)
+
+            $.ajax('/p/wm/npk')
+                .done(function (data) {
+                    if (data.s) {
+                        var requestData = {'mobile':mobile,'oldPw':oldPw, 'newPw':newPw, 'againNewPw':againNewPw}
+                        var pubKey = data.d
+                        var encrypt = new JSEncrypt();
+                        encrypt.setPublicKey(pubKey);
+                        oldPw = encrypt.encrypt(oldPw);
+                        mobile = encrypt.encrypt(mobile);
+                        newPw = encrypt.encrypt(newPw);
+                        againNewPw = encrypt.encrypt(againNewPw);
+                        var requestData = {'mobile':mobile,'oldPw':oldPw, 'newPw':newPw, 'againNewPw':againNewPw}
+                        $.ajax(getSubmitUrl("modifyPw", "save"),{'method':'POST','data':{'mobile':mobile,'oldPw':oldPw, 'newPw':newPw, 'againNewPw':againNewPw}})
+                            .done(function (data) {
+                                if (data.s) {
+                                    castSuccessMsg("成功")
+                                    cleanForm("#modifyPw #modifyPwForm")
+                                }else {
+                                    castErrorMsg(data.m)
+                                }
+                            })
+                            .fail(function (data) {
+                                castErrorMsg("登录请求失败")
+                            })
+                    }
+                })
+                .fail(function (data) {
+                    castErrorMsg("获取公钥失败")
+                })
+
+
+            return false
+        })
+
+
+        var activeTab = $('#modifyPwNav .active a')
+        if (activeTab.length == 0){
+            $('#modifyPwNav li:first a').tab('show')
+        } else {
+            var tablePanelId = activeTab.attr('aria-controls')
+            activeTab.data('hasLoad') ? activeTab.data('hasLoad', false) : null;
+            //$('#'+tablePanelId + " table:first").DataTable().ajax.reload()
+        }
+    })
+
+</script>

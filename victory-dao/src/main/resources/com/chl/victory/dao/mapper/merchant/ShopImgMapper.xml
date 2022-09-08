@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.merchant.ShopImgMapper">
+  <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.merchant.ShopImgDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+    <result column="img_id" jdbcType="VARCHAR" property="imgId" />
+    <result column="used_num" jdbcType="INTEGER" property="usedNum" />
+    <result column="size" jdbcType="BIGINT" property="size" />
+  </resultMap>
+
+  <select id="query4ImgMan" parameterType="com.chl.victory.dao.model.merchant.ShopImgDO" resultMap="BaseResultMap">
+      select * from shop_img
+      <where>
+          <trim prefixOverrides="and">
+              <if test="id != null">
+                  <![CDATA[
+                   and id < #{id,jdbcType=BIGINT}
+                    ]]>
+              </if>
+              and shop_id = #{shopId,jdbcType=BIGINT}
+          </trim>
+      </where>
+
+       order by id desc limit 15
+  </select>
+</mapper>

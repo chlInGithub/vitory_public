@@ -1,0 +1,598 @@
+<div class="loadedContent" id="orderDetail">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b>订单详情</b></span>
+        </div>
+        <div class="panel-body">
+            <form class="form-default" id="orderDetailForm">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">订单ID</span>
+                            <input type="text" name="orderId" class="form-control"/>
+                        </div>
+                    </div>
+                    <button id="query" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        查询
+                    </button>
+                </div>
+            </form>
+
+            <hr/>
+            <div class="small" v-if="orderDetail.orderId">
+                <div class="panel panel-default panel-status">
+                    <div class="panel-heading">
+                        <div class="row">
+                            <span class="col-lg-3 col-md-3 col-sm-3">
+                                订单编号:
+                                <b class="am-text-danger" name="orderId">{{orderDetail.orderId}}</b>
+                            </span>
+                                <span class="col-lg-3 col-md-3 col-sm-3">
+                                订单状态:
+                                <b class="am-text-danger" name="status">{{orderDetail.statusDesc}}</b>
+                            </span>
+                                <span class="col-lg-3 col-md-3 col-sm-3" v-if="orderDetail.pay.type">
+                                支付方式:
+                                <b class="am-text-danger" name="payType">{{m_get_pay_type()}}</b>
+                            </span>
+                                <span class="">
+                                支付流水:
+                                <b class="am-text-danger" name="payNo">{{orderDetail.pay.id}}</b>
+                            </span>
+                        </div>
+                        <div class="row" style="text-align: right;margin: 0 2rem;">
+                            <span v-if="m_show_sent()">
+                                 <button type="button" class="btn btn-success btn-xs btn-sentOrder openModal" data-modalid="sentOrderModal" data-am-modal="{target: '#sentOrderModal', dimmer:false}">发货</button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="panel-body am-text-center">
+                        <div class="status-flow">
+                            <div id="status-10" class="status-node float-left">
+                                <div>
+                                    <span class="am-badge am-round am-text-xl" v-bind:class="c_am_badge_success(10)">1</span>
+                                </div>
+                                <div class="desc am-text-sm" style="font-size: 1rem;">创建订单</div>
+                                <div class="time am-text-nowrap" v-bind:class="c_am_text_success(10)">{{m_get_flow_status_time(10)}}</div>
+                            </div>
+                            <div class="float-left status-pro">
+                                <div class="am-progress am-progress-xs">
+                                    <div class="am-progress-bar" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div id="status-20" class="status-node float-left">
+                                <div>
+                                    <span class="am-badge am-round am-text-xl" v-bind:class="c_am_badge_success(20)">2</span>
+                                </div>
+                                <div class="desc am-text-sm" style="font-size: 1rem;">买家付款</div>
+                                <div class="time am-text-nowrap"  v-bind:class="c_am_text_success(20)">{{m_get_flow_status_time(20)}}</div>
+                            </div>
+                            <div class="float-left status-pro">
+                                <div class="am-progress am-progress-xs">
+                                    <div class="am-progress-bar" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div id="status-30" class="status-node float-left">
+                                <div>
+                                    <span class="am-badge am-round am-text-xl" v-bind:class="c_am_badge_success(30)">3</span>
+                                </div>
+                                <div class="desc am-text-sm" style="font-size: 1rem;">卖家发货</div>
+                                <div class="time am-text-nowrap"  v-bind:class="c_am_text_success(30)">{{m_get_flow_status_time(30)}}</div>
+                            </div>
+                            <div class="float-left status-pro">
+                                <div class="am-progress am-progress-xs">
+                                    <div class="am-progress-bar" style="width: 100%"></div>
+                                </div>
+                            </div>
+                            <div id="status-40" class="status-node float-left">
+                                <div>
+                                    <span class="am-badge am-round am-text-xl" v-bind:class="c_am_badge_success(40)">4</span>
+                                </div>
+                                <div class="desc am-text-sm" style="font-size: 1rem;">确认收货</div>
+                                <div class="time am-text-nowrap"  v-bind:class="c_am_text_success(40)">{{m_get_flow_status_time(40)}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default panel-refund" v-if="orderDetail.refund">
+                    <div class="panel-heading">
+                        退款信息
+                        <div class="row" style="text-align: right;margin: 0 2rem;">
+                            <span v-if="m_show_refund()">
+                                 <button type="button" class="btn btn-success btn-xs btn-dealRefund openModal" data-modalid="dealRefundModal" data-am-modal="{target: '#dealRefundModal', dimmer:false}">处理</button>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="panel-body">
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                        ID:
+                            <b class="am-text-danger" name="refundId">{{orderDetail.refund.id}}</b>
+                        </span>
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                        申请时间:
+                            <b class="am-text-danger" name="refundCreatedTime">{{orderDetail.refund.createdTime}}</b>
+                        </span>
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                        金额:
+                            <b class="am-text-danger" name="refundApplyFee">{{orderDetail.refund.applyFee}}</b>
+                        </span>
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                        类型:
+                            <b class="am-text-danger" name="refundTypeDesc">{{orderDetail.refund.typeDesc}}</b>
+                        </span>
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                        状态:
+                            <b class="am-text-danger" name="refundStatusDesc">{{orderDetail.refund.statusDesc}}</b>
+                        </span>
+                        <span class="col-lg-6 col-md-6 col-sm-6">
+                        原因:
+                            <b class="am-text-danger" name="refundCause">{{orderDetail.refund.cause}}</b>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="panel panel-default panel-buyer">
+                    <div class="panel-heading">
+                    买家信息
+                    </div>
+                    <div class="panel-body">
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                        会员ID:
+                        <b class="am-text-danger" name="bId">{{orderDetail.buyer.id}}</b>
+                    </span>
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                        昵称:
+                        <b class="am-text-danger" name="bNick">{{orderDetail.buyer.nick}}</b>
+                    </span>
+                        <!--<span class="col-lg-3 col-md-3 col-sm-3">
+                        姓名:
+                        <b class="am-text-danger" name="bName"></b>
+                    </span>-->
+                        <span class="">
+                        手机号:
+                        <b class="am-text-danger" name="bMobile">{{orderDetail.buyer.mobile}}</b>
+                    </span>
+                    </div>
+                </div>
+                <div class="panel panel-default panel-order">
+                    <div class="panel-heading">
+                        订单信息
+                    </div>
+                    <div class="panel-body">
+                        <div>
+                            <span class="col-lg-6 col-md-6 col-sm-6">
+                        收货信息:
+                        <b class="am-text-danger" name="rInfo">{{m_get_deliver_address()}}</b>
+                    </span>
+                            <span class="col-lg-2 col-md-2 col-sm-2">
+                        配送方式:
+                        <b class="am-text-danger" name="deliType">{{m_get_deliver_type()}}</b>
+                    </span>
+                            <span class="col-lg-2 col-md-2 col-sm-2">
+                        物流公司:
+                        <b class="am-text-danger" name="logCP">{{orderDetail.deliver.logisticsCP}}</b>
+                    </span>
+                            <span class="">
+                        物流单号:
+                        <b class="am-text-danger" name="logNo">{{orderDetail.deliver.logisticsNo}}</b>
+                    </span>
+                        </div>
+                        <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+                        <div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                买家留言:
+                                <b class="am-text-danger" name="bMsg">{{orderDetail.buyerMsg}}</b>
+                            </div>
+                            <!--<div class="col-lg-12 col-md-12 col-sm-12">
+                                 <button type="button" class="btn btn-default btn-xs btn-modifyMsg">修改留言</button>
+                            </div>-->
+                            <br/>
+                            <br/>
+                        </div>
+                        <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+                        <div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                        备注:
+                        <b class="am-text-danger" name="note">{{orderDetail.note}}</b>
+                    </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                 <button type="button" class="btn btn-default btn-xs btn-modifyNote openModal" data-modalid="modifyNoteModal" data-am-modal="{target: '#modifyNoteModal', dimmer:false}">修改备注</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="panel panel-default panel-items">
+                    <div class="panel-heading">
+                        商品信息
+                    </div>
+                    <div class="panel-body">
+                        <table class="display table table-bordered table-hover small" width="100%">
+                            <thead>
+                            <tr>
+                                <th class='col-lg-6'>商品</th>
+                                <th class='col-lg-2'>单价</th>
+                                <th class='col-lg-2'>数量</th>
+                                <th class='col-lg-2'>小计</th>
+                            </tr>
+                            </thead>
+                            <tbody v-if="orderDetail.subs">
+                                <tr v-for="item in orderDetail.subs">
+                                    <td>
+                                        <div>
+                                                <img class="float-left" name="itemImg" width="70px" height="70px" :src="m_get_img(item.itemImg, 3)"/>
+                                                <div style="margin-left:5px" class="float-left">
+                                                        <div name="itemTitle" data-toggle="tooltip" data-placement="top" :title="item.itemTitle">{{m_abbreviatory(item.itemTitle, 20)}}</div>
+                                                        <div name="itemId">{{item.itemId}}</div>
+                                                        <div data-skuid="" name="skuTitle" data-toggle="tooltip" data-placement="top" :title="item.skuTitle">{{m_abbreviatory(item.skuTitle, 20)}}</div>
+                                                        <div name="presell" v-if="item.presell" style="color: red;">{{m_presell_desc(item)}}</div>
+                                                </div>
+                                            </div>
+                                    </td>
+                                    <td>
+                                        {{m_money_desc(item.price)}}
+                                    </td>
+                                    <td>
+                                        {{item.count}}
+                                    </td>
+                                    <td>
+                                        <div style='color:red'>{{m_money_desc(item.total)}}</div>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="float-right col-lg-4 am-text-default">
+                            <div style="font-size: 1.3rem;" class="">
+                                <div class="col-lg-5 am-text-right">商品小计:</div>
+                                <div class="col-lg-7"><b class="am-text-danger" name="total">{{m_money_desc(orderDetail.total)}}</b></div>
+                            </div>
+                            <div style="font-size: 1.3rem;" class="" v-if="orderDetail.activities">
+                                <div class="col-lg-5 am-text-right">店铺活动:</div>
+                                <div class="col-lg-7">
+                                    <b class="am-text-danger" name="activities">
+                                        <span v-for="item in orderDetail.activities">
+                                            [{{item.desc}}-{{m_money_desc(item.discount)}}]<br/>
+                                        </span>
+                                    </b>
+                                </div>
+                            </div>
+                            <div style="font-size: 1.3rem;" class="">
+                                <div class="col-lg-5 am-text-right">运费:</div>
+                                <div class="col-lg-7"><b class="am-text-danger" name="freight">{{m_money_desc(orderDetail.deliver.freight)}}</b></div>
+                            </div>
+                            <div style="font-size: 1.3rem;" class="" v-if="orderDetail.pointsCash">
+                                <div class="col-lg-5 am-text-right">积分抵现:</div>
+                                <div class="col-lg-7"><b class="am-text-danger" name="points">{{m_money_desc(orderDetail.pointsCash.cash)}}</b></div>
+                            </div>
+                            <div class="">
+                                <div class="col-lg-5 am-text-right"><b>实际支付:</b></div>
+                                <div class="col-lg-7"><b class="am-text-danger" name="sum">{{m_money_desc(orderDetail.sum)}}</b></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="am-modal am-modal-no-btn" tabindex="-1" id="modifyNoteModal" >
+        <div class="am-modal-dialog" style="z-index: 1111;border-radius: .5rem;">
+            <div class="am-modal-hd" style="margin-bottom: 1rem;font-size: 1.7rem;">修改备注
+                <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+            </div>
+            <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+            <div class="am-modal-bd" style="width: 80%;margin-left: 10%;">
+                <form class="form-default" id="orderDetailModifyNote">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">订单ID</span>
+                                <input type="text" name="orderId" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">备注</span>
+                                <textarea type="text" name="note" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 1rem;">
+                        <button id="submitNote" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                            修改
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div style="width:100%;height:100%;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 111;background-color: gray;opacity: .5;"></div>
+    </div>
+    <div class="am-modal am-modal-no-btn" tabindex="-1" id="dealRefundModal" >
+        <div class="am-modal-dialog" style="z-index: 1111;border-radius: .5rem;">
+            <div class="am-modal-hd" style="margin-bottom: 1rem;font-size: 1.7rem;">处理退款申请
+                <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+            </div>
+            <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+            <div class="am-modal-bd" style="width: 80%;margin-left: 10%;">
+                <form class="form-default" id="orderDetailDealRefund">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">订单ID</span>
+                                <input type="text" disabled name="orderId" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">退款单ID</span>
+                                <input type="text" disabled name="refundId" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">备注</span>
+                                <input type="text" name="note" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 1rem;">
+                        <button id="okRefund" type="submit" class="commonSubmit btn btn-success btn-sm am-animation-fade">
+                            同意退款
+                        </button>
+                        <button id="refuseRefund" type="submit" class="commonSubmit btn btn-danger btn-sm am-animation-fade">
+                            拒绝退款
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div style="width:100%;height:100%;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 111;background-color: gray;opacity: .5;"></div>
+    </div>
+    <div class="am-modal am-modal-no-btn" tabindex="-1" id="sentOrderModal" >
+        <div class="am-modal-dialog" style="z-index: 1111;border-radius: .5rem;">
+            <div class="am-modal-hd" style="margin-bottom: 1rem;font-size: 1.7rem;">发货
+                <a href="javascript: void(0)" class="am-close am-close-spin" data-am-modal-close>&times;</a>
+            </div>
+            <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+            <div class="am-modal-bd" style="width: 80%;margin-left: 10%;">
+                <form class="form-default" id="orderDetailSentOrder">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">订单ID</span>
+                                <input type="text" name="orderId" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">物流编号</span>
+                                <input type="text" name="logisticsNo" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-addon">物流公司名称</span>
+                                <input type="text" name="logisticsCP" class="form-control"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="margin-top: 1rem;">
+                        <button id="sent" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                            发货
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div style="width:100%;height:100%;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 111;background-color: gray;opacity: .5;"></div>
+    </div>
+</div>
+
+<script>
+
+    var appOrderDetail = new mixined_vue({
+        el: '#orderDetail',
+        data: {
+            orderDetail: {}
+        },
+        methods: {
+            m_presell_desc : function(subOrder){
+                if (!ObjectCommonUtil.isEmpty(subOrder.presell)) {
+                    var presellJson = JsonUtil.toJson(subOrder.presell);
+                    return "预售规则 截止时间:"+presellJson.endTime+" 发货开始时间：" + presellJson.sentTime
+                }
+            },
+            m_show_refund: function(){
+                return ObjectCommonUtil.isNotUndefined(this.orderDetail.refund) && this.orderDetail.refund.status == 1 && this.orderDetail.status == 60
+            },
+            m_show_sent: function(){
+                return ObjectCommonUtil.isNotUndefined(this.orderDetail.status) && this.orderDetail.status == 20 && this.orderDetail.deliver.deliverType == 1
+            },
+            m_get_flow_status_time: function (statusVal) {
+                log(this.orderDetail.statusFlow)
+                if (this.orderDetail.statusFlow != undefined) {
+                    for (var i = 0; i < this.orderDetail.statusFlow.length; i++) {
+                        var item = this.orderDetail.statusFlow[i]
+                        if (item.status == statusVal) {
+                            return item.time
+                        }
+                    }
+                }
+                return ""
+            },
+            m_get_pay_type: function () {
+                if (this.orderDetail.pay != undefined) {
+                    return (this.orderDetail.pay.type == 0 ? '微信支付' : (this.orderDetail.pay.type == 1 ? '支付宝' : '线下支付'));
+                }
+            },
+            m_get_deliver_address: function () {
+                if (this.orderDetail.deliver != undefined) {
+                    return this.orderDetail.deliver.name + "|" + this.orderDetail.deliver.mobile + "|" + this.orderDetail.deliver.addr;
+                }
+            },
+            m_get_deliver_type: function () {
+                if (this.orderDetail.deliver != undefined) {
+                    return this.orderDetail.deliver.deliverType == 0 ? "自提" : (this.orderDetail.deliver.deliverType == 1 ? "快递/配送" : "其他");
+                }
+            },
+            c_am_badge_success: function (statusVal) {
+                var has = false
+                if (this.orderDetail.statusFlow != undefined) {
+                    for (var i = 0; i < this.orderDetail.statusFlow.length; i++) {
+                        var item = this.orderDetail.statusFlow[i]
+                        if (item.status == statusVal) {
+                            has = true
+                            break
+                        }
+                    }
+                }
+                var result = {'am-badge-success' : has}
+                log(result);
+                return result
+            },
+            c_am_text_success: function (statusVal) {
+                var has = false
+                if (this.orderDetail.statusFlow != undefined) {
+                    for (var i = 0; i < this.orderDetail.statusFlow.length; i++) {
+                        var item = this.orderDetail.statusFlow[i]
+                        if (item.status == statusVal) {
+                            has = true
+                            break
+                        }
+                    }
+                }
+                return {'am-text-success': has}
+
+            }
+        },
+        coumputed:{
+
+        }
+    })
+
+    $(function () {
+        // 每个页面都应取一次数据，以便获取参数
+        log('orderDetail')
+        jumpContextData.dealJumpContextData(function (data) {
+            if (!ObjectCommonUtil.isEmpty(data.orderId)) {
+                $('#orderDetail').find('#orderDetailForm input[name="orderId"]:first').val(data.orderId)
+            }
+        })
+
+/*        $('#modifyNoteModal').on('opened.modal.amui', function (e) {
+            $(this).find("input[name='orderId']").val($('#orderDetail').find('.panel-status b[name="orderId"]').html())
+            $(this).find('textarea[name="note"]').val($('#orderDetail').find('.panel-order b[name="note"]').html())
+        })*/
+
+        bindFormCallback({
+            pageId:'orderDetail',
+            formId:'orderDetailModifyNote',
+            submitId:'submitNote',
+            post:true,
+            formVerify:function (data) {
+                log('orderDetail verify')
+                return !ObjectCommonUtil.isEmpty(data.orderId) && !ObjectCommonUtil.isEmpty(data.note)
+            },
+            submitResultDeal:function (data) {
+                $('#modifyNoteModal').find("input[name='orderId']").val("")
+                $('#modifyNoteModal').find('textarea[name="note"]').val("")
+                $('#modifyNoteModal').modal('close')
+                $("#orderDetailForm #query").click()
+            }
+        })
+        bindFormCallback({
+            pageId:'orderDetail',
+            formId:'orderDetailSentOrder',
+            submitId:'sent',
+            post:true,
+            formVerify:function (data) {
+                log('sent verify')
+                return !ObjectCommonUtil.isEmpty(data.orderId) && !ObjectCommonUtil.isEmpty(data.logisticsCP) && !ObjectCommonUtil.isEmpty(data.logisticsNo)
+            },
+            submitResultDeal:function (data) {
+                $('#sentOrderModal').find("input[name='orderId']").val("")
+                $('#sentOrderModal').find('textarea[name="logisticsCP"]').val("")
+                $('#sentOrderModal').find('textarea[name="logisticsNo"]').val("")
+                $('#sentOrderModal').modal('close')
+                $("#orderDetailForm #query").click()
+            }
+        })
+        bindFormCallback({
+            pageId:'orderDetail',
+            formId:'orderDetailDealRefund',
+            submitId:'okRefund',
+            post:true,
+            formVerify:function (data) {
+                log('okRefund verify')
+                return !ObjectCommonUtil.isEmpty(data.orderId) && !ObjectCommonUtil.isEmpty(data.refundId) && !ObjectCommonUtil.isEmpty(data.note)
+            },
+            submitResultDeal:function (data) {
+                $('#dealRefundModal').modal('close')
+                $("#orderDetailForm #query").click()
+            }
+        })
+        bindFormCallback({
+            pageId:'orderDetail',
+            formId:'orderDetailDealRefund',
+            submitId:'refuseRefund',
+            post:true,
+            formVerify:function (data) {
+                log('refuseRefund verify')
+                return !ObjectCommonUtil.isEmpty(data.orderId) && !ObjectCommonUtil.isEmpty(data.refundId) && !ObjectCommonUtil.isEmpty(data.note)
+            },
+            submitResultDeal:function (data) {
+                $('#dealRefundModal').modal('close')
+                $("#orderDetailForm #query").click()
+            }
+        })
+
+        bindFormCallback({
+            pageId:'orderDetail',
+            formId:'orderDetailForm',
+            submitId:'query',
+            formVerify:function (data) {
+                log('orderDetail verify')
+                return !ObjectCommonUtil.isEmpty(data.orderId)
+            },
+            submitResultDeal:function (data) {
+                var d = data.d
+                if (ObjectCommonUtil.isUndefined(data.d)) {
+                    data.d = {}
+                }
+                appOrderDetail.orderDetail = data.d
+
+                setTimeout(fillContext, 500)
+
+                setTimeout(resizeContentHeight, 500)
+            }
+        })
+
+        var fillContext = function(){
+            var d = appOrderDetail.orderDetail
+            log("modifyNote data")
+            $('#orderDetail').find('.panel-order .btn-modifyNote').data('context', {orderId: d.orderId, note:d.note})
+            $('#orderDetail').find('.btn-sentOrder').data('context', {orderId: d.orderId})
+            if (d.refund != undefined) {
+                $('#orderDetail').find('.btn-dealRefund').data('context', {orderId: d.orderId, refundId:d.refund.id});
+            }
+        }
+
+        $("#orderDetailForm #query").click()
+
+    })
+
+
+</script>

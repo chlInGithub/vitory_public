@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.item.CategoryMapper">
+  <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.item.CategoryDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="level" jdbcType="TINYINT" property="level" />
+    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+    <result column="img" jdbcType="VARCHAR" property="img" />
+    <result column="show" jdbcType="TINYINT" property="show" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_time, modified_time, shop_id, operator_id, name, level, parent_id, img, `show`
+  </sql>
+  <sql id="conditionWithOrderAndPage">
+    <include refid="condition"/>
+    <include refid="order"/>
+    <include refid="page"/>
+  </sql>
+  <sql id="condition">
+    <where>
+      <if test="id != null"> id = #{id} </if>
+      <if test="shopId != null"> and shop_id = #{shopId,jdbcType=BIGINT} </if>
+      <if test="level != null"> and level = #{level,jdbcType=TINYINT} </if>
+      <if test="parentId != null"> and parent_id = #{parentId,jdbcType=BIGINT} </if>
+      <if test="show != null"> and `show` = #{show,jdbcType=TINYINT} </if>
+      <if test="name != null">
+        and `name` like concat('%',#{name,jdbcType=VARCHAR},'%')
+      </if>
+    </where>
+  </sql>
+  <sql id="order">
+    <if test="orderColumn != null">
+      order by #{orderColumn} <if test="desc"> desc </if>
+    </if>
+    <if test="orderColumn = null and orderedColumns != null and orderedColumns.size > 0">
+      <trim suffixOverrides=",">
+        <foreach collection="orderedColumns" index="index" item="orderedColumn" open=" order by " separator="," close="">
+          #{item.orderColumn} <if test="item.desc"> desc </if>
+        </foreach>
+      </trim>
+    </if>
+  </sql>
+  <sql id="page">
+    <if test="rowStart != null and pageSize != null">
+      limit #{rowStart},#{pageSize}
+    </if>
+  </sql>
+
+  <select id="count" parameterType="com.chl.victory.dao.query.item.CategoryQuery" resultType="java.lang.Integer">
+    select
+    count(1)
+    from category
+    <include refid="condition" />
+  </select>
+  
+  
+  <select id="select" parameterType="com.chl.victory.dao.query.item.CategoryQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from category
+    <include refid="conditionWithOrderAndPage" />
+  </select>
+  <select id="selectOne" parameterType="com.chl.victory.dao.query.item.CategoryQuery" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from category
+    <include refid="condition" />
+  </select>
+
+  <delete id="delete" parameterType="com.chl.victory.dao.query.item.CategoryQuery">
+    delete from category
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.chl.victory.dao.model.item.CategoryDO">
+    insert into category (id, created_time, modified_time,
+      shop_id, operator_id, name, 
+      level, parent_id, img, `show`)
+    values (#{id,jdbcType=BIGINT}, now(), now(),
+      #{shopId,jdbcType=BIGINT}, #{operatorId,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, 
+      #{level,jdbcType=TINYINT}, #{parentId,jdbcType=BIGINT}, #{img,jdbcType=VARCHAR}, #{show,jdbcType=TINYINT})
+  </insert>
+  <update id="update" parameterType="com.chl.victory.dao.model.item.CategoryDO">
+    update category
+    <set>
+        modified_time = now(),
+      <if test="shopId != null">
+        shop_id = #{shopId,jdbcType=BIGINT},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="img != null">
+        img = #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=TINYINT},
+      </if>
+      <if test="show != null">
+        `show` = #{show,jdbcType=TINYINT},
+      </if>
+      <if test="parentId != null">
+        parent_id = #{parentId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

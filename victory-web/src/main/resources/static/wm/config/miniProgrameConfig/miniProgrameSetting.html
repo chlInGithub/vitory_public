@@ -1,0 +1,2089 @@
+
+<style>
+    #miniProgramSetting .auth-options .auth-option-panel{
+        display:inline-block; width: 40%;height: 250px;padding-top: 4rem;
+    }
+    #miniProgramSetting .auth-options .auth-option-panel:hover{
+        border-bottom-color: #337ab7;
+        border-bottom-width: 1rem;
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+    }
+    #miniProgramSetting .auth-options .auth-option-panel-auth{
+        margin:0 2% 0 8%;
+        float: left;
+    }
+    #miniProgramSetting .auth-options .auth-option-panel-new{
+        margin:0 0 0 2%;
+    }
+    #miniProgramSetting .auth-options .auth-option-panel .am-panel-bd .title{
+        color: black;
+        text-align: center;
+        font-size: 2rem;
+    }
+    #miniProgramSetting .auth-options .auth-option-panel:hover .am-panel-bd .title{
+        font-size: 2.5rem;
+    }
+    #miniProgramSetting .auth-options .auth-option-panel .am-panel-bd .desc{
+        color: darkgray;
+        margin-top: 2rem;
+        text-align: center;
+    }
+    #miniProgramSetting #panel_code .btn{
+        margin: 0 2rem 1rem 0;;
+    }
+
+    #authNewAppForm .input-group {
+        width: 100%;
+    }
+    #miniProgramStyleForm .row {
+        margin-bottom: 10px;
+    }
+    .demo .demo_content_item{
+        background: #fff;height:50px;margin:3px;padding-top: 10px;border-radius: 3px;
+    }
+</style>
+
+<div class="loadedContent" id="miniProgramSetting">
+    <div class="panel panel-primary" v-if="choosedApp.appId">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b>小程序设置</b></span>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                    <div class="am-alert am-alert-warning" data-am-alert style="text-align: center;">
+                        当遇到问题(如数据延迟、请求错误等)时，可选择关闭顶部'小程序配置'Tab，并重新打开。
+                    </div>
+                </div>
+            </div>
+            <!-- Nav tabs -->
+            <ul id="miniProgramSettingNav" class="nav nav-tabs" role="tablist">
+                <li role="presentation"><a data-val="" id="tab_base" class="btn-xs" href="#panel_base" aria-controls="panel_base" role="tab" data-toggle="tab">小程序信息设置</a></li>
+                <li role="presentation"><a data-val="" id="tab_code" class="btn-xs" href="#panel_code" aria-controls="panel_code" role="tab" data-toggle="tab">小程序代码管理</a></li>
+                <li role="presentation"><a data-val="" id="tab_style" class="btn-xs" href="#panel_style" aria-controls="panel_style" role="tab" data-toggle="tab">小程序样式管理</a></li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content miniProgramSettingPanels">
+                <div role="tabpanel" class="tab-pane table-responsive" id="panel_base" style="overflow: hidden;">
+                    <div style="text-align: right">
+                        <button class="refresh-btn btn btn-success btn-sm am-animation-fade">
+                            刷新
+                        </button>
+                    </div>
+
+                    <div v-if="appBaseInfo.appid" class="am-panel-group">
+                        <div class="am-panel am-panel-default">
+                            <div class="am-panel-hd">
+                                <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#panel_base_content1'}">
+                                    基本信息
+                                </h4>
+                            </div>
+                            <div id="panel_base_content1" class="am-panel-collapse am-collapse am-in">
+                                <div class="am-panel-bd" style="line-height: 3rem;">
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            appid:&nbsp;&nbsp;{{appBaseInfo.appid}}
+                                        </div>
+                                        <div v-if="appBaseInfo.account_type" class="col-lg-3 col-md-3 col-sm-3">
+                                            帐号类型:&nbsp;&nbsp;{{ appBaseInfo.account_type == 1 ? "订阅号" : ( appBaseInfo.account_type == 2 ? '服务号' : ( appBaseInfo.account_type == 3 ? '小程序' : '未知' ) ) }}
+                                        </div>
+                                        <div v-if="appBaseInfo.principal_type" class="col-lg-3 col-md-3 col-sm-3">
+                                            主体类型:&nbsp;&nbsp;{{ appBaseInfo.principal_type == 0 ? "个人" : ( appBaseInfo.principal_type == 1 ? '企业' : ( appBaseInfo.principal_type == 2 ? '媒体' : ( appBaseInfo.principal_type == 3 ? '政府' : ( appBaseInfo.principal_type == 4 ? '其他组织' : '未知' ) ) ) ) }}
+                                        </div>
+                                        <div v-if="appBaseInfo.principal_name" class="col-lg-3 col-md-3 col-sm-3">
+                                            主体名称:&nbsp;&nbsp;{{appBaseInfo.principal_name}}
+                                        </div>
+                                        <div v-if="appBaseInfo.realname_status" class="col-lg-3 col-md-3 col-sm-3">
+                                            实名验证状态:&nbsp;&nbsp;{{ appBaseInfo.realname_status == 1 ? "实名验证成功" : ( appBaseInfo.realname_status == 2 ? '实名验证中' : ( appBaseInfo.realname_status == 3 ? '实名验证失败' : '未知' ) ) }}
+                                        </div>
+                                        <div v-if="appBaseInfo.wx_verify_info" class="col-lg-3 col-md-3 col-sm-3">
+                                            是否资质认证:&nbsp;&nbsp;{{appBaseInfo.wx_verify_info.qualification_verify ? '是' : '否'}}
+                                        </div>
+                                        <div v-if="appBaseInfo.wx_verify_info" class="col-lg-3 col-md-3 col-sm-3">
+                                            是否名称认证:&nbsp;&nbsp;{{appBaseInfo.wx_verify_info.naming_verify ? '是' : '否'}}
+                                        </div>
+                                        <div v-if="appBaseInfo.wx_verify_info" class="col-lg-3 col-md-3 col-sm-3">
+                                            是否需要年审:&nbsp;&nbsp;{{appBaseInfo.wx_verify_info.annual_review ? '是' : '否'}}
+                                        </div>
+                                        <div v-if="appBaseInfo.wx_verify_info" class="col-lg-3 col-md-3 col-sm-3">
+                                            年审开始时间:&nbsp;&nbsp;{{appBaseInfo.wx_verify_info.annual_review_begin_time_desc}}
+                                        </div>
+                                        <div v-if="appBaseInfo.wx_verify_info" class="col-lg-3 col-md-3 col-sm-3">
+                                            年审截止时间:&nbsp;&nbsp;{{appBaseInfo.wx_verify_info.annual_review_end_time_desc}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="appBaseInfo.appid" class="am-panel-group" >
+                        <div class="am-panel am-panel-default">
+                            <div class="am-panel-hd">
+                                <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#panel_base_content2'}">
+                                    域名信息
+                                </h4>
+                            </div>
+                            <div id="panel_base_content2" class="am-panel-collapse am-collapse am-in">
+                                <div class="am-panel-bd" style="line-height: 3rem;">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            request 合法域名:&nbsp;&nbsp;<span style="margin-right: 1rem;" v-for=" item in domain.requestdomain">{{item}}</span>
+                                        </div>
+                                        <div v-if="appBaseInfo.account_type" class="col-lg-12 col-md-12 col-sm-12">
+                                            业务域名:&nbsp;&nbsp;<span v-for=" item in domain.webviewdomain">{{item}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="appBaseInfo.appid" class="form-default" id="miniProgramBaseInfoForm" data-am-validator >
+                        <div class="small">
+                            <div class="panel panel-default panel-item">
+                                <div v-if="choosedApp.fastRegiste == 1" class="panel-body am-text-center">
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                            <div class="input-group input-group">
+                                                <span class="input-group-addon">小程序名称</span>
+                                                <input v-model="appBaseInfo.nickName" type="text" name="nickName" class="form-control" minlength="4" maxlength="30"/>
+                                            </div>
+                                        </div>
+                                        <div v-if="appBaseInfo.auditingNickName" class="col-lg-4 col-md-4 col-sm-4">
+                                            <div class="am-text-danger" style="font-size:2rem; line-height: 3rem;text-align: left;">
+                                                <span style="margin-right:1rem;">{{appBaseInfo.auditingNickName}}</span>正在审核中……
+                                            </div>
+                                        </div>
+                                        <div v-else class="col-lg-2 col-md-2 col-sm-2">
+                                            <button v-if="modifing_nick" class=" btn btn-success btn-sm am-animation-fade">
+                                                正在更改……
+                                            </button>
+                                            <button v-else @click="m_modify_nickname" id="saveNickName" class=" btn btn-success btn-sm am-animation-fade">
+                                                更改小程序名称
+                                            </button>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div style="line-height: 3rem;text-align: left;">
+                                                <span>
+                                                    帐号名称长度为4-30个字符，一个中文字等于2个字符。点击了解更多<a href="http://kf.qq.com/faq/170109umMvm6170109MZNnYV.html " target="blank">名称规则</a>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+
+                                    <div class="row">
+                                        <div class="col-lg-1 col-md-1 col-sm-1">
+                                            <div class="input-group input-group" style="height: 60px;">
+                                                <span class="input-group-addon">小程序头像</span>
+                                                <span class="input-group-addon"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3" style="margin-left: 3rem;">
+                                            <div class="input-group input-group-sm float-left uploaded-imgs">
+                                                <input type="hidden" id="head_img" name='imgs' class="form-control">
+                                            </div>
+                                            <div class="input-group input-group-sm am-form-file">
+                                                <div>
+                                                    <button type="button" class="am-btn am-btn-secondary am-btn-sm item-img-upload">
+                                                        <i class="am-icon-plus am-icon-lg"></i>
+                                                    </button>
+                                                    <input id="fileupload" type="file" name="imgFile" multiple  class="item-img-upload">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <button v-if="modifing_head_img" class=" btn btn-success btn-sm am-animation-fade">
+                                                正在更改……
+                                            </button>
+                                            <button v-else @click="m_modify_head_img"class=" btn btn-success btn-sm am-animation-fade">
+                                                更改小程序头像
+                                            </button>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div style="line-height: 3rem;text-align: left;">
+                                                <span>
+                                                    新头像不允许涉及政治敏感与色情;<br/>
+                                                    图片格式必须为：png,bmp,jpeg,jpg,gif；不可大于2M；建议使用png格式图片，以保持最佳效果；建议图片尺寸为144px*144px
+                                                </span>
+                                                <br/>
+                                                <span v-if="appBaseInfo.head_image_info.modify_used_count">
+                                                本月已使用修改次数为{{appBaseInfo.head_image_info.modify_used_count}}次，本月修改次数总额度为{{appBaseInfo.head_image_info.modify_quota}}次。
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2" style="text-align: right;">
+                                            当前生效的头像
+                                        </div>
+                                        <div class="col-lg-10 col-md-10 col-sm-10" style="text-align: left;">
+                                            <img v-if="appBaseInfo.head_image_info.head_image_url" :src="appBaseInfo.head_image_info.head_image_url"/>
+                                        </div>
+                                    </div>
+                                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                            <div class="input-group input-group">
+                                                <span class="input-group-addon">小程序介绍</span>
+                                                <textarea v-model="appBaseInfo.signature_info.signature"  name="signature" class="form-control" minlength="4" maxlength="120"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <button v-if="modifing_signature" class=" btn btn-success btn-sm am-animation-fade">
+                                                正在更改……
+                                            </button>
+                                            <button v-else @click="m_modify_signature" id="saveSignature" class=" btn btn-success btn-sm am-animation-fade">
+                                                更改小程序介绍
+                                            </button>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div style="line-height: 3rem;text-align: left;">
+                                                <span>
+                                                    请确认介绍内容不含国家相关法律法规禁止内容,介绍字数为4~120个字。
+                                                </span>
+                                                <br/>
+                                                <span v-if="appBaseInfo.signature_info.modify_used_count">
+                                                本月已使用修改次数为{{appBaseInfo.signature_info.modify_used_count}}次，本月修改次数总额度为{{appBaseInfo.signature_info.modify_quota}}次。
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                            <div class="input-group input-group">
+                                                <span class="input-group-addon">小程序类目</span>
+                                                <select v-model="choosedFirstCateId"  name="cate_first" class="form-control">
+                                                    <option v-for="cate in m_get_first_categories()" :value="cate.id">
+                                                        {{cate.name}}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div v-if="choosedFirstCateId != ''" class="col-lg-4 col-md-4 col-sm-4">
+                                            <div class="input-group input-group">
+                                                <span class="input-group-addon">二级类目</span>
+                                                <select v-if="choosedFirstCateId != ''" v-model="choosedSecondCateId"  name="cate_second" class="form-control">
+                                                    <option v-for="cate in m_get_second_categories()" :value="cate.id">
+                                                        {{cate.name}}
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <button v-if="modifing_category" class=" btn btn-success btn-sm am-animation-fade">
+                                                正在更改……
+                                            </button>
+                                            <button v-else @click="m_modify_category" id="saveCategory" class=" btn btn-success btn-sm am-animation-fade">
+                                                添加类目
+                                            </button>
+                                        </div>
+                                        <div v-if="qualifyCount4ChoosedCategory > 0" class="col-lg-12 col-md-12 col-sm-12">
+                                            <div style="line-height: 3rem;text-align: left;" class="am-text-danger">
+                                                需要提供资质信息:
+                                                <span v-for="item in needQualifys">
+                                                    <a v-if="item.url" :href="item.url"> {{item.name}} </a>
+                                                    <span v-else>{{item.name}}</span>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div v-if="qualifyCount4ChoosedCategory > 0" v-for="(item, index) in needQualifys" class="row upload_qualifys" style="margin-bottom: 1rem;">
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <div class="input-group input-group" style="height: 60px;">
+                                                <span class="input-group-addon">上传{{item.name}}</span>
+                                                <span class="input-group-addon"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-9 col-md-9 col-sm-9" style="margin-left: 3rem;">
+                                            <div class="input-group input-group-sm float-left uploaded-imgs">
+                                                <input type="hidden" :id="'qualify_img_' + index" name='imgs' class="form-control">
+                                            </div>
+                                            <div class="input-group input-group-sm am-form-file">
+                                                <div>
+                                                    <button type="button" class="am-btn am-btn-secondary am-btn-sm item-img-upload">
+                                                        <i class="am-icon-plus am-icon-lg"></i>
+                                                    </button>
+                                                    <input :id="'uploadQualify_' + index" type="file" name="imgFile" multiple  class="item-img-upload">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div v-if="setedCates.categories" class="row">
+                                        <div v-if="setedCates.quota" class="col-lg-12 col-md-12 col-sm-12">
+                                            <div style="line-height: 3rem;text-align: left;">
+                                                <span>
+                                                    本月剩余修改次数为{{setedCates.quota}}次，本月修改次数总额度为{{setedCates.limit}}次。
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div v-if="setedCates.categories.length > 0" class="col-lg-2 col-md-2 col-sm-2" style="text-align: right;">
+                                            已设置的类目
+                                        </div>
+                                        <div v-if="setedCates.categories.length > 0" class="col-lg-10 col-md-10 col-sm-10">
+                                            <div style="text-align: left;">
+                                                    <span v-for="item in setedCates.categories" style="margin-right:3rem;">
+                                                        {{item.first_name}},{{item.second_name}},{{item.audit_status == 1 ? '审核中' : (item.audit_status == 2 ? ('审核不通过,' + item.audit_reason) : (item.audit_status == 3 ? '审核通过' : '未知'))}}
+                                                    </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+                                </div>
+                                <div v-else class="panel-body am-text-center">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div class="alert am-alert-warning" style="font-size: 2rem;">
+                                                微信要求：非快速注册方式创建的小程序，商家需要在<a href="https://mp.weixin.qq.com/">微信平台</a>自行维护的小程序基本信息。
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            小程序名称
+                                        </div>
+                                        <div class="col-lg-10 col-md-10 col-sm-10">
+                                            <div>
+                                                {{appBaseInfo.nickName}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+
+                                    <div class="row">
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            小程序头像
+                                        </div>
+                                        <div class="col-lg-10 col-md-10 col-sm-10">
+                                            <div>
+                                                <img v-if="appBaseInfo.head_image_info.head_image_url" :src="appBaseInfo.head_image_info.head_image_url"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+
+                                    <div class="row">
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            小程序介绍
+                                        </div>
+                                        <div class="col-lg-10 col-md-10 col-sm-10">
+                                            <div>
+                                                {{appBaseInfo.signature_info.signature}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+
+                                    <div v-if="setedCates.categories" class="row">
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            已设置的类目
+                                        </div>
+                                        <div class="col-lg-10 col-md-10 col-sm-10">
+                                            <div>
+                                                    <span v-for="item in setedCates.categories" style="margin-right:3rem;">
+                                                        {{item.first_name}}|{{item.second_name}},{{item.audit_status == 1 ? '审核中' : (item.audit_status == 2 ? ('审核不通过,' + item.audit_reason) : (item.audit_status == 3 ? '审核通过' : '未知'))}}
+                                                    </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div v-if="appBaseInfo.appid" class="form-default" id="miniProgramPayForm" data-am-validator style="padding-bottom: 6rem;">
+                        <div class="small">
+                            <div class="am-panel am-panel-default">
+                                <div class="am-panel-hd">
+                                    <h4 class="am-panel-title">
+                                        微信支付配置
+                                    </h4>
+                                </div>
+                                <div class="am-panel-bd am-text-center">
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                            <div class="input-group input-group">
+                                                <span class="input-group-addon">
+                                                    <input v-model="appBaseInfo.pay.sub" type="checkbox" name="sub" class="form-control"/>
+                                                </span>
+                                                <span style="font-weight: 600;" class="input-group-addon">我已经联系客服 并 绑定为特约商户</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div style="line-height: 3rem;text-align: left;color: red;">
+                                                <span>
+                                                    必须依据实际进行选择，否则微信支付无法正常使用。
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+
+                                    <div class="row" v-if="!appBaseInfo.pay.sub">
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                            <div class="input-group input-group">
+                                                <span class="input-group-addon">APIKey</span>
+                                                <input v-model="appBaseInfo.pay.apiKey"  name="apiKey" class="form-control"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div v-if="appBaseInfo.existApiKey" style="font-size:2rem; line-height: 3rem;text-align: left;color: green;">
+                                                <span>
+                                                    已经设置apiKey。如果需要变更，请再次填写。
+                                                </span>
+                                            </div>
+                                            <div style="line-height: 3rem;text-align: left;color: red;">
+                                                <span>
+                                                    非特约商户，必须填写。
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr v-if="!appBaseInfo.pay.sub" data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+
+                                    <div class="row" v-if="!appBaseInfo.pay.sub">
+                                        <div class="col-lg-1 col-md-1 col-sm-1">
+                                            <div class="input-group input-group" style="height: 60px;">
+                                                <span class="input-group-addon">支付证书</span>
+                                                <span class="input-group-addon"></span>
+                                            </div>
+                                            <a target="_blank" href="https://kf.qq.com/faq/161222NneAJf161222U7fARv.html" style="font-size: .5rem;">(如何获取支付证书?)</a>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3" style="margin-left: 3rem;">
+                                            <div class="input-group input-group-sm float-left uploaded-imgs">
+                                                <input type="hidden" name='imgs' class="form-control">
+                                            </div>
+                                            <div class="input-group input-group-sm am-form-file">
+                                                <div>
+                                                    <button type="button" class="am-btn am-btn-secondary am-btn-sm item-img-upload">
+                                                        <i class="am-icon-plus am-icon-lg"></i>
+                                                    </button>
+                                                    <input id="fileupload" type="file" name="file" multiple  class="item-img-upload">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div v-if="appBaseInfo.existPayCert" style="font-size:2rem; line-height: 3rem;text-align: left;color: green;">
+                                                <span>
+                                                    已经上传支付证书。如果需要变更，请再次上传。
+                                                </span>
+                                            </div>
+                                            <div style="line-height: 3rem;text-align: left;color: red;">
+                                                <span>
+                                                    非特约商户，必须填写。
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr  v-if="!appBaseInfo.pay.sub" data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                            <div class="input-group input-group">
+                                                <span class="input-group-addon"><span style="color:red;">*</span>商户号</span>
+                                                <input v-model="appBaseInfo.pay.mchId"  name="mchId" class="form-control"/>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <button v-if="modifing_pay" class=" btn btn-success btn-sm am-animation-fade">
+                                                正在更改……
+                                            </button>
+                                            <button v-else @click="m_modify_pay" id="savePay" class=" btn btn-success btn-sm am-animation-fade">
+                                                保存
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div role="tabpanel" class="tab-pane table-responsive" id="panel_code" style="overflow: hidden;">
+                    <div style="text-align: right">
+                        <button class="refresh-btn btn btn-success btn-sm am-animation-fade">
+                            刷新
+                        </button>
+                    </div>
+                    <div v-if="appBaseInfo.appid" class="am-panel-group">
+                        <div class="am-panel am-panel-default">
+                            <div class="am-panel-hd">
+                                <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#panel_code_content1'}">
+                                    线上版本
+                                </h4>
+                            </div>
+                            <div id="panel_code_content1" class="am-panel-collapse am-collapse am-in">
+                                <div class="am-panel-bd" style="line-height: 3rem;min-height: 100px;">
+                                    <div v-if="code.online" style="margin-top:20px;">
+                                        <div class="col-lg-9 col-md-9 col-sm-9 text-center" style="color: green;font-size: 2rem;">
+                                            <span style="margin-right: 3rem;">提交时间 {{code.online.time}}</span>
+                                            <span>版本描述 {{code.online.version_desc}}</span>
+                                        </div>
+                                        <div v-if="code.audit && code.audit.status == 0" class="col-lg-3 col-md-3 col-sm-3 text-left">
+                                            <button @click="m_show_revert_modal" class=" btn am-btn-success btn-sm ">回滚 &nbsp;&nbsp;<i class="am-icon-level-down"></i></button>
+                                        </div>
+                                    </div>
+                                    <div v-else style="text-align: center;margin-top:20px;">
+                                        尚未提交线上版本
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="appBaseInfo.appid" class="am-panel-group" >
+                        <div class="am-panel am-panel-default">
+                            <div class="am-panel-hd">
+                                <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#panel_code_content2'}">
+                                    审核版本
+                                </h4>
+                            </div>
+                            <div id="panel_code_content2" class="am-panel-collapse am-collapse am-in">
+                                <div class="am-panel-bd" style="line-height: 3rem;min-height: 100px;">
+                                    <div v-if="code.audit" class="row"  style="margin-top:20px;">
+                                            <div class="col-lg-2 col-md-2 col-sm-2 text-center">
+                                                {{code.audit.statusDesc}}
+                                            </div>
+                                            <div class="col-lg-7 col-md-7 col-sm-7 text-center">
+                                                <span style="margin-right: 3rem;">提交时间 {{code.audit.time}}</span>
+                                                <span>版本描述 {{code.audit.version_desc}}</span>
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-3 text-left">
+                                                <button @click="m_show_release_modal" v-if="code.audit.status == 0" class=" btn am-btn-success btn-sm ">发布 &nbsp;&nbsp;<i class="am-icon-angellist"></i></button>
+                                                <button @click="m_show_un_audit_modal" v-if="code.audit.status == 2 || code.audit.status == 0" class=" btn btn-sm ">撤回 &nbsp;&nbsp;<i class="am-icon-remove"></i></button>
+                                            </div>
+                                    </div>
+                                    <div v-else style="text-align: center;margin-top:20px;">
+                                        你暂无提交审核的版本或者版本已发布上线
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div v-if="appBaseInfo.appid" class="am-panel-group" >
+                        <div class="am-panel am-panel-default">
+                            <div class="am-panel-hd">
+                                <h4 class="am-panel-title" data-am-collapse="{parent: '#accordion', target: '#panel_code_content3'}">
+                                    开发版本
+                                </h4>
+                            </div>
+                            <div id="panel_code_content3" class="am-panel-collapse am-collapse am-in">
+                                <div class="am-panel-bd small" style="line-height: 3rem;min-height: 100px;">
+                                        <div v-if="code.test" class="row"  style="margin-top:20px;">
+                                            <div class="col-lg-2 col-md-2 col-sm-2 text-center">
+                                                    <button @click="m_show_test_code" class=" btn am-btn-secondary btn-sm ">体验码 &nbsp;&nbsp;<i class="am-icon-qrcode"></i></button>
+                                            </div>
+                                            <div class="col-lg-7 col-md-7 col-sm-7 text-center">
+                                                <div>
+                                                    <span style="margin-right: 3rem;">代码版本号 {{code.test.user_version}}</span>
+                                                    <span style="margin-right: 3rem;">提交时间 {{code.test.time}}</span>
+                                                    <span>代码描述 {{code.test.user_desc}}</span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 col-md-3 col-sm-3 text-left">
+                                                <button @click="m_show_audit_modal" :disabled="code.audit" class=" btn am-btn-success btn-sm ">提交审核 &nbsp;&nbsp;<i class="am-icon-eye"></i></button>
+                                                <button @click="m_del_test_code" :disabled="code.audit" class=" btn btn-sm ">删除 &nbsp;&nbsp;<i class="am-icon-remove"></i></button>
+                                            </div>
+                                        </div>
+                                    <div v-else class="row"  style="margin-top:20px;">
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                            <div class="input-group input-group">
+                                                <span class="input-group-addon">代码版本号</span>
+                                                <input placeholder="推荐格式 x.x.x 如1.0.0" v-model="code.newtest.user_version" type="text" name="user_version" class="form-control" minlength="4" maxlength="64" required/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                            <div class="input-group input-group">
+                                                <span class="input-group-addon">代码描述</span>
+                                                <input v-model="code.newtest.user_desc" type="text" name="user_desc" class="form-control" minlength="4" maxlength="128" required/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <button v-if="committing_test" class=" btn btn-success btn-sm am-animation-fade">
+                                                正在上传……
+                                            </button>
+                                            <button v-else @click="m_commit_test" id="commitTest" class=" btn btn-success btn-sm am-animation-fade">
+                                                上传代码  &nbsp;&nbsp;<i class="am-icon-upload"></i>
+                                            </button>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div style="line-height: 3rem;text-align: left;">
+                                                <span>
+                                                    代码版本号（长度不要超过 64 个字符）
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div v-if="code.test && code.testers && code.testers.members" class="row"  style="margin-top:20px;">
+                                        <div class="col-lg-2 col-md-2 col-sm-2 text-center">
+                                            体验者微信号
+                                        </div>
+                                        <div class="col-lg-7 col-md-7 col-sm-7 text-center">
+                                            <div v-if="code.testers && code.testers.members && code.testers.members.length > 0">
+                                                <span style="margin-left:3rem;" v-for="item in code.testers.members">{{item.wechatId}}<i class="am-icon-remove" v-if="!code.audit" @click="m_unbind_code_tester(item.userstr)"></i></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3 text-left">
+                                            <button @click="m_show_add_tester_modal" :disabled="code.audit" class=" btn btn-sm ">新增体验者 &nbsp;&nbsp;<i class="am-icon-user-plus"></i></button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div role="tabpanel" class="tab-pane table-responsive" id="panel_style" style="overflow: hidden;">
+                    <div v-if="appBaseInfo.appid" class="form-default" id="miniProgramStyleForm" data-am-validator >
+                        <div class="small">
+                            <div class="panel panel-default panel-item">
+                                <div class="panel-body am-text-center">
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                            <div class="input-group input-group">
+                                                <span class="input-group-addon">导航栏背景色</span>
+                                                <input v-model="appStyle.navBarBackColor" placeholder="默认白色，即#ffffff或#FFFFFF" type="text" name="navBarBackColor" class="form-control" maxlength="7"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                            <div class="input-group input-group">
+                                                <span class="input-group-addon">导航栏文字色</span>
+                                                <input v-model="appStyle.navBarFontColor" placeholder="默认黑色，即#000000" type="text" name="navBarFontColor" class="form-control" maxlength="7"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div style="line-height: 3rem;text-align: left;color: red;">
+                                                <span>
+                                                    仅支持 #ffffff 和 #000000。
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                            <div class="input-group input-group">
+                                                <span class="input-group-addon">页面背景色</span>
+                                                <input v-model="appStyle.bgColor" placeholder="默认浅灰色，即#EEEEEE" type="text" name="bgColor" class="form-control" maxlength="7"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4">效果预览</div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-4">
+                                            <div name="detail" class="my-phone demo">
+                                                <div class="my-phone-container" style="overflow: hidden">
+                                                    <div :style="m_get_navBarStyle()">
+                                                        导航栏标题
+                                                    </div>
+                                                    <div :style="m_get_pageStyle()">
+                                                        <div class="demo_content_item">
+                                                            活动内容
+                                                        </div>
+                                                        <div class="demo_content_item">
+                                                            类目内容
+                                                        </div>
+                                                        <div class="demo_content_item">
+                                                            推荐内容
+                                                        </div>
+                                                        <div class="demo_content_item" style="height: 150px;padding-top:50px;">
+                                                            商品内容
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                            <button @click="m_modify_style" id="saveColor" class=" btn btn-success btn-sm am-animation-fade">
+                                                保存
+                                            </button>
+                                        </div>
+
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div style="line-height: 3rem;text-align: left;color: red;">
+                                                <span>
+                                                    必须发布代码，才可变更小程序样式。
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div v-else class="am-popup" id="auth-app-popup" style="display: contents; ">
+        <div class="am-popup-inner" style="padding: 0 !important;">
+            <div class="am-popup-bd">
+                <div class="am-alert am-alert-secondary" data-am-alert style="text-align: left;font-size: 1.5rem;line-height: 3rem;color: black;">
+                    将小程序授权给给博予，博予会自动帮助您生成店铺小程序，并提交给微信审核。
+                    如果商家已有认证注册的小程序，可以选择直接授权，使用认证的小程序；如果商家没有小程序，可以选择注册小程序，注册后直接授权使用。
+                </div>
+
+                <div v-if="loadAppsDone">
+                    <div v-if="authorizedApps.apps && authorizedApps.apps.length > 0" class="am-panel am-panel-success">
+                        <div class="am-panel-hd">已授权APP</div>
+                        <div class="am-panel-bd">
+                            <div>
+                                <table class="apps-table am-table am-table-striped am-table-hover am-table-bordered am-table-radius"><!--table-bordered-->
+                                    <thead>
+                                    <tr>
+                                        <th class='col-lg-3'>appID</th>
+                                        <th class='col-lg-3'>名称</th>
+                                        <th class='col-lg-2'>绑定方式</th>
+                                        <th class='col-lg-1'>微信支付</th>
+                                        <th class='col-lg-1'>特约商户</th>
+                                        <th class='col-lg-2'></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr v-for="app in authorizedApps.apps">
+                                        <td>{{app.appId}}</td>
+                                        <td>{{app.appName}}</td>
+                                        <td>{{app.fastRegiste == 1 ? "快速注册" : "授权"}}</td>
+                                        <td>{{app.configPay == 1 ? "已配置" : "未配置"}}</td>
+                                        <td>{{app.sub == 1 ? "已绑定" : "未绑定"}}</td>
+                                        <td>
+                                            <button type='button' class='btn btn-primary btn-xs' @click="m_choose_app(app)">配置 &nbsp;&nbsp;<i class="am-icon-cog"></i></button>
+                                            <!--<button v-if="app.bindPay == 0" type='button' class='btn btn-success btn-xs confirmed'
+                                                    data-msg="已完成 微信支付特约商户入驻 并 配置appId ?" data-optid="bindPay" :data-appid=app.appId >绑定微信支付 &nbsp;&nbsp;<i class="am-icon-link"></i></button>-->
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--<hr data-am-widget="divider" style="" class="am-divider am-divider-dashed" />-->
+
+                    <div v-else class="auth-options" style="margin: 4rem 0;">
+                        <div @click="m_auth_app()" class="auth-option-panel auth-option-panel-auth am-panel am-panel-default">
+                            <div class="am-panel-bd">
+                                <div class="title">
+                                    <!--<div>
+                                        <img src="">
+                                    </div>-->
+                                    <div>
+                                        授权已有小程序
+                                    </div>
+                                </div>
+                                <div class="desc">
+                                    如果商家已有认证过的小程序，可以直接授权使用该小程序。
+                                    <b style="color: red;">
+                                        微信要求：针对此种方式授权的小程序，商家需要在微信平台自行维护的小程序基本信息。
+                                    </b>
+                                </div>
+                            </div>
+                        </div>
+                        <div @click="m_show_new_app_modal()" class="auth-option-panel auth-option-panel-new am-panel am-panel-default">
+                            <div class="am-panel-bd">
+                                <div class="title">
+                                    <!--<div>
+                                        <img src="">
+                                    </div>-->
+                                    <div>
+                                        注册新的小程序
+                                    </div>
+                                </div>
+                                <div class="desc">
+                                    如果商家没有小程序，可以直接进行注册，并使用新注册的小程序，<b style="color: darkgreen;">无需交300元认证费</b>。
+                                    <b style="color: red;">只能创建线下类目小程序，创建线上类目小程序将被微信驳回。
+                                        <a href="https://docs.qq.com/sheet/DQnJZa05GaFVFTW1U">快速创建小程序接口-类目参考表</a>
+                                    </b>
+                                    <div v-if="authorizedApps.registing" class="alert am-alert-warning" style="margin-top: 2rem;">
+                                        最近新建的小程序，正在等待微信审批，请耐心等待。
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="am-modal am-modal-confirm" id="auth-new-app-modal" style="width: 100%">
+        <div class="am-modal-dialog" style="z-index: 1111;border-radius: .5rem;">
+            <div class="am-modal-hd">快速创建小程序</div>
+            <div class="am-modal-bd">
+                <div class="alert am-alert-secondary" style="text-align: left;line-height: 2rem;">
+                    采用法人人脸识别方式替代小额打款等认证流程，极大的减轻了小程序主体、类目资质信息收集的人力成本。
+                    <br/>
+                    只需提供<b>法人姓名、法人微信、企业名称、企业代码信息</b>，微信官方便可以向企业法人微信下发一条采集法人人脸的信息，可极简的完成全部注册与认证流程。
+                </div>
+
+                <form class="form-default" id="authNewAppForm" enctype="multipart/form-data" data-am-validator>
+                    <div class="small">
+                        <div class="panel panel-default panel-item">
+                            <div class="panel-body am-text-center">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="input-group input-group-sm">
+                                            <input required placeholder="法人姓名" v-model="newAppData.legal_persona_name" type="text" name="legal_persona_name" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="input-group input-group-sm">
+                                            <input required placeholder="法人微信号" v-model="newAppData.legal_persona_wechat" type="text" name="legal_persona_wechat" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="input-group input-group-sm">
+                                            <input required placeholder="企业名称" v-model="newAppData.name" type="text" name="name" class="form-control" />
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="input-group input-group-sm">
+                                            <div class="am-form-group am-form-select">
+                                                <select required v-model="newAppData.code_type" name="code_type" class="form-control">
+                                                    <option value="1">统一社会信用代码（18 位）</option>
+                                                    <option value="2">组织机构代码（9 位）</option>
+                                                    <option value="3">营业执照注册号(15 位)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="input-group input-group-sm">
+                                            <input required placeholder="企业代码" v-model="newAppData.code" type="text" name="code" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+        <div style="width:100%;height:100%;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 111;background-color: gray;opacity: .5;"></div>
+    </div>
+    <div class="am-modal am-modal-confirm" id="add-code-tester-modal" style="width: 100%">
+        <div class="am-modal-dialog" style="z-index: 1111;border-radius: .5rem;">
+            <div class="am-modal-hd">新增体验者</div>
+            <div class="am-modal-bd">
+                <div class="form-default" enctype="multipart/form-data" data-am-validator>
+                    <div class="small">
+                        <div class="panel panel-default panel-item">
+                            <div class="panel-body am-text-center">
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12 col-sm-12">
+                                        <div class="input-group input-group-sm" style="margin: auto;">
+                                            <input required placeholder="微信号" v-model="code.newTester.wechatId" type="text" name="wechatId" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+        <div style="width:100%;height:100%;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 111;background-color: gray;opacity: .5;"></div>
+    </div>
+
+    <div class="am-modal am-modal-confirm" id="audit-code-modal" style="width: 100%">
+        <div class="am-modal-dialog" style="z-index: 1111;border-radius: .5rem;">
+            <div class="am-modal-hd">提交审核的相关须知</div>
+            <div class="am-modal-bd">
+                <div class="text-center" style="margin-bottom: 2rem;">
+                    <i class="am-icon-exclamation-circle" style="font-size: 6rem;color: royalblue;"></i>
+                    <br/>
+                    <span style="font-size: 3rem;">确认提交审核？</span>
+                </div>
+                <div style="width:80%; margin-left:10%;line-height: 3rem;" class="text-left">
+                    <div>
+                        提交给微信团队审核前，请确保:
+                    </div>
+                    <div>
+                        <ul>
+                            <li>
+                                提交的小程序功能完整，可正常打开和运行，而不是测试版或 Demo。 多次提交测试内容或 Demo，将受到相应处罚。
+                            </li>
+                            <li>
+                                已仔细阅读 <a target="_blank" href="https://developers.weixin.qq.com/miniprogram/product/index.html">《微信小程序平台运营规范》</a>和 <a target="_blank" href="https://developers.weixin.qq.com/miniprogram/product/reject.html">《微信小程序平台审核常见被拒绝情形》</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        第三方平台提示:
+                    </div>
+                    <div>
+                        <ul>
+                            <li>
+                                提交审核前，请务必在管理后台进行较充分配置，如店铺信息、商品信息等。
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+        <div style="width:100%;height:100%;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 111;background-color: gray;opacity: .5;"></div>
+    </div>
+    <div class="am-modal am-modal-confirm" id="un_audit-code-modal" style="width: 100%">
+        <div class="am-modal-dialog" style="z-index: 1111;border-radius: .5rem;">
+            <div class="am-modal-bd">
+                <div class="text-center" style="margin-bottom: 2rem;">
+                    <i class="am-icon-exclamation-circle" style="font-size: 6rem;color: royalblue;"></i>
+                    <br/>
+                    <div class="alert-danger" style="font-size: .6rem;">单个帐号每天审核撤回次数最多不超过 1 次，一个月不超过 10 次。</div>
+                    <span style="font-size: 3rem;">确认回撤审核？</span>
+                </div>
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+        <div style="width:100%;height:100%;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 111;background-color: gray;opacity: .5;"></div>
+    </div>
+    <div class="am-modal am-modal-confirm" id="release-code-modal" style="width: 100%">
+        <div class="am-modal-dialog" style="z-index: 1111;border-radius: .5rem;">
+            <div class="am-modal-bd">
+                <div class="text-center" style="margin-bottom: 2rem;">
+                    <i class="am-icon-exclamation-circle" style="font-size: 6rem;color: royalblue;"></i>
+                    <br/>
+                    <span style="font-size: 3rem;">确认发布？</span>
+                </div>
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+        <div style="width:100%;height:100%;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 111;background-color: gray;opacity: .5;"></div>
+    </div>
+    <div class="am-modal am-modal-confirm" id="revert-code-modal" style="width: 100%">
+        <div class="am-modal-dialog" style="z-index: 1111;border-radius: .5rem;">
+            <div class="am-modal-bd">
+                <div class="text-center" style="margin-bottom: 2rem;">
+                    <i class="am-icon-exclamation-circle" style="font-size: 6rem;color: royalblue;"></i>
+                    <br/>
+                    <span style="font-size: 3rem;">确认回滚？</span>
+                </div>
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+        <div style="width:100%;height:100%;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 111;background-color: gray;opacity: .5;"></div>
+    </div>
+    <div class="am-modal am-modal-confirm" id="audit-result-modal" style="width: 100%">
+        <div class="am-modal-dialog" style="z-index: 1111;border-radius: .5rem;">
+            <div class="am-modal-bd">
+                <div class="text-center" style="margin-bottom: 2rem;">
+                    <span style="font-size: 3rem;">已完成授权？</span>
+                </div>
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>取消</span>
+                <span class="am-modal-btn" data-am-modal-confirm>确定</span>
+            </div>
+        </div>
+        <div style="width:100%;height:100%;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 111;background-color: gray;opacity: .5;"></div>
+    </div>
+
+    <div class="am-modal am-modal-confirm" id="test-code-modal" style="width: 100%">
+        <div class="am-modal-dialog" style="z-index: 1111;border-radius: .5rem;">
+            <div class="am-modal-bd">
+                <div class="text-center" style="margin-bottom: 2rem;">
+
+                </div>
+            </div>
+            <div class="am-modal-footer">
+                <span class="am-modal-btn" data-am-modal-cancel>关闭</span>
+            </div>
+        </div>
+        <div style="width:100%;height:100%;position: fixed;top: 0;right: 0;bottom: 0;left: 0;z-index: 111;background-color: gray;opacity: .5;"></div>
+    </div>
+
+</div>
+
+<script>
+    var appMiniProgramSetting = new mixined_vue({
+        el: '#miniProgramSetting',
+        data: {
+            loadAppsDone: false,
+            authorizedApps: {},
+            registing: false,
+            choosedApp: {},
+            newAppData: {
+                code_type: 1
+            },
+            appBaseInfo:{
+                pay:{}
+            },
+            appStyle:{
+                navBarFontColor: '#000000',
+                navBarBackColor: '#ffffff',
+                bgColor: '#EEEEEE'
+            },
+            oldSignature: '',
+            oldNickName: '',
+            modifing_nick: false,
+            modifing_style: false,
+            modifing_signature: false,
+            modifing_head_img: false,
+            domain:{},
+            categories: [],
+            choosedFirstCateId: "",
+            choosedSecondCateId: "",
+            choosedCategory: {},
+            modifing_category: false,
+            firstCates: [],
+            qualifyCount4ChoosedCategory: 0,
+            needQualifys: [],
+            setedCates: {},
+            code: {
+                newtest: {},
+                newTester: {}
+            },
+            committing_test: false,
+            currentBindPayAppId: false,
+            modifing_pay: false
+        },
+        methods: {
+            m_modify_style: function(){
+                if (this.modifing_style) {
+                    return true;
+                }
+                var navBarFontColor = this.appStyle.navBarFontColor
+                if ("#000000" != navBarFontColor && "#ffffff" != navBarFontColor) {
+                    return msgAlert("导航栏文本色仅支持#000000或#ffffff")
+                }
+                return modify_style();
+            },
+            m_get_navBarStyle: function(){
+                var style = 'border:1px solid #eeeeee;padding-top:15px;text-align: center; height: 50px;color: ' + this.appStyle.navBarFontColor + ';background-color: '+ this.appStyle.navBarBackColor
+                return style
+            },
+            m_get_pageStyle: function(){
+                var style = 'height:100%;border:1px solid #eeeeee;text-align: center; background-color: '+ this.appStyle.bgColor
+                return style
+            },
+            m_modify_pay: function(){
+                var mchId = this.appBaseInfo.pay.mchId
+                if (ObjectCommonUtil.isEmpty(mchId)) {
+                    return castErrorMsg("请填写商户号")
+                }
+                var sub = this.appBaseInfo.pay.sub
+                var apiKey = this.appBaseInfo.pay.apiKey
+                var existPayCert = this.appBaseInfo.existPayCert
+                var existApiKey = this.appBaseInfo.existApiKey
+                log(sub)
+                if (sub == false && !existApiKey && ObjectCommonUtil.isEmpty(apiKey)) {
+                    return castErrorMsg("未绑定为特约商户，必须填写apiKey.")
+                }
+                if (sub == false && !existPayCert) {
+                    return castErrorMsg("未绑定为特约商户，必须上传支付证书.")
+                }
+
+                this.modifing_pay = true
+                AjaxUtil.doAjax({
+                    url:getSubmitUrl('miniProgramSetting','pay'),
+                    config: {
+                        method: 'POST'
+                    },
+                    data:{
+                        sub:  sub,
+                        mchId: mchId,
+                        apiKey : apiKey
+                    },
+                    doneCallback:function (data) {
+                        appMiniProgramSetting.modifing_pay = false
+                        if (!data.s) {
+                            castErrorMsg(data)
+                            return false
+                        }
+                    },
+                    failCallback: function () {
+                        appMiniProgramSetting.modifing_pay = false
+                    }
+                })
+
+            },
+            m_add_code_tester: function(tester){
+                this.code.testers.members.push(tester)
+                this.$forceUpdate()
+            },
+            m_unbind_code_tester: function(userId){
+                unbindTester(userId)
+            },
+            m_del_code_tester: function(userId){
+                this.code.testers.members = this.code.testers.members.filter(function (value) {
+                    return value.userstr != userId
+                })
+                this.$forceUpdate()
+            },
+            m_set_code_testers: function(testers){
+                this.code.testers = testers
+                this.$forceUpdate()
+            },
+            m_set_style: function(data){
+                this.appStyle = data
+                // 强制刷新数据
+                this.$forceUpdate()
+            },
+            m_set_code_test: function(test){
+                this.code.test = test
+                // 强制刷新数据
+                this.$forceUpdate()
+            },
+            m_set_code_audit: function(test){
+                this.code.audit = test
+                // 强制刷新数据
+                this.$forceUpdate()
+            },
+            m_set_code_online: function(test){
+                this.code.online = test
+                // 强制刷新数据
+                this.$forceUpdate()
+            },
+            m_show_add_tester_modal: function(){
+                showAddTesterModal()
+            },
+            m_show_revert_modal: function(){
+                showRevertModal()
+            },
+            m_show_release_modal: function(){
+                showReleaseModal()
+            },
+            m_commit_test: function(){
+                commitTest()
+            },
+            m_show_audit_modal: function(){
+                showAuditModal()
+            },
+            m_show_un_audit_modal: function(){
+                showUnAuditModal()
+            },
+            m_show_test_code: function(){
+                showTestCode()
+            },
+            m_del_test_code: function(){
+                delTestCode()
+            },
+            m_get_first_categories: function(){
+                if (this.choosedApp.fastRegiste == 0) {
+                    return msgAlert("非快速注册小程序，请前往微信平台进行基本信息设置。")
+                }
+
+                var that = this;
+                if (this.firstCates.length < 1) {
+                    this.categories.forEach(function (value, index) {
+                        if (value.level == 1) {
+                            that.firstCates.push(value)
+                        }
+                    });
+                }
+                return this.firstCates
+            },
+            m_get_second_categories: function(){
+                if (this.choosedApp.fastRegiste == 0) {
+                    return msgAlert("非快速注册小程序，请前往微信平台进行基本信息设置。")
+                }
+
+                var secondCategories = []
+                var that = this
+                var firstCate
+                if (this.choosedFirstCateId != "") {
+                    this.firstCates.forEach(function (value, index) {
+                        if (value.id == that.choosedFirstCateId) {
+                            firstCate = value
+                        }
+                    })
+                    if (ObjectCommonUtil.isNotUndefined(firstCate) && ObjectCommonUtil.isNotUndefined(firstCate.children)) {
+                        firstCate.children.forEach(function (value) {
+                            var temp = that.m_get_cate(value)
+                            if (ObjectCommonUtil.isNotUndefined(temp)) {
+                                secondCategories.push(temp);
+                            }
+                        })
+                    }
+                }
+
+                if (secondCategories.length < 1) {
+                    msgAlert("没有匹配的下级类目");
+                    throw "没有匹配的下级类目"
+                }
+
+                return secondCategories
+            },
+            m_get_cate: function(id){
+                var cate
+                this.categories.forEach(function (value, index) {
+                    if (value.id == id) {
+                        cate = value
+                        return cate
+                    }
+                });
+                return cate
+            },
+            m_modify_category: function(){
+                if (this.choosedApp.fastRegiste == 0) {
+                    return msgAlert("非快速注册小程序，请前往微信平台进行基本信息设置。")
+                }
+
+                // 是否为已设置的类目
+                var same = false
+                if (ObjectCommonUtil.isNotUndefined(this.setedCates.categories) && this.setedCates.categories.length > 0) {
+                    for(var i = 0; i < this.setedCates.categories.length; i++){
+                        var category = this.setedCates.categories[i]
+                        if (ObjectCommonUtil.isNotUndefined(category) && category.first == this.choosedFirstCateId && category.second == this.choosedSecondCateId) {
+                            same = true
+                            break
+                        }
+                    }
+                }
+
+                modify_category(same)
+            },
+            m_modify_head_img:function(){
+                if (this.choosedApp.fastRegiste == 0) {
+                    return msgAlert("非快速注册小程序，请前往微信平台进行基本信息设置。")
+                }
+
+                modify_head_img()
+            },
+            m_modify_nickname: function(){
+                if (this.choosedApp.fastRegiste == 0) {
+                    return msgAlert("非快速注册小程序，请前往微信平台进行基本信息设置。")
+                }
+
+                if (this.oldNickName == this.appBaseInfo.nickName) {
+                    return msgAlert("请改变配置");
+                }
+                if (this.appBaseInfo.nickName.length < 4) {
+                    return msgAlert("请查看字段说明");
+                }
+                modify_nickname()
+            },
+            m_modify_signature: function(){
+                if (this.choosedApp.fastRegiste == 0) {
+                    return msgAlert("非快速注册小程序，请前往微信平台进行基本信息设置。")
+                }
+
+                if (this.oldSignature == this.appBaseInfo.signature_info.signature) {
+                    return msgAlert("请改变配置");
+                }
+                if (this.appBaseInfo.signature_info.modify_used_count >= this.appBaseInfo.signature_info.modify_quota) {
+                    return msgAlert("本月修改次数已用完");
+                }
+                if (this.appBaseInfo.signature_info.signature.length < 4) {
+                    return msgAlert("请查看字段说明");
+                }
+                modify_signature();
+            },
+            m_choose_app: function (app) {
+                chooseApp(app)
+            },
+            m_show_new_app_modal: function () {
+                if (this.authorizedApps.registing) {
+                    return msgAlert("最近快速创建的小程序，处于微信审核中……")
+                }
+                // 展示收集必要信息的modal
+                showNewAppModal()
+            },
+            m_auth_app: function () {
+                authApp()
+            }
+        },
+        watch: {
+            choosedFirstCateId: function () {
+                log("一级类目")
+            },
+            choosedSecondCateId: function () {
+                if (this.choosedApp.fastRegiste == 0) {
+                    return false
+                }
+
+                var cate = this.m_get_cate(this.choosedSecondCateId)
+                log(ObjectCommonUtil.isNotUndefined(cate))
+                if (ObjectCommonUtil.isUndefined(cate)) {
+                    cate = {}
+                }
+                this.choosedCategory = cate
+                var qualifyCount = 0
+                var qualifys = []
+                log(cate.qualify)
+                if (cate.sensitive_type == 1 && ObjectCommonUtil.isNotUndefined(cate.qualify) && ObjectCommonUtil.isNotUndefined(cate.qualify.exter_list)) {
+                    cate.qualify.exter_list.forEach(function (value) {
+                        if (ObjectCommonUtil.isNotUndefined(value.inner_list) && value.inner_list.length > 0) {
+                            value.inner_list.forEach(function (value) {
+                                qualifys.push(value)
+                            })
+                        }
+                    })
+                }
+                this.qualifyCount4ChoosedCategory = qualifys.length
+                this.needQualifys = qualifys
+                if (this.qualifyCount4ChoosedCategory > 0) {
+                    fileUploadUtils.clearImgs("#miniProgramSetting #miniProgramBaseInfoForm .upload_qualifys")
+                    setTimeout(function (){
+                        qualifys.forEach(function (value, index) {
+                            fileUploadUtils.bind(
+                                {
+                                    selecter:'#miniProgramSetting #miniProgramBaseInfoForm #uploadQualify_'+index,
+                                    url:'/p/wm/weixin/thirdplatform/mini/info/uploadMedia',
+                                    limitMax:1,
+                                    size:1024*1024*2
+                                }
+                            )
+                        })
+                    }, 1000)
+                }
+            }
+        }
+    })
+
+    var modify_style, chooseApp, showNewAppModal, authApp, modify_nickname, modify_signature, modify_head_img, commitTest, showTestCode, showAuditModal, delTestCode, showUnAuditModal, showReleaseModal, showRevertModal, bindTester, unbindTester, showAddTesterModal
+    $(function () {
+        // 查询是否有关联小程序，是否快速新建小程序以及进度
+        var authorizedApps = function () {
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramSetting','queryAuthorizedApps'),
+                config: {
+                    async: false
+                },
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    appMiniProgramSetting.authorizedApps = data.d
+                    appMiniProgramSetting.loadAppsDone = true
+
+                    setTimeout(function () {
+                        bindConfirmedCallback({
+                            selector:'#miniProgramSetting .apps-table .confirmed',
+                            genParam: function (currentThis) {
+                                var appId = $(currentThis).data("appid");
+                                log(app)
+                                if (!ObjectCommonUtil.isEmpty(appId)){
+                                    var param = {}
+                                    param.appId = appId
+
+                                    appMiniProgramSetting.currentBindPayAppId = appId
+
+                                    return param
+                                }
+                                return
+                            },
+                            doneCallback: function () {
+                                appMiniProgramSetting.authorizedApps.forEach(function (value) {
+                                    if (value.appId == appMiniProgramSetting.currentBindPayAppId) {
+                                        value.bindPay = true
+                                    }
+                                })
+                                appMiniProgramSetting.currentBindPayAppId = false
+                            }
+                        })
+                    }, 1000)
+                }
+            })
+        }
+        authorizedApps()
+        // 显示授权popup
+        jQuery("#miniProgramSetting #auth-app-popup").modal({dimmer: false, width: '100%', closeOnCancel: false, closeOnConfirm: false})
+        jQuery("#miniProgramSetting #auth-app-popup").on('opened.modal.amui', function () {
+            resizeContentHeight('miniProgrameSetting')
+        })
+        showNewAppModal = function () {
+            jQuery("#miniProgramSetting #auth-new-app-modal").modal({dimmer: false, width:600, closeOnConfirm: false, onConfirm: newApp})
+            /*开启表单验证*/
+            $('#miniProgramSetting #authNewAppForm').validator({})
+        }
+        var newApp = function () {
+            if (ObjectCommonUtil.isUndefined(appMiniProgramSetting.newAppData.legal_persona_name)
+                || ObjectCommonUtil.isUndefined(appMiniProgramSetting.newAppData.legal_persona_wechat)
+                || ObjectCommonUtil.isUndefined(appMiniProgramSetting.newAppData.code)
+                || ObjectCommonUtil.isUndefined(appMiniProgramSetting.newAppData.code_type)
+                || ObjectCommonUtil.isUndefined(appMiniProgramSetting.newAppData.name)) {
+                return msgAlert("请提供完整信息")
+            }
+
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramSetting','fastRegister'),
+                config: {
+                    method: 'POST'
+                },
+                data:appMiniProgramSetting.newAppData,
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    appMiniProgramSetting.newAppData = {}
+                    jQuery("#miniProgramSetting #auth-new-app-modal").modal('close')
+
+                    authorizedApps()
+                }
+            })
+        }
+
+        authApp = function () {
+            // 获取跳转url
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramSetting','authUrl'),
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+
+                    // 新标签页
+                    window.open(data.d.data, "_blank")
+
+                    jQuery("#miniProgramSetting #audit-result-modal").modal({dimmer: false, width:600, onConfirm: authorizedApps})
+                }
+            })
+        }
+
+        // 选择要配置的app
+        chooseApp = function (app) {
+            jQuery("#miniProgramSetting #test-code-modal .am-modal-bd div img").remove()
+
+            // 选择
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramSetting','chooseApp'),
+                config: {
+                    method: 'POST'
+                },
+                data:{
+                  appId:  app.appId
+                },
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    appMiniProgramSetting.choosedApp = app
+                    setTimeout(callbackOnChooseApp,300)
+                }
+            })
+        }
+        // 确认已绑定微信支付
+        bindPay = function (app) {
+            // 选择
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramSetting','bindPay'),
+                config: {
+                    method: 'POST'
+                },
+                data:{
+                  appId:  app.appId
+                },
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    app.bindPay = 1
+                }
+            })
+        }
+
+        // 选择app后，需要初始化页面行为
+        var callbackOnChooseApp = function () {
+            var queryBaseInfo = function () {
+                AjaxUtil.doAjax({
+                    url:getSubmitUrl('miniProgramSetting','query'),
+                    doneCallback:function (data) {
+                        if (!data.s) {
+                            castErrorMsg(data)
+                            return false
+                        }
+                        appMiniProgramSetting.appBaseInfo = data.d
+                        appMiniProgramSetting.oldNickName = appMiniProgramSetting.appBaseInfo.nickName
+                        appMiniProgramSetting.oldSignature = appMiniProgramSetting.appBaseInfo.signature_info.signature
+                        if (appMiniProgramSetting.choosedApp.fastRegiste == 1) {
+                            setTimeout(function (){
+                                resizeContentHeight()
+                                fileUploadUtils.bind(
+                                    {
+                                        selecter:'#miniProgramSetting #miniProgramBaseInfoForm #fileupload',
+                                        url:'/p/wm/weixin/thirdplatform/mini/info/uploadMedia',
+                                        limitMax:1,
+                                        size:1024*1024*2
+                                    }
+                                )
+                            }, 500)
+                        }
+                        // 绑定上传证书操作
+                        setTimeout(function (){
+                            fileUploadUtils.bind(
+                                {
+                                    selecter:'#miniProgramSetting #miniProgramPayForm #fileupload',
+                                    url:'/p/wm/weixin/thirdplatform/mini/info/uploadPayCert',
+                                    limitMax:1,
+                                    isImage: false,
+                                    size:1024*4,
+                                    suffix: "p12",
+                                    doneCallback: function () {
+                                        appMiniProgramSetting.appBaseInfo.existPayCert = true
+                                    }
+                                }
+                            )
+                        }, 500)
+                    }
+                })
+
+                AjaxUtil.doAjax({
+                    url:getSubmitUrl('miniProgramSetting','queryDomains'),
+                    doneCallback:function (data) {
+                        if (!data.s) {
+                            castErrorMsg(data)
+                            return false
+                        }
+                        appMiniProgramSetting.domain = data.d
+                    }
+                })
+
+                if (appMiniProgramSetting.choosedApp.fastRegiste == 1) {
+                    AjaxUtil.doAjax({
+                        url:getSubmitUrl('miniProgramSetting','allCates'),
+                        doneCallback:function (data) {
+                            if (!data.s) {
+                                castErrorMsg(data)
+                                return false
+                            }
+                            appMiniProgramSetting.categories = JsonUtil.toJson(data.d);
+                        }
+                    })
+                }
+
+                AjaxUtil.doAjax({
+                    url:getSubmitUrl('miniProgramSetting','setedCates'),
+                    doneCallback:function (data) {
+                        if (!data.s) {
+                            castErrorMsg(data)
+                            return false
+                        }
+                        appMiniProgramSetting.setedCates = data.d;
+                    }
+                })
+            }
+            var queryCode = function(){
+                AjaxUtil.doAjax({
+                    url:getSubmitUrl('miniProgramCodeSetting','test'),
+                    doneCallback:function (data) {
+                        if (!data.s) {
+                            castErrorMsg(data)
+                            return false
+                        }
+                        if (ObjectCommonUtil.isNotUndefined(data.d)) {
+                            appMiniProgramSetting.m_set_code_test(data.d)
+                        }
+                    }
+                })
+
+                AjaxUtil.doAjax({
+                    url:getSubmitUrl('miniProgramCodeSetting','audit'),
+                    doneCallback:function (data) {
+                        if (!data.s) {
+                            castErrorMsg(data)
+                            return false
+                        }
+                        if (ObjectCommonUtil.isNotUndefined(data.d)) {
+                            appMiniProgramSetting.m_set_code_audit(data.d)
+                        }
+                    }
+                })
+
+                AjaxUtil.doAjax({
+                    url:getSubmitUrl('miniProgramCodeSetting','online'),
+                    doneCallback:function (data) {
+                        if (!data.s) {
+                            castErrorMsg(data)
+                            return false
+                        }
+                        if (ObjectCommonUtil.isNotUndefined(data.d)) {
+                            appMiniProgramSetting.m_set_code_online(data.d)
+                        }
+                    }
+                })
+
+                AjaxUtil.doAjax({
+                    url:getSubmitUrl('miniProgramCodeSetting','testers'),
+                    doneCallback:function (data) {
+                        if (!data.s) {
+                            castErrorMsg(data)
+                            return false
+                        }
+                        if (ObjectCommonUtil.isNotUndefined(data.d)) {
+                            if (ObjectCommonUtil.isUndefined(data.d.members)) {
+                                data.d.members = []
+                            }
+                            appMiniProgramSetting.m_set_code_testers(data.d);
+                        }
+                    }
+                })
+            }
+            var queryStyle = function(){
+                AjaxUtil.doAjax({
+                    url:getSubmitUrl('miniProgramStyleSetting','queryStyle'),
+                    doneCallback:function (data) {
+                        if (!data.s) {
+                            castErrorMsg(data)
+                            return false
+                        }
+                        if (ObjectCommonUtil.isNotUndefined(data.d)) {
+                            appMiniProgramSetting.m_set_style(data.d)
+                        }
+                    }
+                })
+            }
+
+            bindNavTabCallback({
+                pageId:'miniProgramSetting',
+                navId:'miniProgramSettingNav',
+                navShown: function (target, relatedTarget) {
+                    var activeTab = $('#miniProgramSettingNav .active a')
+                    var tablePanelId = activeTab.attr('aria-controls')
+                    if (undefined == activeTab.data('hasLoad')) {
+                        //TODO
+                        log(tablePanelId)
+                        if (tablePanelId == "panel_base") {
+                            queryBaseInfo()
+                            $("#miniProgramSetting #"+tablePanelId).on('click', ".refresh-btn", function () {
+                                var that = $(this)
+                                that.attr("disabled", "disabled")
+                                queryBaseInfo()
+                                setTimeout(function () {
+                                    that.removeAttr("disabled")
+                                }, 5000)
+                            })
+
+                        }else if (tablePanelId == "panel_code") {
+                            queryCode()
+                            $("#miniProgramSetting #"+tablePanelId).on('click', ".refresh-btn", function () {
+                                var that = $(this)
+                                that.attr("disabled", "disabled")
+                                queryCode()
+                                setTimeout(function () {
+                                    that.removeAttr("disabled")
+                                }, 5000)
+                            })
+                        }else if (tablePanelId == "panel_style") {
+                            queryStyle()
+                        }
+                        activeTab.data('hasLoad', true);
+                    }else if (activeTab.data('hasLoad') == false) {
+                        //TODO
+                    }
+                }
+            })
+
+            var activeTab = $('#miniProgramSettingNav .active a')
+            if (activeTab.length == 0){
+                $('#miniProgramSettingNav li:first a').tab('show')
+            } else {
+                var tablePanelId = activeTab.attr('aria-controls')
+                activeTab.data('hasLoad') ? activeTab.data('hasLoad', false) : null;
+                //$('#'+tablePanelId + " table:first").DataTable().ajax.reload()
+            }
+        }
+
+        modify_style = function () {
+            appMiniProgramSetting.modifing_style = true
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramStyleSetting','style'),
+                config: {
+                    method: 'POST'
+                },
+                data:appMiniProgramSetting.appStyle,
+                doneCallback:function (data) {
+                    appMiniProgramSetting.modifing_style = false
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    castSuccessMsg("成功")
+                }
+            })
+        }
+
+        modify_nickname = function () {
+            if (appMiniProgramSetting.choosedApp.fastRegiste == 0) {
+                return msgAlert("非快速注册小程序，请前往微信平台进行基本信息设置。")
+            }
+
+            appMiniProgramSetting.modifing_nick = true
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramSetting','modifyNick'),
+                config: {
+                    method: 'POST'
+                },
+                data:{
+                    nick_name: appMiniProgramSetting.appBaseInfo.nickName
+                },
+                doneCallback:function (data) {
+                    appMiniProgramSetting.modifing_nick = false
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    castSuccessMsg("成功")
+                }
+            })
+        }
+
+        modify_signature = function () {
+            if (appMiniProgramSetting.choosedApp.fastRegiste == 0) {
+                return msgAlert("非快速注册小程序，请前往微信平台进行基本信息设置。")
+            }
+
+            appMiniProgramSetting.modifing_signature = true
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramSetting','modifySignature'),
+                config: {
+                    method: 'POST'
+                },
+                data:{
+                    signature: appMiniProgramSetting.appBaseInfo.signature_info.signature
+                },
+                doneCallback:function (data) {
+                    appMiniProgramSetting.modifing_signature = false
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    castSuccessMsg("成功")
+                    appMiniProgramSetting.signature_info.modify_used_count++
+                }
+            })
+        }
+
+        modify_head_img = function () {
+            if (appMiniProgramSetting.choosedApp.fastRegiste == 0) {
+                return msgAlert("非快速注册小程序，请前往微信平台进行基本信息设置。")
+            }
+
+            if (ObjectCommonUtil.isEmpty($("#miniProgramSetting #miniProgramBaseInfoForm #head_img").val())) {
+                return msgAlert("请上传图片");
+            }
+            appMiniProgramSetting.modifing_head_img = true
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramSetting','modifyHeadImage'),
+                config: {
+                    method: 'POST'
+                },
+                data:{
+                    imgs: $("#miniProgramSetting #miniProgramBaseInfoForm #head_img").val()
+                },
+                doneCallback:function (data) {
+                    appMiniProgramSetting.modifing_head_img = false
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    castSuccessMsg("成功")
+                    var imgMd5 = $("#miniProgramSetting #miniProgramBaseInfoForm #head_img").val().split(",")[0]
+                    appMiniProgramSetting.appBaseInfo.head_image_info.head_image_url = ImgUtil.getImgUrl(imgMd5)
+                }
+            })
+        }
+
+        modify_category = function (same) {
+            if (appMiniProgramSetting.choosedApp.fastRegiste == 0) {
+                return msgAlert("非快速注册小程序，请前往微信平台进行基本信息设置。")
+            }
+
+            if (appMiniProgramSetting.setedCates.quota <= 0) {
+                return msgAlert("修改次数已到上限")
+            }
+            
+            for (var i = 0; i < appMiniProgramSetting.needQualifys.length; i++) {
+                var imgs = $("#miniProgramSetting #miniProgramBaseInfoForm #qualify_img_" + i).val()
+                if (ObjectCommonUtil.isEmpty(imgs)) {
+                    return msgAlert("请上传资质图片" + appMiniProgramSetting.needQualifys[i].name);
+                }
+            }
+
+            if (appMiniProgramSetting.needQualifys.length < appMiniProgramSetting.qualifyCount4ChoosedCategory) {
+                return msgAlert("请上传资质图片");
+            }
+
+            var isAdd = ObjectCommonUtil.isNotUndefined(same) && same == true ? 0 : 1
+            var data = {
+                first: appMiniProgramSetting.choosedFirstCateId,
+                second: appMiniProgramSetting.choosedSecondCateId,
+                isAdd: isAdd
+            }
+
+            for (var i = 0; i < appMiniProgramSetting.needQualifys.length; i++) {
+                var value = $("#miniProgramSetting #miniProgramBaseInfoForm #qualify_img_" + i).val()
+                var key = appMiniProgramSetting.needQualifys[i].name
+                data['certicates['+i+'].key'] = key
+                data['certicates['+i+'].value'] = value
+            }
+
+            appMiniProgramSetting.modifing_category = true;
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramSetting','modifyCate'),
+                config: {
+                    method: 'POST'
+                },
+                data:data,
+                doneCallback:function (data) {
+                    appMiniProgramSetting.modifing_category = false
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    castSuccessMsg("成功")
+                }
+            })
+        }
+
+        commitTest = function(){
+
+            if (ObjectCommonUtil.isUndefined(appMiniProgramSetting.code.newtest.user_version) || ObjectCommonUtil.isUndefined(appMiniProgramSetting.code.newtest.user_desc)) {
+                return msgAlert("请填写信息")
+            }
+
+            var data = appMiniProgramSetting.code.newtest
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramCodeSetting','commitTest'),
+                config: {
+                    method: 'POST'
+                },
+                data:data,
+                doneCallback:function (data) {
+                    appMiniProgramSetting.modifing_category = false
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    castSuccessMsg("成功")
+                    appMiniProgramSetting.code.test = appMiniProgramSetting.code.newtest
+                    appMiniProgramSetting.code.test.time = data.d.time
+                    appMiniProgramSetting.code.newtest = {}
+                    delTestQrCode()
+                }
+            })
+        }
+
+        showTestCode = function () {
+            if (jQuery("#miniProgramSetting #test-code-modal .am-modal-bd div img").length < 1 && appMiniProgramSetting.code.test != false) {
+                var url = getSubmitUrl('miniProgramCodeSetting','testCode') + "?appId=" + appMiniProgramSetting.choosedApp.appId;
+                jQuery("#miniProgramSetting #test-code-modal .am-modal-bd div").html("<img style='width:100%;' src='"+url+"'/>")
+            }
+            jQuery("#miniProgramSetting #test-code-modal").modal({dimmer: false, width:400, onCancel: function () {
+                    // jQuery("#miniProgramSetting #test-code-modal .am-modal-bd div img").remove()
+                }})
+        }
+        var delTestQrCode = function(){
+            jQuery("#miniProgramSetting #test-code-modal .am-modal-bd div img").remove()
+        }
+        showAuditModal = function () {
+            jQuery("#miniProgramSetting #audit-code-modal").modal({dimmer: false, width:600, onConfirm: auditCode});
+        }
+        showUnAuditModal = function () {
+            jQuery("#miniProgramSetting #un_audit-code-modal").modal({dimmer: false, width:600, onConfirm: unAuditCode})
+
+        }
+        showReleaseModal = function () {
+            if (appMiniProgramSetting.code.audit.status != 0) {
+                return msgAlert("审核状态错误")
+            }
+            jQuery("#miniProgramSetting #release-code-modal").modal({dimmer: false, width:600, onConfirm: releaseCode});
+
+        }
+        showRevertModal = function () {
+            if (appMiniProgramSetting.code.audit.status != 0) {
+                return msgAlert("审核状态错误")
+            }
+            jQuery("#miniProgramSetting #revert-code-modal").modal({dimmer: false, width:600, onConfirm: revertCode});
+
+        }
+        showAddTesterModal = function () {
+            jQuery("#miniProgramSetting #add-code-tester-modal").modal({dimmer: false, width:300, onConfirm: bindTester});
+
+        }
+        var revertCode = function () {
+
+            if (appMiniProgramSetting.code.audit.status != 0) {
+                return msgAlert("审核状态错误")
+            }
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramCodeSetting','revert'),
+                config: {
+                    method: 'POST'
+                },
+                data:{},
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    appMiniProgramSetting.m_set_code_online(false)
+                    appMiniProgramSetting.m_set_code_audit(false)
+                    appMiniProgramSetting.m_set_code_test(false)
+                }
+            })
+        }
+        var releaseCode = function () {
+
+            if (appMiniProgramSetting.code.audit.status != 0) {
+                return msgAlert("审核状态错误")
+            }
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramCodeSetting','commitRelease'),
+                config: {
+                    method: 'POST'
+                },
+                data:{},
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    appMiniProgramSetting.m_set_code_online(data.d)
+                    appMiniProgramSetting.m_set_code_audit(false)
+                    appMiniProgramSetting.m_set_code_test(false)
+                    msgAlert("已发布。")
+                }
+            })
+        }
+        var unAuditCode = function(){
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramCodeSetting','unAudit'),
+                config: {
+                    method: 'POST'
+                },
+                data:{},
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    appMiniProgramSetting.m_set_code_audit(false)
+                }
+            })
+        }
+        var auditCode = function(){
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramCodeSetting','commitAudit'),
+                config: {
+                    method: 'POST'
+                },
+                data:{},
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    appMiniProgramSetting.m_set_code_audit(data.d)
+                    msgAlert("已提交审核。本次审核预计在1-7天内完成，请耐心等待。")
+                }
+            })
+        }
+        delTestCode = function () {
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramCodeSetting','delTest'),
+                config: {
+                    method: 'POST'
+                },
+                data:{},
+                doneCallback:function (data) {
+                    appMiniProgramSetting.modifing_category = false
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+
+                    appMiniProgramSetting.m_set_code_test(false)
+                    delTestQrCode()
+                }
+            })
+        }
+        bindTester = function () {
+            if (ObjectCommonUtil.isEmpty(appMiniProgramSetting.code.newTester.wechatId)) {
+                return msgAlert("请填写信息")
+            }
+
+            var data = {
+                wechatid : appMiniProgramSetting.code.newTester.wechatId
+            };
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramCodeSetting','bindTester'),
+                config: {
+                    method: 'POST'
+                },
+                data:data,
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+
+                    appMiniProgramSetting.code.newTester = {}
+                    appMiniProgramSetting.m_add_code_tester(data.d)
+                }
+            })
+        }
+        unbindTester = function (userId) {
+            var data = {
+                userId : userId
+            }
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('miniProgramCodeSetting','unbindTester'),
+                config: {
+                    method: 'POST'
+                },
+                data:data,
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+
+                    appMiniProgramSetting.m_del_code_tester(userId)
+                }
+            })
+        }
+    })
+
+</script>

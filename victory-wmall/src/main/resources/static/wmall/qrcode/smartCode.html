@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>活码</title>
+</head>
+<body>
+    <div style="text-align: center">
+        <div id="process" style="font-size:3rem;top: 40vh;position: relative;">正在获取可用码</div>
+        <img id="code" style="display:none;width: 80vw;margin-top: 10vw;" src=""/>
+        <div id="desc" style="display: none;font-size: 2rem;color: green">(长按识别二维码)</div>
+        <div id="title" style="display: none;font-size: 3rem;"></div>
+    </div>
+</body>
+
+<script type='text/javascript' src='./../js/jquery-3.4.1.min.js' charset='utf-8'></script>
+<script type="text/javascript" src="./../js/common.js"></script>
+
+<script>
+    var paramJson = genJsonFromUrlParams();
+    if (ObjectCommonUtil.isUndefined(paramJson.id)) {
+        jQuery("#process").text("网址错误")
+        throw "缺少ID";
+    }
+    // 图片加载完成事件
+    jQuery("#code").on("load", function () {
+        jQuery("#code").show()
+        jQuery("#desc").show();
+        jQuery("#process").hide();
+
+        // 获取文本
+        var url = "https://smartcode.5jym.com/wmall/viewSmartCode/title"
+        var param = {id: paramJson.id}
+        jQuery.get(url, param, function(result) {
+            console.log(result)
+            if (result.s) {
+                jQuery("#title").text(result.d).show();
+            }
+        }, "json")
+
+        // 页面停留x s,认为用户扫码了
+        setTimeout(function () {
+            var url = "https://smartcode.5jym.com/wmall/viewSmartCode/increViewCode"
+            var param = {}
+            jQuery.get(url, param, function(result) {}, "json")
+        },1000)
+    })
+    // 图片加载失败事件
+    jQuery("#code").on("error", function () {
+        jQuery("#process").text("二维码加载失败")
+    })
+    jQuery("#code").attr("src", "https://smartcode.5jym.com/wmall/viewSmartCode/code?id=" + paramJson.id);
+
+</script>
+</html>

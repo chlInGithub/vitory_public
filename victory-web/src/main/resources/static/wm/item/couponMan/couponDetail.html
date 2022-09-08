@@ -1,0 +1,167 @@
+<div class="loadedContent" id="couponDetail">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b>店铺优惠券详情</b></span>
+        </div>
+        <div class="panel-body">
+            <form class="form-default" id="couponDetailForm">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">ID</span>
+                            <input type="text" name="id" class="form-control"/>
+                        </div>
+                    </div>
+                    <button id="query" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        查询
+                    </button>
+                </div>
+            </form>
+
+            <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+
+            <div class="small" v-if="couponDetail.id">
+                <div class="panel panel-default  panel-status">
+                    <div class="panel-heading" style="display: flex;">
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                            ID:&nbsp;&nbsp;{{couponDetail.id}}
+                        </span>
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                            标题:&nbsp;&nbsp;{{couponDetail.title}}
+                        </span>
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                            状态:
+                            <b class="am-text-danger" name="status">{{m_get_status_desc()}}</b>
+                        </span>
+                    </div>
+                    <div class="panel-body">
+                        <span class="col-lg-12 col-md-12 col-sm-12">
+                            描述:&nbsp;&nbsp;{{couponDetail.desc}}
+                        </span>
+
+                        <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                            满足金额:
+                            <b class="am-text-danger" name="meet">{{couponDetail.meet}}</b>
+                        </span>
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                            优惠金额:
+                            <b class="am-text-danger" name="discount">{{couponDetail.discount}}</b>
+                        </span>
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                            生效时间:
+                            <b class="am-text-danger" name="validTime">{{couponDetail.validTime}}</b>
+                        </span>
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                            失效时间:
+                            <b class="am-text-danger" name="validTime">{{couponDetail.invalidTime}}</b>
+                        </span>
+
+                        <hr data-am-widget="divider" style="" class="am-divider am-divider-default" />
+
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                            排斥规则:
+                            <b class="am-text-danger" name="only">{{m_get_only_desc()}}</b>
+                        </span>
+                        <span class="col-lg-3 col-md-3 col-sm-3">
+                            执行顺序:&nbsp;&nbsp;{{couponDetail.order}}
+                        </span>
+                    </div>
+                </div>
+                <div class="panel panel-default panel-itemIds">
+                    <div class="panel-heading">
+                        参与活动的商品
+                    </div>
+                    <div class="panel-body">
+                        <b style="color:red;font-size:.5rem;">(注意：未选择商品，则表示店铺所有商品都可使用该优惠券。)</b>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-addon">可使用优惠券的商品</span>
+                                    <textarea name="itemIds" class="form-control" rows="4" disabled :value="couponDetail.itemIds"/>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+
+                        <div v-if="couponDetail.itemIds" class="items-of-activity float-left" style="padding:0 5px 0 5px;width:49%;min-height: 300px;border: 1px solid #0e90d2;">
+                            <div style="text-align: center">可使用优惠券的商品列表</div>
+                            <div>
+                                <table class="table table-hover small" style="background-color: #0e90d2;"><!--table-bordered-->
+                                    <thead>
+                                    <tr>
+                                        <th>
+                                            <div class="float-left">基本信息</div>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div v-else>
+                无数据
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var appcouponDetail = new mixined_vue({
+        el: '#couponDetail',
+        data: {
+            couponDetail: {}
+        },
+        methods: {
+            m_get_only_desc: function (statusVal) {
+                return this.couponDetail.only == 1 ? "排斥其他活动/优惠" : "不排斥其他活动/优惠"
+            },
+            m_get_status_desc: function (statusVal) {
+                return this.couponDetail.status == 1 ? "生效" : "失效"
+            }
+        },
+        coumputed:{
+
+        }
+    })
+
+    $(function () {
+        // 每个页面都应取一次数据，以便获取参数
+        jumpContextData.dealJumpContextData(function (data) {
+            if (!ObjectCommonUtil.isEmpty(data.id)) {
+                $('#couponDetail').find('#couponDetailForm input[name="id"]:first').val(data.id)
+            }
+        })
+
+        bindFormCallback({
+            pageId:'couponDetail',
+            formId:'couponDetailForm',
+            submitId:'query',
+            formVerify:function (data) {
+                return !ObjectCommonUtil.isEmpty(data.id)
+            },
+            submitResultDeal:function (data) {
+                if (ObjectCommonUtil.isUndefined(data.d)) {
+                    data.d = {}
+                }
+                appcouponDetail.couponDetail = data.d;
+
+                setTimeout(function (){
+                    resizeContentHeight()
+                    canMovedItemGroup.showItems4Detail("couponDetail")
+                }, 500)
+            }
+        })
+
+        $("#couponDetailForm #query").click()
+    })
+
+
+</script>

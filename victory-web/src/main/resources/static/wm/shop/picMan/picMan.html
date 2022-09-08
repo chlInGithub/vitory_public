@@ -1,0 +1,181 @@
+<div class="loadedContent" id="picMan">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b>图片管理</b></span>
+        </div>
+        <div class="panel-body">
+            <div class="panel panel-default">
+                <div class="panel-heading" style="display: flex;">
+                    <span class="col-lg-1 col-md-1 col-sm-1">
+                        <b>图片概述</b>
+                    </span>
+                    <span class="col-lg-3 col-md-3 col-sm-3">
+                        图片总量
+                        <b class="am-text-danger" name="orderId">{{queryResult.count}} 张</b>
+                    </span>
+                    <span class="col-lg-3 col-md-3 col-sm-3">
+                        占用空间
+                        <b class="am-text-danger" name="status">{{m_get_total()}}</b>
+                    </span>
+                </div>
+            </div>
+            <hr/>
+            <form class="form-default" id="picManForm">
+                <div class="row">
+                    <div class="col-lg-3 col-md-3 col-sm-3">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-addon">图片ID</span>
+                            <input type="text" name="picId" class="form-control" v-model="searchPicId"/>
+                            <!--<input type="hidden" name="lastId" class="form-control"/>-->
+                        </div>
+                    </div>
+                    <button id="query" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                        <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        查询
+                    </button>
+                </div>
+            </form>
+
+            <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+
+            <div v-if="queryResult.pics.length > 0">
+                <div style="    margin-bottom: 2rem;">
+                    当前页展示{{queryResult.pics.length}}张图片
+                </div>
+                <div style="display: inline-block;text-align: center;margin: 4px 4px;" v-for="item in queryResult.pics">
+                    <div style="display: inline-block">
+                        <img :src="m_get_img(item.picId, 4)" style="width: 100px;height: 100px;" @click="m_show_img(item.picId)" data-am-modal="{target: '#real-pic-modal', dimmer:false}" title="点击查看原图"/>
+                    </div>
+                    <div style="font-size:.1rem">
+                        <b>{{m_get_img(item.picId)}}</b>
+                    </div>
+                    <div style="font-size:.1rem">
+                        {{m_get_kbs(item.size)}}
+                        <button  type="button" style="font-size:.1rem;" class="am-btn am-icon-close" @click="m_del_img(item.picId)"></button>
+                    </div>
+                </div>
+                <div style="margin-top: 2rem;">
+                    当前页展示{{queryResult.pics.length}}张图片
+                </div>
+            </div>
+            <div style="margin-bottom: 2rem" v-if="show_more_pic" >
+                <div style="text-align: center">
+                    <button v-if='searchPicId == ""' id="picManListMore" type="button" style="font-size:1rem;" class="am-btn am-btn-primary am-round" @click="m_list_more_pic">更多</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var appPicMan = new mixined_vue({
+        el: '#picMan',
+        data: {
+            queryResult: {pics:[]},
+            searchPicId: "",
+            currentPicId: "",
+            show_more_pic: true
+        },
+        methods: {
+            m_get_total: function () {
+                return this.queryResult.total / 1000 + "KB"
+            },
+            m_get_kbs: function (bytes) {
+                return bytes / 1000 + "KB"
+            },
+            m_del_img: function (id) {
+                AjaxUtil.doAjax({
+                    url:getSubmitUrl('picMan','del'),
+                    config: {method: 'POST'},
+                    data: {id: id, all: 1},
+                    doneCallback:function (data) {
+                        if (!data.s) {
+                            castErrorMsg(data)
+                            return false
+                        }
+                        var deletedPic = {}
+                        appPicMan.queryResult.pics = appPicMan.queryResult.pics.filter(
+                            function (value) {
+                                if (value.picId === id) {
+                                    deletedPic = value
+                                    return false
+                                }else {
+                                    return true;
+                                }
+                            }
+                        )
+                        appPicMan.queryResult.count --
+                        appPicMan.queryResult.total -= deletedPic.size
+                    }
+                })
+            },
+            m_get_low_img: function (picId) {
+                return this.m_get_img(picId) + "?w=100&h=100&q=50"
+            },
+            m_show_img : function (picId) {
+                window.open(this.m_get_img(picId))
+            },
+            m_list_more_pic : function () {
+                log("m_list_more_pic")
+                var lastId = appPicMan.queryResult.pics[appPicMan.queryResult.pics.length - 1].id
+                AjaxUtil.doAjax({
+                    url:getSubmitUrl('picMan','query'),
+                    data: {lastId: lastId},
+                    doneCallback:function (data) {
+                        if (!data.s) {
+                            castErrorMsg(data)
+                            return false
+                        }
+                        if (data.d.pics.length > 0) {
+                            appPicMan.queryResult.pics = appPicMan.queryResult.pics.concat(data.d.pics);
+                            setTimeout(resizeContentHeight, 500);
+                        } else {
+                            appPicMan.show_more_pic = false
+                        }
+                    }
+                })
+            }
+        }
+    })
+
+    $(function () {
+        $("#picMan#picManListMore").on("click", function () {
+            $("#picMan #query").click()
+        })
+        // 每个页面都应取一次数据，以便获取参数
+        log('picMan')
+        jumpContextData.dealJumpContextData(function (data) {
+            /*if (!ObjectCommonUtil.isEmpty(data.orderId)) {
+                $('#orderDetail').find('#orderDetailForm input[name="orderId"]:first').val(data.orderId)
+            }*/
+        })
+
+        bindFormCallback({
+            pageId:'picMan',
+            formId:'picManForm',
+            submitId:'query',
+            formVerify:function (data) {
+                /*log('orderDetail verify')
+                return !ObjectCommonUtil.isEmpty(data.picId)*/
+                return true;
+            },
+            submitResultDeal:function (data) {
+                //appPicMan.queryResult.pics = appPicMan.queryResult.pics.concat(data.d.pics)
+                appPicMan.queryResult.pics = data.d.pics
+                appPicMan.queryResult.count = data.d.count
+                appPicMan.queryResult.total = data.d.total
+                //$("#picManForm input[name='lastId']").val(appPicMan.queryResult.pics[appPicMan.queryResult.pics.length - 1].id);
+                if (data.d.pics.length > 0){
+                    appPicMan.show_more_pic = true
+                }
+                setTimeout(resizeContentHeight, 500)
+            }
+        })
+
+
+        $("#picMan #query").click()
+    })
+
+
+</script>

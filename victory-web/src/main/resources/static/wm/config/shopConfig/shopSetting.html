@@ -1,0 +1,510 @@
+
+
+<div class="loadedContent" id="shopSetting">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <span class="panel-header-ele"><b>店铺设置</b></span>
+        </div>
+        <div class="panel-body">
+            <!-- Nav tabs -->
+            <ul id="shopSettingNav" class="nav nav-tabs" role="tablist">
+                <li role="presentation"><a data-val="" id="tab_shop" class="btn-xs" href="#panel_shop" aria-controls="panel_shop" role="tab" data-toggle="tab">店铺基本信息</a></li>
+                <li role="presentation"><a data-val="" id="tab_freight_free" class="btn-xs" href="#panel_freight_free" aria-controls="panel_freight_free" role="tab" data-toggle="tab">统一免邮设置</a></li>
+                <li role="presentation"><a data-val="" id="tab_delivery_area" class="btn-xs" href="#panel_delivery_area" aria-controls="panel_delivery_area" role="tab" data-toggle="tab">配送区域设置</a></li>
+                <li role="presentation"><a data-val="" id="tab_pay_type" class="btn-xs" href="#panel_pay_type" aria-controls="panel_pay_type" role="tab" data-toggle="tab">支付类型</a></li>
+                <li role="presentation"><a data-val="" id="tab_delivery_type" class="btn-xs" href="#panel_delivery_type" aria-controls="panel_delivery_type" role="tab" data-toggle="tab">交付类型</a></li>
+            </ul>
+            <!-- Tab panes -->
+            <div class="tab-content shopSettingPanels">
+                <div role="tabpanel" class="tab-pane table-responsive" id="panel_shop" style="overflow: hidden;">
+                    <form class="form-default" id="shopSettingForm" enctype="multipart/form-data" data-am-validator>
+                        <div class="small">
+                            <div class="panel panel-default panel-item">
+                                <div class="panel-body am-text-center">
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-addon">店铺名称</span>
+                                                <input type="text" name="name" class="form-control" minlength="1" maxlength="10" required/>
+                                                <input type="hidden" name="id" class="form-control"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-addon">手机号码</span>
+                                                <input type="number" name="mobile" class="form-control" placeholder="用于短信通知" pattern="^(1\d{10})$" required/>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-6">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-addon">地址</span>
+                                                <input type="text" name="address" class="form-control" placeholder="店铺地址" required/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr data-am-widget="divider" style="" class="am-divider am-divider-dotted" />
+                                    <div class="row">
+                                        <div class="col-lg-1 col-md-2 col-sm-2">
+                                            <div class="input-group input-group-sm" style="height: 60px;">
+                                                <span class="input-group-addon">图片</span>
+                                                <span class="input-group-addon"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-11 col-md-10 col-sm-10">
+                                            <div class="input-group input-group-sm float-left uploaded-imgs">
+                                                <input type="hidden" name='imgs' class="form-control">
+                                            </div>
+                                            <div class="input-group input-group-sm am-form-file">
+                                                <div>
+                                                    <button type="button" class="am-btn am-btn-secondary am-btn-sm item-img-upload">
+                                                        <i class="am-icon-plus am-icon-lg"></i>
+                                                    </button>
+                                                    <input id="fileupload" type="file" name="imgFile" multiple  class="item-img-upload">
+                                                    <span style="color: red;">要求图片大小 不大于 50KB。尺寸如130px*130px。</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" align="center">
+                            <button id="save" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                保存
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div role="tabpanel" class="tab-pane table-responsive" id="panel_freight_free" style="overflow: hidden;">
+                    <form class="form-default" id="freightFreeSettingForm" enctype="multipart/form-data" data-am-validator>
+                        <div class="small">
+                            <div class="panel panel-default panel-item">
+                                <div class="panel-body am-text-center">
+                                    <div class="row">
+                                        <div class="col-lg-4 col-md-4 col-sm-4">
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-addon">单笔订单金额不小于</span>
+                                                    <input type="number" name="orderFeeOfFreightFree" class="form-control" minlength="0" />
+                                                    <span class="input-group-addon">元，则订单免邮。</span>
+                                                </div>
+                                        </div>
+                                        <div style="line-height: 3rem;text-align: left;color: red;">
+                                            <span>*小于0，表示不设置统一免邮规则。</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" align="center">
+                            <button id="saveOfFreightFree" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                保存
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div role="tabpanel" class="tab-pane table-responsive" id="panel_delivery_area" style="overflow: hidden;">
+                    <form class="form-default" id="deliveryAreaSettingForm" enctype="multipart/form-data" data-am-validator>
+                        <div class="small">
+                            <div class="panel panel-default panel-item">
+                                <div class="panel-body am-text-left"  style="min-height: 300px">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12 col-sm-12">
+                                            <div id="city-picker" class="col-lg-5 col-md-5 col-sm-5"></div>
+                                            <div class="col-lg-5 col-md-5 col-sm-5">
+                                                <input type="text" placeholder="范围补充说明" v-model="deliveryArea.other" class="form-control" maxlength="100" />
+                                            </div>
+                                            <div style="line-height: 3rem;display:inline-block; text-align: left;color: red;">
+                                                <span>*仅对该配送区域提供配送服务，不配置则无限制。</span>
+                                            </div>
+                                            <button style="margin-left: 3rem;" type="button" class="btn btn-warning btn-xs" @click="m_reset_picker()">清空</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" align="center">
+                            <button id="saveOfDeliveryArea" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                保存
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div role="tabpanel" class="tab-pane table-responsive" id="panel_pay_type" style="overflow: hidden;">
+                    <form class="form-default" id="payTypeSettingForm" data-am-validator>
+                        <div class="small">
+                            <div class="panel panel-default panel-item">
+                                <div class="panel-body am-text-center">
+                                    <div class="row">
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-addon">
+                                                    <input type="checkbox" value="0" class="form-control" v-model="payTypes"/>
+                                                </span>
+                                                <span class="input-group-addon">微信支付</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-md-2 col-sm-2">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-addon">
+                                                    <input type="checkbox" value="2" class="form-control" v-model="payTypes"/>
+                                                </span>
+                                                <span class="input-group-addon">线下支付</span>
+                                            </div>
+                                        </div>
+                                        <div style="line-height: 3rem;text-align: left;color: red;">
+                                            <span>*用户在微商城下单时可选择的支付类型。</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" align="center">
+                            <button id="saveOfPayType" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                保存
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div role="tabpanel" class="tab-pane table-responsive" id="panel_delivery_type" style="overflow: hidden;">
+                    <form class="form-default" id="deliveryTypeSettingForm" data-am-validator>
+                        <div class="small">
+                            <div class="panel panel-default panel-item">
+                                <div class="panel-body am-text-center">
+                                    <div class="row">
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-addon">
+                                                    <input type="checkbox" value=0 class="form-control" v-model="deliveryTypes"/>
+                                                </span>
+                                                <span class="input-group-addon">不用物流/自提</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3 col-sm-3">
+                                            <div class="input-group input-group-sm">
+                                                <span class="input-group-addon">
+                                                    <input type="checkbox" value=1 class="form-control" v-model="deliveryTypes"/>
+                                                </span>
+                                                <span class="input-group-addon">需要物流/快递/配送</span>
+                                            </div>
+                                        </div>
+                                        <div style="line-height: 3rem;text-align: left;color: red;">
+                                            <span>*用户在微商城下单时可选择的交付类型。</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row" align="center">
+                            <button id="saveOfDeliveryType" type="submit" class="commonSubmit btn btn-primary btn-sm am-animation-fade">
+                                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                保存
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="r/js/ipicker/ipicker.js"></script>
+
+<script>
+    var appShopSetting = new mixined_vue({
+        el: '#shopSetting',
+        data: {
+            // deliveryArea: {province:'',city:'',district:''}
+            deliveryArea: {},
+            payTypes: [],
+            deliveryTypes: []
+        },
+        methods: {
+            m_reset_picker: function () {
+                $( "#city-picker" ).iPicker( "clear" )
+                this.deliveryArea = {}
+            }
+            /*m_add_delivery_area: function () {
+                this.deliveryAreas.push({})
+            },
+            m_rm_delivery_area: function (index) {
+                this.deliveryAreas.splice(index, 1)
+            }*/
+        }
+    })
+
+    $(function () {
+        // FormUtil.genToken("shopSetting")
+
+        var queryShopBaseInfo = function () {
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('shopSetting','query'),
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    for (var key in data.d){
+                        if (key == 'imgs'){
+                            fileUploadUtils.appendImgs('#shopSetting #panel_shop form #fileupload', data.d[key])
+                        } else {
+                            log(data.d[key])
+                            $('#shopSetting #panel_shop form input[name="'+ key +'"]').val(data.d[key])
+                        }
+                    }
+                }
+            })
+        }
+        var queryFreightFeeInfo = function () {
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('shopSetting','queryFreightFree'),
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    $('#shopSetting #panel_freight_free form input[name="orderFeeOfFreightFree"]').val(data.d)
+                }
+            })
+        }
+        var queryDeliveryAreaInfo = function () {
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('shopSetting','queryDeliveryArea'),
+                config: {async: false},
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    log(data.d)
+                    if (ObjectCommonUtil.isNotUndefined(data.d)) {
+                        if (data.d.length > 0) {
+                            appShopSetting.deliveryArea = data.d[0];
+                        }
+                    }
+                }
+            })
+
+            var cityCode = []
+            if (ObjectCommonUtil.isNotUndefined(appShopSetting.deliveryArea.code)) {
+                cityCode = appShopSetting.deliveryArea.code.split(" ")
+            }
+
+            AjaxUtil.doAjax({
+                url:"r/js/ipicker/area.json",
+                doneCallback:function (data) {
+                    $( "#city-picker" ).iPicker({
+                        data: data,
+                        width: 120,
+                        maxHeight: 180,
+                        defaultValue: cityCode,
+                        onSelect: function ( v, t, set ) {
+                            /*if (v.length < 3) {
+                                return
+                            }*/
+                            appShopSetting.deliveryArea.desc = t.join(" ")
+                            appShopSetting.deliveryArea.code = v.join(" ")
+                        }
+                    });
+                }
+            });
+
+        }
+        var queryPayType = function () {
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('shopSetting','queryPayType'),
+                config: {async: false},
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    log(data.d)
+                    if (ObjectCommonUtil.isNotUndefined(data.d)) {
+                        if (data.d.length > 0) {
+                            appShopSetting.payTypes = []
+                            data.d.forEach(function (value) {
+                                appShopSetting.payTypes.push(value.code)
+                            })
+                        }
+                    }
+                }
+            })
+        }
+        var queryDeliveryType = function () {
+            AjaxUtil.doAjax({
+                url:getSubmitUrl('shopSetting','queryDeliveryType'),
+                config: {async: false},
+                doneCallback:function (data) {
+                    if (!data.s) {
+                        castErrorMsg(data)
+                        return false
+                    }
+                    log(data.d)
+                    if (ObjectCommonUtil.isNotUndefined(data.d)) {
+                        if (data.d.length > 0) {
+                            appShopSetting.deliveryTypes = []
+                            data.d.forEach(function (value) {
+                                appShopSetting.deliveryTypes.push(value.code)
+                            })
+                        }
+                    }
+                }
+            })
+        }
+
+        bindNavTabCallback({
+            pageId:'shopSetting',
+            navId:'shopSettingNav',
+            navShown: function (target, relatedTarget) {
+                var activeTab = $('#shopSettingNav .active a')
+                var tablePanelId = activeTab.attr('aria-controls')
+                log(activeTab)
+                if (undefined == activeTab.data('hasLoad')) {
+                    //TODO
+                    log(tablePanelId)
+                    if (tablePanelId == "panel_shop") {
+                        queryShopBaseInfo()
+                    }else if (tablePanelId == "panel_freight_free") {
+                        queryFreightFeeInfo()
+                    }else if (tablePanelId == "panel_delivery_area") {
+                        queryDeliveryAreaInfo()
+                    }else if (tablePanelId == "panel_pay_type") {
+                        queryPayType()
+                    }else if (tablePanelId == "panel_delivery_type") {
+                        queryDeliveryType()
+                    }
+                    activeTab.data('hasLoad', true);
+                }else if (activeTab.data('hasLoad') == false) {
+                    //TODO
+                }
+            }
+        })
+
+        /*开启表单验证*/
+        $('#shopSetting #shopSettingForm').validator({})
+
+        bindFormCallback({
+            pageId:'shopSetting',
+            formId:'shopSettingForm',
+            submitId:'save',
+            post: true,
+            /*headers:{
+                ft: FormUtil.getToken("shopSetting")
+            },*/
+            formVerify:function (data) {
+                var result = $('#shopSetting #shopSettingForm').validator('isFormValid')
+                return result
+            },
+            submitDataAppend:function(data){
+
+            },
+            submitResultDeal:function (data) {
+                if (data.s){
+                    castSuccessMsg("成功")
+                }
+            }
+        })
+        bindFormCallback({
+            pageId:'shopSetting',
+            formId:'freightFreeSettingForm',
+            submitId:'saveOfFreightFree',
+            post: true,
+            /*headers:{
+                ft: FormUtil.getToken("shopSetting")
+            },*/
+            formVerify:function (data) {
+                var result = $('#shopSetting #freightFreeSettingForm').validator('isFormValid')
+                return result
+            },
+            submitDataAppend:function(data){
+
+            },
+            submitResultDeal:function (data) {
+                if (data.s){
+                    castSuccessMsg("成功")
+                }
+            }
+        })
+        bindFormCallback({
+            pageId:'shopSetting',
+            formId:'deliveryAreaSettingForm',
+            submitId:'saveOfDeliveryArea',
+            post: true,
+            /*headers:{
+                ft: FormUtil.getToken("shopSetting")
+            },*/
+            formVerify:function (data) {
+                return true;
+            },
+            submitDataAppend:function(data){
+                if (appShopSetting.deliveryArea.code != undefined){
+                    data.deliveryArea = "[" + JSON.stringify(appShopSetting.deliveryArea) + "]";
+                }else {
+                    data.deliveryArea = "[]"
+                }
+            },
+            submitResultDeal:function (data) {
+                if (data.s){
+                    castSuccessMsg("成功")
+                }
+            }
+        })
+        bindFormCallback({
+            pageId:'shopSetting',
+            formId:'payTypeSettingForm',
+            submitId:'saveOfPayType',
+            post: true,
+            /*headers:{
+                ft: FormUtil.getToken("shopSetting")
+            },*/
+            formVerify:function (data) {
+                return appShopSetting.payTypes.length > 0;
+            },
+            submitDataAppend:function(data){
+                data.payTypes = JSON.stringify(appShopSetting.payTypes);
+            },
+            submitResultDeal:function (data) {
+                if (data.s){
+                    castSuccessMsg("成功")
+                }
+            }
+        })
+        bindFormCallback({
+            pageId:'shopSetting',
+            formId:'deliveryTypeSettingForm',
+            submitId:'saveOfDeliveryType',
+            post: true,
+            /*headers:{
+                ft: FormUtil.getToken("shopSetting")
+            },*/
+            formVerify:function (data) {
+                return appShopSetting.deliveryTypes.length > 0;
+            },
+            submitDataAppend:function(data){
+                data.deliveryTypes = JSON.stringify(appShopSetting.deliveryTypes);
+            },
+            submitResultDeal:function (data) {
+                if (data.s){
+                    castSuccessMsg("成功")
+                }
+            }
+        })
+
+        fileUploadUtils.bind({selecter:'#shopSetting #fileupload',url:'/p/wm/img/upload',limitMax:1,size:1024*50})
+
+        var activeTab = $('#shopSettingNav .active a')
+        if (activeTab.length == 0){
+            $('#shopSettingNav li:first a').tab('show')
+        } else {
+            var tablePanelId = activeTab.attr('aria-controls')
+            activeTab.data('hasLoad') ? activeTab.data('hasLoad', false) : null;
+            //$('#'+tablePanelId + " table:first").DataTable().ajax.reload()
+        }
+
+        //queryShopBaseInfo()
+    })
+</script>

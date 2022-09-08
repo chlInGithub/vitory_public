@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>我的优惠券</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- <link rel="shortcut icon" href="/favicon.ico"> -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/item.css">
+    <link rel="stylesheet" href="css/coupons.css">
+
+    <style>
+
+    </style>
+
+</head>
+<body>
+<div id='app' class="page-group">
+    <template>
+
+        <div class="page page-current">
+
+            <header class="bar bar-nav">
+                <a href="javascript:goHistroy()" class="float-left nav-history">
+                    <span class="icon icon-left"></span>
+                </a>
+                <a href="javascript:window.location.reload()" class="float-right nav-refresh">
+                    <span class="icon icon-refresh"></span>
+                </a>
+                <h1 class="title header-title">
+                    <div class="header-shop float-left" style="display: flex;" @click="m_go_shop()">
+                        <img :src="m_get_img(shop.img)" class="header-img"/>
+                        <span><b>{{shop.name}}</b></span>
+                    </div>
+                    <div class="header-user float-right" style="display: flex;" @click="m_go_me()">
+                        <img :src="user.img" class="header-img"/>
+                        <span><b>{{user.name}}</b></span>
+                    </div>
+                </h1>
+            </header>
+
+            <nav class="bar bar-tab">
+                <a class="tab-item" @click="m_go_shop()">
+                    <span class="icon icon-home"></span>
+                    <span class="tab-label">首页</span>
+                </a>
+                <a class="tab-item" @click="m_go_cart()">
+                    <span class="icon icon-cart"></span>
+                    <span class="tab-label">购物车</span>
+                </a>
+                <a class="tab-item" @click="m_go_me()">
+                    <span class="icon icon-me"></span>
+                    <span class="tab-label">我的</span>
+                </a>
+                </a>
+            </nav>
+
+            <div class="content infinite-scroll infinite-scroll-bottom" data-distance="50">
+                <div class="list-container" v-if="couponList.length > 0">
+
+                    <div class="card card-item-info" style="text-align: center;">
+                        <div class="card-header">
+                            我的优惠券
+                        </div>
+                        <div class="card-content" v-for="coupon in couponList" @click="m_go_coupon_item_list(coupon.couponsId)">
+                            <div class="card-content-inner">
+                                <div class="list-block media-list">
+                                    <div class="row no-gutter">
+                                        <div class="col-100">
+                                            <div class="coupons-container">
+                                                <div class="coupons-left-div">
+                                                    <div>
+                                                        优<br/>
+                                                        惠<br/>
+                                                        券
+                                                    </div>
+                                                </div>
+                                                <div class="coupons-content-div">
+                                                    <div>
+                                                        <div class="coupons-discount">
+                                                            ￥{{ coupon.discount }}
+                                                        </div>
+                                                        <div class="coupons-discount-desc">
+                                                            {{ "满￥" + coupon.meet +"减￥" + coupon.discount}}
+                                                        </div>
+                                                    </div>
+                                                    <div class="coupons-title">
+                                                        {{ coupon.title }}
+                                                    </div>
+                                                    <div class="coupons-valid-time">
+                                                        {{ coupon.validTime + " - " + coupon.invalidTime}}
+                                                    </div>
+                                                </div>
+                                                <div class="coupons-right-div">
+                                                    <div>
+                                                        去<br/>
+                                                        使<br/>
+                                                        用
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!--<div style="display:inline-block;width: 80%;border-radius: 0.3rem;border: 1px solid rosybrown;background-color: lightyellow;margin: .3rem 0;">
+                                                <div style="line-height: 1rem;width: 10%;float: left;font-size: .4rem;">
+                                                    <div>
+                                                        优<br/>
+                                                        惠<br/>
+                                                        券
+                                                    </div>
+                                                </div>
+                                                <div style="height: 3rem;padding: .2rem 0;width: 80%;float: left;border-right: 1px solid rosybrown;border-left: 1px solid rosybrown;line-height: 1.2;">
+                                                    <div>
+                                                        <div style="margin-right: .3rem;display: inline-block;font-size: 1rem;color: red;">
+                                                            ￥{{ coupon.discount }}
+                                                        </div>
+                                                        <div style="display: inline-block;font-size: .6em;color: red;">
+                                                            {{ "满￥" + coupon.meet +"减￥" + coupon.discount}}
+                                                        </div>
+                                                    </div>
+                                                    <div style="font-size: .5rem;color: gray;">
+                                                        {{ coupon.title }}
+                                                    </div>
+                                                    <div style="font-size: .4rem;color:red;">
+                                                        {{ coupon.validTime + " - " + coupon.invalidTime}}
+                                                    </div>
+                                                </div>
+                                                <div style="line-height: 1rem;width: 10%;float: right;font-size: .4rem;">
+                                                    <div style="color: red">
+                                                        去<br/>
+                                                        使<br/>
+                                                        用
+                                                    </div>
+                                                </div>
+                                            </div>-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- 加载提示符 -->
+                <div class="infinite-scroll-preloader" v-if="loading">
+                    <div class="preloader"></div>
+                </div>
+                <div class="no-item" style="text-align: center;" v-if="couponList.length == 0">
+                    没有优惠券！
+                </div>
+
+                <div class="card card-recommended-item-list">
+                    <div v-if="recommended_item_list.length > 0">
+                        <div class="card-header" style="font-size: .6rem;">
+                            你可能还喜欢
+                        </div>
+                        <div class="card-content">
+                            <div class="card-content-inner">
+                                <div class="list-block media-list">
+                                    <div class="row no-gutter">
+                                        <div class="col-50 col-50-item" v-for="item in recommended_item_list">
+                                            <a>
+                                                <div class="item-img" @click="m_go_item_detail(item.id)">
+                                                    <img :src="m_get_img(item.img)">
+                                                </div>
+                                                <div class="item-outline">
+                                                    <div>
+                                                        <div class="item-outline-title">
+                                                            {{item.title}}
+                                                        </div>
+                                                        <div class="item-outline-sale">
+                                                            已卖{{item.salesTotal}}件
+                                                        </div>
+                                                        <div class="salestrategy-div"  v-if="item.strategyJson && item.strategyJson != ''" v-html="item.strategyTagHtml" >
+                                                        </div>
+                                                        <div v-if="item.existSku" class="item-exist-sku">
+                                                            款式多
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="item-outline-price">
+                                                            <span class="item-price-unit">￥</span>
+                                                            <span>{{item.price}}</span>
+                                                        </div>
+                                                        <div class="float-right item-outline-buycar" align="center">
+                                                            <img src="img/cart3.png" @click="m_add_cart_from_item_list(item.id, item.existSku)">
+                                                            <!--<span class="icon icon-cart" style="color: white"
+                                                                  @click="m_add_cart(item.id)"></span>-->
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </template>
+</div>
+
+
+<script type='text/javascript' src='js/jquery-3.4.1.min.js' charset='utf-8'></script>
+<script type="text/javascript">
+    jQuery.noConflict()
+</script>
+<script src="js/vue.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/miniprogram.js"></script>
+<script type='text/javascript' src='https://res.wx.qq.com/open/js/jweixin-1.4.0.js' charset='utf-8'></script>
+<script type="text/javascript" src="js/mixin_vue.js"></script>
+<script type='text/javascript' src='https://g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='https://g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+<script type="text/javascript">
+    //$.showPreloader();
+    //打开自动初始化页面的功能
+    //建议不要打开自动初始化，而是自己调用 $.init 方法完成初始化
+    $.config = {
+        autoInit: false,
+        router: false
+    }
+</script>
+
+<script type="text/javascript">
+    /*获取url query*/
+    var query = window.location.search.substring(1)
+    log(query)
+
+
+    /*vue code*/
+    var mixined_vue = Vue.extend({
+        mixins: [common_mixin]
+    })
+    var app = new mixined_vue({
+        el: '#app',
+        data: {
+            maxItems: 0,
+            couponList: []
+        },
+        methods: {
+            m_add_coupon_list: function (item_list) {
+                this.couponList = this.couponList.concat(item_list)
+            },
+            m_go_weixin_pay: function (orderId) {
+                go_weixin_pay(orderId)
+            }
+        }
+    })
+
+    /*sui code*/
+    var pageIndex = 0;
+    $(function () {
+        var loading = false;
+
+        // 注册'infinite'事件处理函数
+        $(document).on('infinite', '.infinite-scroll-bottom', function () {
+
+            // 如果正在加载，则退出
+            if (loading) return;
+
+            // 上次加载的序号
+            var lastIndex = $('.list-container .card-item-info').length;
+
+            // 设置flag
+            loading = true;
+
+            if (lastIndex >= app.maxItems) {
+                // 加载完毕，则注销无限加载事件，以防不必要的加载
+                $.detachInfiniteScroll($('.infinite-scroll'));
+                // 删除加载提示符
+                $('.infinite-scroll-preloader').remove();
+                $('.no-item').show()
+                return;
+            }
+
+            // 添加新条目
+            pageIndex++
+            query_item(function () {
+                loading = false
+            });
+
+
+        })
+    });
+
+    /*jQuery code*/
+    /*通过接口从服务器获取数据。*/
+    var go_weixin_pay = function (orderId) {
+        $.showPreloader("跳转微信支付……");
+
+        AjaxUtil.post("/wmall/wxpay/prePay", {orderId: orderId}, function (result) {
+
+            $.hidePreloader()
+
+            if (result.d != undefined) {
+                log(result.d)
+
+                weixin.gotoPay(result.d)
+            }
+        }, function () {
+            $.hidePreloader()
+            $.toast("跳转失败，请前往订单详情页", 500)
+        });
+    }
+
+    var query_item = function (callback) {
+        app.loading = true
+        AjaxUtil.get("/wmall/user/coupons", {}, function (result) {
+            app.loading = false
+            if (result.d != undefined) {
+                app.m_add_coupon_list(result.d);
+                app.maxItems = app.couponList.length
+                if (typeof(callback) == "function") {
+                    callback()
+                }
+            }
+        })
+    }
+
+    var callback = function () {
+        query_item()
+    }
+    initPage(callback)
+</script>
+
+<script type="text/javascript">
+    $.init()
+</script>
+</body>
+</html>

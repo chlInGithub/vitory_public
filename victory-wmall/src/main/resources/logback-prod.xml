@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="true"  scan="true" scanPeriod="60 seconds">
+
+    <property name="LOG_HOME" value="/workspace/logs"></property>
+    <property name="APP_NAME" value="wmall"></property>
+
+    <!--<appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_HOME}/${APP_NAME}/${APP_NAME}1.log</file>
+        <encoder>
+            <pattern>%date %level [%thread] %logger{10} [%file : %line] %msg%n</pattern>
+        </encoder>
+    </appender>-->
+
+    <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_HOME}/${APP_NAME}/${APP_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- daily rollover -->
+            <fileNamePattern>${LOG_HOME}/${APP_NAME}/${APP_NAME}.%d{yyyy-MM-dd}.log</fileNamePattern>
+
+            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>3GB</totalSizeCap>
+
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%date %-5level [%thread] %logger{35} [%file : %line] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date %-5level [%thread] %logger{35} [%file : %line] - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--<logger name="chapters.configuration.Foo" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>-->
+
+    <root level="warn">
+        <appender-ref ref="ROLLING" />
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>休息室</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- <link rel="shortcut icon" href="/favicon.ico"> -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <link rel="stylesheet" href="css/common.css">
+
+    <style>
+
+    </style>
+
+</head>
+<body>
+<div id="app" class="page-group">
+    <template>
+        <div class="page page-current">
+
+            <header class="bar bar-nav">
+                <h1 class="title" style="font-size: .7rem;">
+                    <span style="color: green;" class="icon icon-emoji"></span>
+                    <span>休息一下喽</span>
+                    <span style="color: green;" class="icon icon-emoji"></span>
+                </h1>
+            </header>
+
+            <div class="content">
+                <div class="page-index" style="height: 100%;">
+                    <div class="card shop-about" style="height: 100%;font-size: .5rem;line-height: .7rem;padding:3rem .5rem .5rem .5rem;color:darkgray;">
+                        <div v-if="param.shop">
+                            <div style="text-align: center">
+                                请稍后使用微信授权登录……
+                            </div>
+                            <button style="width:100%;margin:1rem 0;" class="button button-success" @click="m_retry()">重新访问</button>
+                        </div>
+                        <div v-else>
+                            <div style="text-align: center">
+                                参数被抢走了。
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
+</div>
+
+</body>
+
+<script type='text/javascript' src='js/jquery-3.4.1.min.js' charset='utf-8'></script>
+<script type="text/javascript">
+    /*避免jQuery $ 与 sui $ 产生冲突，不使用$代表jQuery，js jQuery code时必须使用jQuery*/
+    jQuery.noConflict()
+</script>
+<script type="text/javascript" src="js/vue.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/miniprogram.js"></script>
+<script type='text/javascript' src='https://res.wx.qq.com/open/js/jweixin-1.4.0.js' charset='utf-8'></script>
+
+<script type="text/javascript">
+
+    var jsonParam = genJsonFromUrlParams()
+
+    /*vue code*/
+    var app = new Vue({
+        el: '#app',
+        data: {
+            param: {},
+        },
+        methods: {
+            m_retry: function () {
+                weixin.gotoLogin(this.param);
+            }
+        },
+        watch: {
+        }
+    });
+
+    if (jsonParam.shopId != undefined) {
+        app.param = {
+            needCallback :false,
+            shop : {
+                id: jsonParam.shopId,
+                name : jsonParam.shopName,
+                img : jsonParam.shopImg
+            }
+        };
+
+        setTimeout(app.m_retry, 1000)
+    }
+
+</script>
+
+</html>

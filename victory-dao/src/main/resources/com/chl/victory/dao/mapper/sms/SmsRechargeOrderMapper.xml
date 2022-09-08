@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.sms.SmsRechargeOrderMapper">
+  <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.sms.SmsRechargeOrderDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="status" jdbcType="BIT" property="status" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_time, modified_time, shop_id, operator_id, order_id, status
+  </sql>
+  <sql id="conditionWithOrderAndPage">
+    <include refid="condition"/>
+    <include refid="order"/>
+    <include refid="page"/>
+  </sql>
+  <sql id="condition">
+    <where>
+      <if test="id != null"> id = #{id} </if>
+      <if test="shopId != null">
+        and shop_id = #{shopId,jdbcType=BIGINT}
+      </if>
+      <if test="orderId != null">
+        and order_id = #{orderId,jdbcType=BIGINT}
+      </if>
+    </where>
+  </sql>
+  <sql id="order">
+    <if test="orderColumn != null">
+      order by #{orderColumn} <if test="desc"> desc </if>
+    </if>
+    <if test="orderColumn = null and orderedColumns != null and orderedColumns.size > 0">
+      <trim suffixOverrides=",">
+        <foreach collection="orderedColumns" index="index" item="orderedColumn" open=" order by " separator="," close="">
+          #{item.orderColumn} <if test="item.desc"> desc </if>
+        </foreach>
+      </trim>
+    </if>
+  </sql>
+  <sql id="page">
+    <if test="rowStart != null and pageSize != null">
+      limit #{rowStart},#{pageSize}
+    </if>
+  </sql>
+
+  <select id="count" parameterType="com.chl.victory.dao.query.sms.SmsRechargeOrderQuery" resultType="java.lang.Integer">
+    select
+    count(1)
+    from sms_recharge_order
+    <include refid="condition" />
+  </select>
+
+  <select id="select" parameterType="com.chl.victory.dao.query.sms.SmsRechargeOrderQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sms_recharge_order
+    <include refid="conditionWithOrderAndPage" />
+  </select>
+
+  <delete id="delete" parameterType="com.chl.victory.dao.query.sms.SmsRechargeOrderQuery">
+    delete from sms_recharge_order
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" parameterType="com.chl.victory.dao.model.sms.SmsRechargeOrderDO">
+    insert into sms_recharge_order (id, created_time, modified_time,
+      shop_id, operator_id, order_id, 
+      status)
+    values (#{id,jdbcType=BIGINT}, now(), now(),
+      #{shopId,jdbcType=BIGINT}, #{operatorId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, 
+      #{status,jdbcType=BIT})
+  </insert>
+
+  <update id="update" parameterType="com.chl.victory.dao.model.sms.SmsRechargeOrderDO">
+    update sms_recharge_order
+    <set>
+        modified_time = now(),
+      <if test="shopId != null">
+        shop_id = #{shopId,jdbcType=BIGINT},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.order.SubOrderMapper">
+  <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.order.SubOrderDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="order_id" jdbcType="BIGINT" property="orderId" />
+    <result column="item_id" jdbcType="BIGINT" property="itemId" />
+    <result column="sku_id" jdbcType="BIGINT" property="skuId" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="count" jdbcType="TINYINT" property="count" />
+    <result column="total_fee" jdbcType="DECIMAL" property="totalFee" />
+    <result column="presell" jdbcType="VARCHAR" property="presell" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_time, modified_time, shop_id, operator_id, order_id, item_id, sku_id, 
+    price, `count`, total_fee, activity,
+      coupons, points_cash, real_fee, presell
+  </sql>
+  <sql id="conditionWithOrderAndPage">
+    <include refid="condition"/>
+    <include refid="order"/>
+    <include refid="page"/>
+  </sql>
+  <sql id="condition">
+    <where>
+      <if test="id != null"> id = #{id} </if>
+      <if test="shopId != null">
+        and shop_id = #{shopId,jdbcType=BIGINT}
+      </if>
+      <if test="orderId != null">
+        and order_id = #{orderId,jdbcType=BIGINT}
+      </if>
+      <if test="itemId != null">
+        and item_id = #{itemId,jdbcType=BIGINT}
+      </if>
+      <if test="skuId != null">
+        and sku_id = #{skuId,jdbcType=BIGINT}
+      </if>
+    </where>
+  </sql>
+  <sql id="delCondition">
+    <where>
+      <if test="id != null"> id = #{id} </if>
+        and shop_id = #{shopId,jdbcType=BIGINT}
+        and order_id = #{orderId,jdbcType=BIGINT}
+      <if test="itemId != null">
+        and item_id = #{itemId,jdbcType=BIGINT}
+      </if>
+      <if test="skuId != null">
+        and sku_id = #{skuId,jdbcType=BIGINT}
+      </if>
+    </where>
+  </sql>
+  <sql id="order">
+    <if test="orderColumn != null">
+      order by #{orderColumn} <if test="desc"> desc </if>
+    </if>
+    <if test="orderColumn = null and orderedColumns != null and orderedColumns.size > 0">
+      <trim suffixOverrides=",">
+        <foreach collection="orderedColumns" index="index" item="orderedColumn" open=" order by " separator="," close="">
+          #{item.orderColumn} <if test="item.desc"> desc </if>
+        </foreach>
+      </trim>
+    </if>
+  </sql>
+  <sql id="page">
+    <if test="rowStart != null and pageSize != null">
+      limit #{rowStart},#{pageSize}
+    </if>
+  </sql>
+
+  <select id="count" parameterType="com.chl.victory.dao.query.order.SubOrderQuery" resultType="java.lang.Integer">
+    select
+    count(1)
+    from sub_order
+    <include refid="condition" />
+  </select>
+
+  <select id="select" parameterType="com.chl.victory.dao.query.order.SubOrderQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from sub_order
+    <include refid="conditionWithOrderAndPage" />
+  </select>
+  <select id="selectOne" parameterType="com.chl.victory.dao.query.order.SubOrderQuery" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from sub_order
+    <include refid="condition" />
+  </select>
+
+  <delete id="delete" parameterType="com.chl.victory.dao.query.order.SubOrderQuery">
+    delete from sub_order
+    <include refid="delCondition" />
+  </delete>
+  <insert id="insert" parameterType="com.chl.victory.dao.model.order.SubOrderDO">
+    insert into sub_order (id, created_time, modified_time,
+      shop_id, operator_id, order_id, 
+      item_id, sku_id, price, 
+      `count`, total_fee, activity,
+      coupons, points_cash, real_fee, share_user_id, presell)
+    values (#{id,jdbcType=BIGINT}, now(), now(),
+      #{shopId,jdbcType=BIGINT}, #{operatorId,jdbcType=BIGINT}, #{orderId,jdbcType=BIGINT}, 
+      #{itemId,jdbcType=BIGINT}, #{skuId,jdbcType=BIGINT}, #{price,jdbcType=DECIMAL}, 
+      #{count,jdbcType=TINYINT}, #{totalFee,jdbcType=DECIMAL}, #{activity,jdbcType=VARCHAR},
+      #{coupons,jdbcType=VARCHAR}, #{pointsCash,jdbcType=VARCHAR}, #{realFee,jdbcType=DECIMAL}, #{shareUserId,jdbcType=BIGINT}, #{presell,jdbcType=VARCHAR})
+  </insert>
+  <update id="update" parameterType="com.chl.victory.dao.model.order.SubOrderDO">
+    update sub_order
+    <set>
+        modified_time = now(),
+      <if test="shopId != null">
+        shop_id = #{shopId,jdbcType=BIGINT},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="orderId != null">
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="itemId != null">
+        item_id = #{itemId,jdbcType=BIGINT},
+      </if>
+      <if test="skuId != null">
+        sku_id = #{skuId,jdbcType=BIGINT},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="count != null">
+        `count` = #{count,jdbcType=TINYINT},
+      </if>
+      <if test="totalFee != null">
+        total_fee = #{totalFee,jdbcType=DECIMAL},
+      </if>
+      <if test="activity != null">
+        activity = #{activity,jdbcType=VARCHAR},
+      </if>
+      <if test="coupons != null">
+        coupons = #{coupons,jdbcType=VARCHAR},
+      </if>
+      <if test="pointsCash != null">
+        points_cash = #{pointsCash,jdbcType=VARCHAR},
+      </if>
+      <if test="realFee != null">
+        real_fee = #{realFee,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+
+  <select id="countItem" parameterType="com.chl.victory.dao.query.order.SubOrderQuery" resultType="java.lang.Integer">
+    select sum(`count`)
+    from sub_order
+    <where>
+      <trim prefixOverrides="and">
+        shop_id = #{shopId,jdbcType=BIGINT}
+        <if test="startedCreatedTime != null">
+          <![CDATA[
+            and created_time >= #{startedCreatedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+        <if test="endedCreatedTime != null">
+          <![CDATA[
+            and created_time <= #{endedCreatedTime,jdbcType=TIMESTAMP}
+        ]]>
+        </if>
+      </trim>
+    </where>
+  </select>
+</mapper>

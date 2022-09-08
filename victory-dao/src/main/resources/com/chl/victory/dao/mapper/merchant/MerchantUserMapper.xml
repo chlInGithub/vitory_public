@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.merchant.MerchantUserMapper">
+  <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.merchant.MerchantUserDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="desc" jdbcType="VARCHAR" property="desc" />
+    <result column="mobile" jdbcType="BIGINT" property="mobile" />
+    <result column="pass" jdbcType="VARCHAR" property="pass" />
+    <result column="valid" jdbcType="BIT" property="valid" />
+    <result column="init_pass_modified" jdbcType="BIT" property="initPassModified" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_time, modified_time, operator_id, `desc`, mobile, pass, valid, init_pass_modified
+  </sql>
+  <sql id="conditionWithOrderAndPage">
+    <include refid="condition"/>
+    <include refid="order"/>
+    <include refid="page"/>
+  </sql>
+  <sql id="condition">
+    <where>
+      <if test="id != null"> id = #{id} </if>
+      <if test="mobile != null">
+        and mobile = #{mobile,jdbcType=BIGINT}
+      </if>
+    </where>
+  </sql>
+  <sql id="order">
+    <if test="orderColumn != null">
+      order by #{orderColumn} <if test="desc"> desc </if>
+    </if>
+    <if test="orderColumn = null and orderedColumns != null and orderedColumns.size > 0">
+      <trim suffixOverrides=",">
+        <foreach collection="orderedColumns" index="index" item="orderedColumn" open=" order by " separator="," close="">
+          #{item.orderColumn} <if test="item.desc"> desc </if>
+        </foreach>
+      </trim>
+    </if>
+  </sql>
+  <sql id="page">
+    <if test="rowStart != null and pageSize != null">
+      limit #{rowStart},#{pageSize}
+    </if>
+  </sql>
+
+  <select id="count" parameterType="com.chl.victory.dao.query.merchant.MerchantUserQuery" resultType="java.lang.Integer">
+    select
+    count(1)
+    from merchant_user
+    <include refid="condition" />
+  </select>
+
+  <select id="select" parameterType="com.chl.victory.dao.query.merchant.MerchantUserQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from merchant_user
+    <include refid="conditionWithOrderAndPage" />
+  </select>
+  <select id="selectOne" parameterType="com.chl.victory.dao.query.merchant.MerchantUserQuery" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from merchant_user
+    <include refid="condition" />
+  </select>
+
+  <delete id="delete" parameterType="com.chl.victory.dao.query.merchant.MerchantUserQuery">
+    delete from merchant_user
+    where id = #{id,jdbcType=BIGINT} and mobile = #{mobile,jdbcType=BIGINT}
+  </delete>
+
+  <insert id="insert" parameterType="com.chl.victory.dao.model.merchant.MerchantUserDO">
+    insert into merchant_user (id, created_time, modified_time,
+      operator_id, `desc`, mobile,
+      pass, valid, init_pass_modified
+      )
+    values (#{id,jdbcType=BIGINT}, now(), now(),
+      #{operatorId,jdbcType=BIGINT}, #{desc,jdbcType=VARCHAR}, #{mobile,jdbcType=BIGINT},
+      #{pass,jdbcType=VARCHAR}, #{valid,jdbcType=BIT}, #{initPassModified,jdbcType=BIT}
+      )
+  </insert>
+
+  <update id="update" parameterType="com.chl.victory.dao.model.merchant.MerchantUserDO">
+    update merchant_user
+    <set>
+        modified_time = now(),
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="desc != null">
+        desc = #{desc,jdbcType=VARCHAR},
+      </if>
+      <if test="mobile != null">
+        mobile = #{mobile,jdbcType=BIGINT},
+      </if>
+      <if test="pass != null">
+        pass = #{pass,jdbcType=VARCHAR},
+      </if>
+      <if test="valid != null">
+        valid = #{valid,jdbcType=BIT},
+      </if>
+      <if test="initPassModified != null">
+        init_pass_modified = #{initPassModified,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

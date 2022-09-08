@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.chl.victory.dao.mapper.coupons.ShopCouponsMapper">
+  <resultMap id="BaseResultMap" type="com.chl.victory.dao.model.coupons.ShopCouponsDO">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="shop_id" jdbcType="BIGINT" property="shopId" />
+    <result column="operator_id" jdbcType="BIGINT" property="operatorId" />
+    <result column="valid_time" jdbcType="TIMESTAMP" property="validTime" />
+    <result column="invalid_time" jdbcType="TIMESTAMP" property="invalidTime" />
+    <result column="status" jdbcType="BIT" property="status" />
+    <result column="title" jdbcType="VARCHAR" property="title" />
+    <result column="desc" jdbcType="VARCHAR" property="desc" />
+    <result column="meet" jdbcType="DECIMAL" property="meet" />
+    <result column="discount" jdbcType="DECIMAL" property="discount" />
+    <result column="only" jdbcType="BIT" property="only" />
+    <result column="priority" jdbcType="TINYINT" property="priority" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, created_time, modified_time, shop_id, operator_id, valid_time, invalid_time, 
+    status, title, `desc`, meet, discount, `only`, priority
+  </sql>
+  <sql id="conditionWithOrderAndPage">
+    <include refid="condition"/>
+    <include refid="order"/>
+    <include refid="page"/>
+  </sql>
+  <sql id="condition">
+    <where>
+      <if test="id != null"> id = #{id} </if>
+      <if test="ids != null and ids.size > 0">
+        and id in
+        <foreach collection="ids" item="item" separator="," open="(" close=")">
+          #{item}
+        </foreach>
+      </if>
+      <if test="startValidTime != null">
+        <![CDATA[
+            and valid_time <= #{startValidTime,jdbcType=TIMESTAMP}
+        ]]>
+      </if>
+      <if test="endValidTime != null">
+        <![CDATA[
+            and invalid_time >= #{endValidTime,jdbcType=TIMESTAMP}
+        ]]>
+      </if>
+      <if test="shopId != null"> and shop_id = #{shopId,jdbcType=BIGINT} </if>
+      <if test="status != null"> and status = #{status,jdbcType=BIT} </if>
+      <if test="only != null"> and `only` = #{only,jdbcType=BIT} </if>
+      <if test="title != null">
+        and `title` like concat('%',#{title,jdbcType=VARCHAR},'%')
+      </if>
+    </where>
+  </sql>
+  <sql id="order">
+    <if test="orderColumn != null">
+      order by #{orderColumn,jdbcType=VARCHAR} <if test="desc"> desc </if>
+    </if>
+    <if test="orderColumn = null and orderedColumns != null and orderedColumns.size > 0">
+      <trim suffixOverrides=",">
+        <foreach collection="orderedColumns" index="index" item="orderedColumn" open=" order by " separator="," close="">
+          #{item.orderColumn,jdbcType=VARCHAR} <if test="item.desc"> desc </if>
+        </foreach>
+      </trim>
+    </if>
+  </sql>
+  <sql id="page">
+    <if test="rowStart != null and pageSize != null">
+      limit #{rowStart},#{pageSize}
+    </if>
+  </sql>
+
+  <select id="count" parameterType="com.chl.victory.dao.query.coupons.ShopCouponsQuery" resultType="java.lang.Integer">
+    select
+    count(1)
+    from shop_coupons
+    <include refid="condition" />
+  </select>
+
+  <select id="select" parameterType="com.chl.victory.dao.query.coupons.ShopCouponsQuery" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from shop_coupons
+    <include refid="conditionWithOrderAndPage" />
+  </select>
+  <select id="selectOne" parameterType="com.chl.victory.dao.query.coupons.ShopCouponsQuery" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from shop_coupons
+    <include refid="condition" />
+  </select>
+
+  <delete id="delete" parameterType="com.chl.victory.dao.query.coupons.ShopCouponsQuery">
+    delete from shop_coupons
+    where id = #{id,jdbcType=BIGINT} and shop_id = #{shopId}
+  </delete>
+  <insert id="insert" parameterType="com.chl.victory.dao.model.coupons.ShopCouponsDO">
+    insert into shop_coupons (id, created_time, modified_time,
+      shop_id, operator_id, valid_time, 
+      invalid_time, status, title, 
+      `desc`, meet, discount,
+      `only`, priority)
+    values (#{id,jdbcType=BIGINT}, now(), now(),
+      #{shopId,jdbcType=BIGINT}, #{operatorId,jdbcType=BIGINT}, #{validTime,jdbcType=TIMESTAMP}, 
+      #{invalidTime,jdbcType=TIMESTAMP}, #{status,jdbcType=BIT}, #{title,jdbcType=VARCHAR}, 
+      #{desc,jdbcType=VARCHAR}, #{meet,jdbcType=DECIMAL}, #{discount,jdbcType=DECIMAL}, 
+      #{only,jdbcType=BIT}, #{priority,jdbcType=TINYINT})
+  </insert>
+  <update id="update" parameterType="com.chl.victory.dao.model.coupons.ShopCouponsDO">
+    update shop_coupons
+    <set>
+        modified_time = now(),
+      <if test="shopId != null">
+        shop_id = #{shopId,jdbcType=BIGINT},
+      </if>
+      <if test="operatorId != null">
+        operator_id = #{operatorId,jdbcType=BIGINT},
+      </if>
+      <if test="validTime != null">
+        valid_time = #{validTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="invalidTime != null">
+        invalid_time = #{invalidTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=BIT},
+      </if>
+      <if test="title != null">
+        title = #{title,jdbcType=VARCHAR},
+      </if>
+      <if test="desc != null">
+        `desc` = #{desc,jdbcType=VARCHAR},
+      </if>
+      <if test="meet != null">
+        meet = #{meet,jdbcType=DECIMAL},
+      </if>
+      <if test="discount != null">
+        discount = #{discount,jdbcType=DECIMAL},
+      </if>
+      <if test="only != null">
+        `only` = #{only,jdbcType=BIT},
+      </if>
+      <if test="priority != null">
+        priority = #{priority,jdbcType=TINYINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT} and shop_id = #{shopId}
+  </update>
+</mapper>

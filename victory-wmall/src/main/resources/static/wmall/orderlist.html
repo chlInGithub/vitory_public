@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>我的订单</title>
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+    <!-- <link rel="shortcut icon" href="/favicon.ico"> -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <link rel="stylesheet" href="https://g.alicdn.com/msui/sm/0.6.2/css/sm.min.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/item.css">
+
+    <style>
+
+    </style>
+
+</head>
+<body>
+<div id='app' class="page-group">
+    <template>
+
+        <div class="page page-current">
+
+            <header class="bar bar-nav">
+                <a href="javascript:goHistroy()" class="float-left nav-history">
+                    <span class="icon icon-left"></span>
+                </a>
+                <a href="javascript:window.location.reload()" class="float-right nav-refresh">
+                    <span class="icon icon-refresh"></span>
+                </a>
+                <h1 class="title header-title">
+                    <div class="header-shop float-left" style="display: flex;" @click="m_go_shop()">
+                        <img :src="m_get_img(shop.img)" class="header-img"/>
+                        <span><b>{{shop.name}}</b></span>
+                    </div>
+                    <div class="header-user float-right" style="display: flex;" @click="m_go_me()">
+                        <img :src="user.img" class="header-img"/>
+                        <span><b>{{user.name}}</b></span>
+                    </div>
+                </h1>
+            </header>
+
+            <nav class="bar bar-tab">
+                <a class="tab-item" @click="m_go_shop()">
+                    <span class="icon icon-home"></span>
+                    <span class="tab-label">首页</span>
+                </a>
+                <a class="tab-item" @click="m_go_cart()">
+                    <span class="icon icon-cart"></span>
+                    <span class="tab-label">购物车</span>
+                </a>
+                <a class="tab-item" @click="m_go_me()">
+                    <span class="icon icon-me"></span>
+                    <span class="tab-label">我的</span>
+                </a>
+                </a>
+            </nav>
+
+            <div class="content infinite-scroll infinite-scroll-bottom" data-distance="50">
+                <div class="list-container" v-if="orderList.length > 0">
+
+                    <div class="card card-item-info" v-for="order in orderList">
+                        <div class="card-header">
+                            <div class="row" style="width: 100%;margin: 0;text-align:right;font-size: .6rem;padding-right: .5rem;color:red">
+                                <div class="float-left">
+                                    {{order.statusDes}}
+                                </div>
+                                <div class="float-right">
+                                <span style="font-size:.4rem;margin-left:1rem;" v-if="order.payVO">
+                                    {{order.payVO.typeDesc}}
+                                </span>
+                                <span style="font-size:.4rem;margin-left:1rem;" v-if="order.status == 10 && order.payVO.type == 2">
+                                    待商家确认已付款
+                                </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-content" @click="m_go_order_detail(order.id)">
+                            <div class="card-content-inner">
+                                <div class="list-block media-list"
+                                     v-if="order.subOrderVOS && order.subOrderVOS.length > 0">
+                                    <div class="row no-gutter">
+                                        <div class="col-100">
+                                            <div class="item-inner" style="padding-right: 0 !important">
+                                                <!--<div class="row" style="padding-left: 0.5rem;margin: 0;text-align:right;font-size: .6rem;padding-right: .5rem;color:red">
+                                                    {{order.statusDes}}
+                                                    <span style="font-size:.4rem;margin-left:1rem;" v-if="order.status == 10 && order.payVO"> 已选[{{order.payVO.typeDesc}}]</span>
+                                                    <span style="font-size:.4rem;margin-left:1rem;" v-if="order.status == 10 && order.payVO.type == 2">
+                                                        待商家确认已付款
+                                                    </span>
+                                                </div>-->
+                                                <div class="row" v-for="item in order.subOrderVOS"
+                                                     style="display: inline-flex;margin: 0;padding-left: .5rem;width: 100%;">
+                                                    <div class="col-40">
+                                                        <img class="buycar-item-img" :src="m_get_img(item.itemImg)"
+                                                             style="width: 100%"/>
+                                                    </div>
+                                                    <div class="col-60"
+                                                         style="margin-left: .5rem;font-size: .6rem;">
+                                                        <div class="buycar-item-title">
+                                                            {{ item.itemTitle }}
+                                                        </div>
+                                                        <div class="buycar-item-sku-title" style="color: gray;">
+                                                            {{ item.skuTitle }}
+                                                        </div>
+                                                        <div v-if="item.presell" style="color: red;">
+                                                            [预售商品]
+                                                        </div>
+                                                        <div class="buycar-item-price"
+                                                             style="color: red;">
+                                                            ￥<span>{{ item.price }}</span>
+                                                        </div>
+                                                        <div class="buycar-item-count">
+                                                            x{{ item.count }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row" style="padding-left: 0.5rem;margin: 0;text-align:right;font-size: .6rem;padding-right: .5rem;">合计:￥{{order.realFee}}</div>
+                                                <div class="row" style="padding-left: 0.5rem;;padding-right: .5rem;margin: 0;">
+                                                    <div class="col-25 float-right" style="margin-left:.3rem" v-if="order.status == 30">
+                                                        <a @click.stop="m_success_order(order.id)" class="button button-success" style="font-size: .6rem;">已收货</a>
+                                                    </div>
+                                                    <div class="col-25 float-right" style="margin-left:.3rem" v-if="order.status == 10 && order.payVO.type != 2">
+                                                        <a @click.stop="m_go_weixin_pay(order.id)" class="button button-danger" style="font-size: .6rem;">付款</a>
+                                                    </div>
+                                                    <div class="col-25 float-right" style="margin-left:.3rem">
+                                                        <a @click.stop="m_del_order(order.id)" class="button button-light" style="font-size: .6rem;">删除</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- 加载提示符 -->
+                <div class="infinite-scroll-preloader" v-if="loading">
+                    <div class="preloader"></div>
+                </div>
+                <div class="infinite-scroll-preloader"  v-if="!loading && !hasGotAll">
+                    <a @click.stop="m_query_more" class="button button-default" style="font-size: .4rem;">更多订单</a>
+                </div>
+                <div class="no-item" style="margin-top:.5rem;text-align: center;font-size: .6rem;" v-if="orderList.length == 0">
+                    没有订单了！
+                </div>
+
+                <div class="card card-recommended-item-list">
+                    <div v-if="recommended_item_list.length > 0">
+                        <div class="card-header" style="font-size: .6rem;">
+                            你可能还喜欢
+                        </div>
+                        <div class="card-content">
+                            <div class="card-content-inner">
+                                <div class="list-block media-list">
+                                    <div class="no-gutter">
+                                        <div class="list-col-50 col-50 col-50-item" v-for="item in recommended_item_list">
+                                            <a>
+                                                <div class="item-img" @click="m_go_item_detail(item.id)">
+                                                    <img :src="m_get_img(item.img)">
+                                                </div>
+                                                <div class="item-outline">
+                                                    <div>
+                                                        <div class="item-outline-title">
+                                                            {{item.title}}
+                                                        </div>
+                                                        <div class="item-outline-sale" v-if="item.saleUV">
+                                                            已有{{item.saleUV}}+人购买
+                                                        </div>
+                                                        <div class="salestrategy-div"  v-if="item.strategyJson && item.strategyJson != ''" v-html="item.strategyTagHtml" >
+                                                        </div>
+                                                        <div v-if="item.existSku" class="item-exist-sku">
+                                                            款式多
+                                                        </div>
+                                                    </div>
+                                                    <div>
+                                                        <div class="item-outline-price">
+                                                            <span class="item-price-unit">￥</span>
+                                                            <span>{{item.price}}</span>
+                                                        </div>
+                                                        <div class="float-right item-outline-buycar" align="center">
+                                                            <img src="img/cart3.png" @click="m_add_cart_from_item_list(item.id, item.existSku)">
+                                                           <!-- <span class="icon icon-cart" style="color: white"
+                                                                  @click="m_add_cart(item.id)"></span>-->
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </template>
+</div>
+
+
+<script type='text/javascript' src='js/jquery-3.4.1.min.js' charset='utf-8'></script>
+<script type="text/javascript">
+    jQuery.noConflict()
+</script>
+<script src="js/vue.js"></script>
+<script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript" src="js/miniprogram.js"></script>
+<script type='text/javascript' src='https://res.wx.qq.com/open/js/jweixin-1.4.0.js' charset='utf-8'></script>
+<script type="text/javascript" src="js/mixin_vue.js"></script>
+<script type='text/javascript' src='https://g.alicdn.com/sj/lib/zepto/zepto.min.js' charset='utf-8'></script>
+<script type='text/javascript' src='https://g.alicdn.com/msui/sm/0.6.2/js/sm.min.js' charset='utf-8'></script>
+<script type="text/javascript">
+    //$.showPreloader();
+    //打开自动初始化页面的功能
+    //建议不要打开自动初始化，而是自己调用 $.init 方法完成初始化
+    $.config = {
+        autoInit: false,
+        router: false
+    }
+</script>
+
+<script type="text/javascript">
+    /*获取url query*/
+    var query = window.location.search.substring(1)
+    var queryJson = genJsonFromUrlParams()
+    log(query)
+
+
+    /*vue code*/
+    var mixined_vue = Vue.extend({
+        mixins: [common_mixin]
+    })
+    var app = new mixined_vue({
+        el: '#app',
+        data: {
+            maxItems: 0,
+            orderList: [],
+            hasGotAll: false
+        },
+        methods: {
+            m_add_order_list: function (item_list) {
+                this.orderList = this.orderList.concat(item_list)
+            },
+            m_go_weixin_pay: function (orderId) {
+                go_weixin_pay(orderId)
+            },
+            m_del_order: function (orderId) {
+                del_order(orderId)
+            },
+            m_success_order: function (orderId) {
+                success_order(orderId)
+            },
+            m_query_more : function () {
+                query_more()
+            }
+        }
+    })
+
+    var query_more;
+    /*sui code*/
+    var pageIndex = 0;
+    $(function () {
+        query_more = function () {
+
+            // 如果正在加载，则退出
+            if (loading) return;
+
+            // 上次加载的序号
+            var lastIndex = $('.list-container .card-item-info').length;
+
+            // 设置flag
+            loading = true;
+
+            if (lastIndex >= app.maxItems) {
+                // 加载完毕，则注销无限加载事件，以防不必要的加载
+                $.detachInfiniteScroll($('.infinite-scroll'));
+                // 删除加载提示符
+                $('.infinite-scroll-preloader').remove();
+                $('.no-item').show()
+                app.hasGotAll = true
+                return;
+            }
+
+            // 添加新条目
+            pageIndex++
+            query_item(function () {
+                loading = false
+            });
+        }
+
+        // 注册'infinite'事件处理函数
+        // $(document).on('infinite', '.infinite-scroll-bottom', query_more)
+    });
+
+    var loading = false;
+
+    /*jQuery code*/
+    /*通过接口从服务器获取数据。*/
+    var go_weixin_pay = function (orderId) {
+        $.showPreloader("跳转微信支付……");
+
+        AjaxUtil.post("/wmall/wxpay/prePay", {orderId: orderId}, function (result) {
+            if (result.d != undefined) {
+                log(result.d)
+
+                weixin.gotoPay(result.d)
+            }
+        }/*, function () {
+            $.hidePreloader()
+            $.toast("跳转失败，请前往订单详情页", 500)
+        }*/);
+    }
+
+    var del_order = function (orderId) {
+        AjaxUtil.post("/wmall/order/del", {orderId: orderId}, function (result) {
+            if (result.s) {
+                var orders = []
+                app.orderList.forEach(function (item) {
+                    if (item.id != orderId) {
+                        orders.push(item)
+                    }
+                })
+                app.orderList = orders
+            }
+        });
+    }
+    var success_order = function (orderId) {
+        AjaxUtil.post("/wmall/order/success", {orderId: orderId}, function (result) {
+            if (result.s) {
+                app.orderList.forEach(function (item) {
+                    if (item.id == orderId) {
+                        item.status = 40
+                        item.statusDes = "交易成功"
+                    }
+                })
+            }
+        });
+    }
+    var query_item = function (callback) {
+        app.loading = true
+        queryJson.pageIndex = pageIndex
+        AjaxUtil.get("/wmall/order/list", queryJson, function (result) {
+            app.loading = false
+            if (result.d != undefined) {
+                result.d = JsonUtil.getJson(result.d)
+                app.m_add_order_list(result.d);
+                app.maxItems = result.c
+                app.hasGotAll = app.orderList.length >= result.c
+                if (!app.hasGotAll && result.d.length == 0) {
+                    app.hasGotAll = true
+                }
+                if (typeof(callback) == "function") {
+                    callback();
+                }
+            }
+        })
+    }
+
+    var callback = function () {
+        query_item()
+    }
+    initPage(callback)
+</script>
+
+<script type="text/javascript">
+    $.init()
+</script>
+</body>
+</html>
